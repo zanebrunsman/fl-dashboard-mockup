@@ -1,0 +1,1616 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1194, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#0b3a52" />
+    <title>FL Home — Wall Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@500,600,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ===========================
+         HOME VIEW
+         =========================== -->
+    <main class="view view--home" data-view="home">
+      <!-- Top bar: greeting, time, weather summary -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <div class="brand">
+            <svg viewBox="0 0 32 32" aria-hidden="true" class="brand__mark">
+              <path d="M5 16 L16 5 L27 16 L27 27 L5 27 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+              <path d="M13 27 L13 19 L19 19 L19 27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            </svg>
+            <div class="brand__text">
+              <div class="brand__line1">Island Landing</div>
+              <div class="brand__line2">St. Augustine · FL</div>
+            </div>
+          </div>
+        </div>
+        <div class="topbar__center">
+          <div class="clock">
+            <span class="clock__time" id="clockTime">2:14</span>
+            <span class="clock__meridiem" id="clockMeridiem">PM</span>
+          </div>
+          <div class="clock__date" id="clockDate">Saturday · June 20</div>
+        </div>
+        <div class="topbar__right">
+          <button class="sleep-toggle" data-sleep-toggle aria-label="Enter sleep mode" title="Sleep mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+          </button>
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero weather strip -->
+      <section class="hero">
+        <div class="hero__main">
+          <div class="hero__conditions">
+            <div class="hero__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="84" height="84" fill="none">
+                <circle cx="22" cy="24" r="11" fill="var(--sun)" />
+                <path
+                  d="M14 42 Q14 32 24 32 Q26 25 35 26 Q44 26 46 34 Q56 34 56 44 Q56 50 50 50 L18 50 Q12 50 12 44 Z"
+                  fill="var(--cloud)"
+                  stroke="var(--cloud-edge)"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </div>
+            <div class="hero__readout">
+              <div class="hero__temp">
+                <span class="hero__temp-num">86°</span>
+                <span class="hero__temp-unit">F</span>
+              </div>
+              <div class="hero__phrase">Partly sunny · Feels 92°</div>
+            </div>
+          </div>
+          <div class="hero__stats">
+            <div class="stat">
+              <div class="stat__label">Humidity</div>
+              <div class="stat__value">71%</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Wind</div>
+              <div class="stat__value">9 mph <span class="stat__sub">ENE</span></div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">UV Index</div>
+              <div class="stat__value">8 <span class="stat__sub stat__sub--warn">High</span></div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Tide</div>
+              <div class="stat__value">Rising <span class="stat__sub">High 4:42p</span></div>
+            </div>
+            <div class="stat stat--lightning">
+              <div class="stat__label">Lightning</div>
+              <div class="stat__value">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--lightning)" stroke="none" style="vertical-align:-2px;margin-right:4px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+                3.2 mi <span class="stat__sub">NE · 2m ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top-priority alert banner (DASH-4) -->
+        <!-- Shows only the highest-priority active alert. 'More' link → Weather tab. -->
+        <aside class="alert alert--bolt" role="status" aria-live="polite">
+          <div class="alert__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" stroke="none">
+              <path d="M13 2 4 14h6l-1 8 9-12h-6z"/>
+            </svg>
+          </div>
+          <div class="alert__body">
+            <div class="alert__title">Lightning nearby — 3.2 mi NE</div>
+            <div class="alert__detail">5 strikes in last 10 min · cell moving WNW @ 18 mph. Audible chime sounded.</div>
+          </div>
+          <div class="alert__meta">
+            <span class="alert__pill">+3 more</span>
+            <span class="alert__autoswitch" title="Will auto-switch to Weather tab on audible alerts">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+              Auto-switch on
+            </span>
+          </div>
+          <button class="alert__cta" data-nav="weather">More →</button>
+        </aside>
+
+        <!-- 'All clear' empty state — hidden unless no active alerts. Swap aside above for this when alerts=[] -->
+        <aside class="alert alert--clear" role="status" aria-live="polite" hidden>
+          <div class="alert__icon alert__icon--clear" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="alert__body">
+            <div class="alert__title">All clear</div>
+            <div class="alert__detail">No active weather alerts. Last refreshed 30 sec ago.</div>
+          </div>
+          <button class="alert__cta" data-nav="weather">Forecast →</button>
+        </aside>
+      </section>
+
+      <!-- Quick tiles row -->
+      <section class="tiles">
+        <button class="tile tile--weather" data-nav="weather" aria-label="Weather and radar">
+          <div class="tile__head">
+            <span class="tile__eyebrow">Weather</span>
+            <span class="tile__chev" aria-hidden="true">›</span>
+          </div>
+          <div class="tile__body">
+            <div class="forecast">
+              <div class="forecast__day">
+                <div class="forecast__when">Today</div>
+                <svg viewBox="0 0 32 32" width="34" height="34"><circle cx="16" cy="16" r="7" fill="var(--sun)" /><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6" /><line x1="16" y1="26" x2="16" y2="29" /><line x1="3" y1="16" x2="6" y2="16" /><line x1="26" y1="16" x2="29" y2="16" /></g></svg>
+                <div class="forecast__temp">88° <span>74°</span></div>
+              </div>
+              <div class="forecast__day">
+                <div class="forecast__when">Sun</div>
+                <svg viewBox="0 0 32 32" width="34" height="34"><circle cx="16" cy="16" r="7" fill="var(--sun)" /><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6" /><line x1="16" y1="26" x2="16" y2="29" /><line x1="3" y1="16" x2="6" y2="16" /><line x1="26" y1="16" x2="29" y2="16" /></g></svg>
+                <div class="forecast__temp">89° <span>76°</span></div>
+              </div>
+              <div class="forecast__day">
+                <div class="forecast__when">Mon</div>
+                <svg viewBox="0 0 32 32" width="34" height="34"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)" /><path d="M12 27 l-2 3 M16 27 l-2 3 M20 27 l-2 3" stroke="var(--rain)" stroke-width="2" stroke-linecap="round" /></svg>
+                <div class="forecast__temp">84° <span>73°</span></div>
+              </div>
+              <div class="forecast__day">
+                <div class="forecast__when">Tue</div>
+                <svg viewBox="0 0 32 32" width="34" height="34"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)" /></svg>
+                <div class="forecast__temp">86° <span>74°</span></div>
+              </div>
+            </div>
+          </div>
+        </button>
+
+        <button class="tile tile--cameras" data-nav="security" aria-label="View cameras">
+          <div class="tile__head">
+            <span class="tile__eyebrow">Cameras</span>
+            <span class="tile__count">4 online</span>
+            <span class="tile__chev" aria-hidden="true">›</span>
+          </div>
+          <div class="tile__body tile__body--cam-grid">
+            <div class="cam-thumb cam-thumb--front" style="background-image:url('assets/cams/cam-front.png')">
+              <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
+              <div class="cam-thumb__label">Front Door</div>
+            </div>
+            <div class="cam-thumb cam-thumb--drive" style="background-image:url('assets/cams/cam-drive.png')">
+              <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
+              <div class="cam-thumb__label">Driveway</div>
+            </div>
+            <div class="cam-thumb cam-thumb--back" style="background-image:url('assets/cams/cam-back.png')">
+              <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
+              <div class="cam-thumb__label">Backyard</div>
+            </div>
+            <div class="cam-thumb cam-thumb--gar" style="background-image:url('assets/cams/cam-garage.png')">
+              <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
+              <div class="cam-thumb__label">Garage</div>
+            </div>
+          </div>
+        </button>
+
+        <button class="tile tile--security" data-nav="security" aria-label="Doors and garage">
+          <div class="tile__head">
+            <span class="tile__eyebrow">Doors &amp; Garage</span>
+            <span class="tile__chev" aria-hidden="true">›</span>
+          </div>
+          <div class="tile__body tile__body--status">
+            <div class="lock-row">
+              <div class="lock-row__icon lock-row__icon--locked" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              </div>
+              <div class="lock-row__name">Front door</div>
+              <div class="lock-row__state lock-row__state--ok">Locked</div>
+            </div>
+            <div class="lock-row">
+              <div class="lock-row__icon lock-row__icon--locked" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              </div>
+              <div class="lock-row__name">Back door</div>
+              <div class="lock-row__state lock-row__state--ok">Locked</div>
+            </div>
+            <div class="lock-row">
+              <div class="lock-row__icon lock-row__icon--garage" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13" /><path d="M7 21v-9h10v9" /><path d="M7 15h10" /></svg>
+              </div>
+              <div class="lock-row__name">Garage door</div>
+              <div class="lock-row__state lock-row__state--ok">Closed</div>
+            </div>
+          </div>
+        </button>
+
+        <button class="tile tile--nowplaying" data-nav="media" aria-label="Open media controls">
+          <div class="tile__head">
+            <span class="tile__eyebrow">Now playing</span>
+            <span class="tile__count tile__count--info">Sonos</span>
+            <span class="tile__chev" aria-hidden="true">›</span>
+          </div>
+          <div class="tile__body tile__body--nowplaying">
+            <div class="np-art" aria-hidden="true">
+              <div class="np-art__bg"></div>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff" stroke="none" class="np-art__play"><path d="M6 4l14 8-14 8z"/></svg>
+            </div>
+            <div class="np-meta">
+              <div class="np-title">Margaritaville</div>
+              <div class="np-artist">Jimmy Buffett</div>
+              <div class="np-room">Living Room · Kitchen</div>
+            </div>
+          </div>
+        </button>
+      </section>
+
+      <!-- Footer nav strip -->
+      <nav class="navstrip" aria-label="Sections">
+        <button class="navstrip__btn navstrip__btn--active" data-nav="home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12 12 3l9 9v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z" /></svg>
+          Home
+        </button>
+        <button class="navstrip__btn" data-nav="weather">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 13a4 4 0 0 0-8 0" /><path d="M7 18h10a3 3 0 0 0 0-6h-.83A6 6 0 0 0 6 12a3 3 0 0 0 1 6z" /></svg>
+          Weather
+        </button>
+        <button class="navstrip__btn" data-nav="security">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z" /></svg>
+          Security
+        </button>
+        <button class="navstrip__btn" data-nav="media">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
+          Media
+        </button>
+        <button class="navstrip__btn" data-nav="settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </nav>
+    </main>
+
+    <!-- ===========================
+         WEATHER VIEW
+         =========================== -->
+    <main class="view view--weather" data-view="weather" hidden>
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="back" data-nav="home" aria-label="Back to home">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+            Home
+          </button>
+        </div>
+        <div class="topbar__center">
+          <div class="page-title">Weather &amp; Alerts</div>
+        </div>
+        <div class="topbar__right">
+          <button class="sleep-toggle" data-sleep-toggle aria-label="Enter sleep mode" title="Sleep mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+          </button>
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="wx-grid">
+        <!-- Radar -->
+        <section class="card card--radar">
+          <header class="card__head">
+            <div class="card__title">Live radar</div>
+            <div class="card__sub">RainViewer + Blitzortung · St. Augustine</div>
+          </header>
+          <div class="radar" data-radar="card">
+            <!-- Pan/zoom + expand controls -->
+            <div class="radar__ctrls">
+              <button class="radar__ctrl" data-radar-action="reset" aria-label="Reset radar view" title="Reset view">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+              </button>
+              <button class="radar__ctrl" data-radar-action="expand" aria-label="Open full-screen radar" title="Full screen">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+              </button>
+            </div>
+            <svg viewBox="0 0 600 380" class="radar__svg" data-radar-svg preserveAspectRatio="xMidYMid slice" aria-label="Radar with road map showing precipitation and lightning strikes east of St. Augustine">
+              <defs>
+                <radialGradient id="rain1" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ef4444" stop-opacity="0.85" />
+                  <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.75" />
+                  <stop offset="75%" stop-color="#22c55e" stop-opacity="0.5" />
+                  <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
+                </radialGradient>
+                <radialGradient id="rain2" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#22c55e" stop-opacity="0.7" />
+                  <stop offset="60%" stop-color="#22c55e" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
+                </radialGradient>
+                <filter id="boltGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- ===== Pan/zoom viewport group ===== -->
+              <g data-radar-viewport>
+
+              <!-- ===== Road-map base layer (light) ===== -->
+              <!-- Land -->
+              <rect width="600" height="380" fill="#e8ebe5" />
+              <!-- Water (Atlantic + Intracoastal + Matanzas Bay) -->
+              <path d="M205 0 Q195 60 220 110 Q245 160 215 210 Q190 260 220 320 Q235 360 215 380 L600 380 L600 0 Z" fill="#bfd8e6" />
+              <!-- Anastasia Island strip -->
+              <path d="M260 30 Q275 110 268 200 Q262 290 280 380 L320 380 Q302 290 308 200 Q316 110 300 30 Z" fill="#e3e8da" />
+              <!-- Inlet -->
+              <path d="M268 175 Q285 180 305 175 L300 195 Q285 192 270 195 Z" fill="#bfd8e6" />
+              <!-- Parks/green -->
+              <path d="M40 280 Q90 270 130 290 Q150 310 120 330 Q70 340 40 320 Z" fill="#d4dcc6" />
+              <path d="M275 60 Q310 70 305 110 Q295 130 275 125 Z" fill="#d4dcc6" />
+
+              <!-- Roads -->
+              <g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">
+                <!-- I-95 vertical -->
+                <path d="M50 0 L50 380" stroke-width="5" stroke="#ffd27a" />
+                <path d="M50 0 L50 380" />
+                <!-- US-1 -->
+                <path d="M120 0 Q125 100 130 200 Q140 300 145 380" stroke="#fff" />
+                <!-- A1A on island -->
+                <path d="M285 0 Q290 100 285 200 Q282 300 290 380" stroke="#fff" />
+                <!-- Bridge of Lions / connectors -->
+                <path d="M155 195 L280 185" />
+                <path d="M155 260 L285 260" />
+                <!-- 16/207 cross streets -->
+                <path d="M0 130 L210 145" />
+                <path d="M0 310 L210 305" />
+                <!-- Local grid -->
+                <path d="M75 70 L210 75" stroke-width="2" />
+                <path d="M75 220 L210 225" stroke-width="2" />
+                <path d="M90 0 L95 380" stroke-width="2" />
+                <path d="M175 0 L180 380" stroke-width="2" />
+              </g>
+              <!-- Road labels (counter-scale layer) -->
+              <g data-radar-labels="roads" fill="#7a8772" font-family="Satoshi, sans-serif" font-size="9" font-weight="700">
+                <text x="34" y="50" transform="rotate(-90 34 50)">I-95</text>
+                <text x="108" y="60" transform="rotate(-88 108 60)">US-1</text>
+                <text x="273" y="55" transform="rotate(-86 273 55)">A1A</text>
+              </g>
+
+              <!-- ===== Precipitation overlay ===== -->
+              <g opacity="0.8">
+                <ellipse cx="410" cy="230" rx="125" ry="75" fill="url(#rain1)" />
+                <ellipse cx="495" cy="125" rx="100" ry="60" fill="url(#rain2)" />
+                <ellipse cx="345" cy="330" rx="85" ry="42" fill="url(#rain2)" />
+              </g>
+
+              <!-- ===== Lightning strikes ===== -->
+              <g data-radar-lightning filter="url(#boltGlow)">
+                <!-- Closest strike: 3.2 mi NE -->
+                <g transform="translate(245 165)">
+                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
+                </g>
+                <g transform="translate(400 145)">
+                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
+                </g>
+                <g transform="translate(465 95)">
+                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
+                </g>
+                <g transform="translate(440 255)">
+                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
+                </g>
+                <g transform="translate(355 280)">
+                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
+                </g>
+              </g>
+
+              <!-- ===== Range rings + home marker ===== -->
+              <g data-radar-rings stroke="#0b3a52" stroke-opacity="0.18" fill="none" stroke-dasharray="3 4">
+                <circle cx="215" cy="190" r="55" />
+                <circle cx="215" cy="190" r="120" />
+                <circle cx="215" cy="190" r="200" />
+              </g>
+              <g data-radar-home transform="translate(215 190)">
+                <circle r="7" fill="#0b3a52" />
+                <circle r="3" fill="#fff" />
+                <text x="12" y="4" fill="#0b3a52" font-size="12" font-family="Satoshi, sans-serif" font-weight="700">Home</text>
+              </g>
+              <!-- distance ring labels (counter-scale layer) -->
+              <g data-radar-labels="rings" fill="#0b3a52" font-family="Satoshi, sans-serif" font-size="9" font-weight="600" opacity="0.55">
+                <text x="215" y="138" text-anchor="middle">5 mi</text>
+                <text x="215" y="73" text-anchor="middle">10 mi</text>
+              </g>
+
+              </g><!-- /data-radar-viewport -->
+            </svg>
+
+            <div class="radar__legend">
+              <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
+              <span class="radar__chip"><i style="background:#f59e0b"></i>Moderate</span>
+              <span class="radar__chip"><i style="background:#ef4444"></i>Heavy</span>
+              <span class="radar__chip radar__chip--bolt"><i style="background:#ffd84d"></i>Lightning · last 10 min</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Alerts list -->
+        <section class="card card--alerts">
+          <header class="card__head">
+            <div class="card__title">Active alerts</div>
+            <div class="card__sub">NWS · St. Johns County</div>
+          </header>
+          <ul class="alerts" role="list">
+            <li class="alert-row alert-row--bolt">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>Lightning nearby — 3.2 mi NE</div>
+                <div class="alert-row__when">5 strikes in last 10 min · cell moving WNW @ 18 mph</div>
+                <div class="alert-row__desc">Audible chime sounded on Sonos + tablet. Stay indoors until cell passes.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--warn">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Heat Advisory</div>
+                <div class="alert-row__when">Today, 11:00 AM – 8:00 PM</div>
+                <div class="alert-row__desc">Heat index up to 108°F. Hydration and shade.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--watch">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Rip Current Statement</div>
+                <div class="alert-row__when">Through Sun 8:00 PM</div>
+                <div class="alert-row__desc">High risk along St. Johns County beaches.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--info">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Coastal flood — Minor</div>
+                <div class="alert-row__when">High tide 4:42 PM</div>
+                <div class="alert-row__desc">Minor flooding possible near Vilano causeway.</div>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Tide -->
+        <section class="card card--tide">
+          <header class="card__head">
+            <div class="card__title">Tide · Station 8720587</div>
+            <div class="card__sub">St. Augustine Beach</div>
+          </header>
+          <div class="tide-wrap">
+            <svg viewBox="0 0 600 200" class="tide" aria-label="Tide chart" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="tideFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--color-blue)" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="var(--color-blue)" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <!-- gridlines -->
+              <g stroke="var(--color-border)" stroke-width="1">
+                <line x1="0" y1="35" x2="600" y2="35" stroke-dasharray="2 4" opacity="0.6"/>
+                <line x1="0" y1="100" x2="600" y2="100" stroke-dasharray="2 4" opacity="0.6"/>
+                <line x1="0" y1="165" x2="600" y2="165" stroke-dasharray="2 4" opacity="0.6"/>
+              </g>
+              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70 L 640 180 L 0 180 Z" fill="url(#tideFill)" />
+              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70" fill="none" stroke="var(--color-blue)" stroke-width="3" stroke-linecap="round" />
+              <!-- NOW marker line -->
+              <line x1="240" y1="15" x2="240" y2="180" stroke="var(--color-primary)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+              <g>
+                <circle cx="120" cy="35" r="5" fill="var(--color-blue)" />
+                <circle cx="360" cy="165" r="5" fill="var(--color-text-muted)" />
+                <circle cx="240" cy="100" r="6" fill="var(--color-primary)" stroke="#fff" stroke-width="2" />
+              </g>
+              <!-- height labels y-axis -->
+              <g fill="var(--color-text-faint)" font-family="Satoshi, sans-serif" font-size="10" font-weight="600">
+                <text x="6" y="30">4.3 ft</text>
+                <text x="6" y="104">2.0 ft</text>
+                <text x="6" y="168">0.4 ft</text>
+              </g>
+              <!-- peak/trough labels -->
+              <g fill="var(--color-text-muted)" font-family="Satoshi, sans-serif" font-size="10" font-weight="700">
+                <text x="120" y="22" text-anchor="middle">High 4:42 AM</text>
+                <text x="360" y="185" text-anchor="middle">Low 11:08 AM</text>
+                <text x="240" y="22" text-anchor="middle" fill="var(--color-primary)" font-weight="800">NOW · 2.1 ft</text>
+              </g>
+            </svg>
+            <!-- x-axis time labels -->
+            <div class="tide__axis">
+              <span>12a</span><span>3a</span><span>6a</span><span>9a</span><span>12p</span><span>3p</span><span>6p</span><span>9p</span>
+            </div>
+          </div>
+          <div class="tide__legend">
+            <div><strong>Now</strong> Rising · 2.1 ft</div>
+            <div><strong>Next high</strong> 4:42 PM · 4.3 ft</div>
+            <div><strong>Next low</strong> 11:08 PM · 0.4 ft</div>
+          </div>
+        </section>
+
+        <!-- Conditions table -->
+        <section class="card card--cond">
+          <header class="card__head">
+            <div class="card__title">Conditions</div>
+            <div class="card__sub">Right now</div>
+          </header>
+          <div class="cond-grid">
+            <div class="cond-cell">
+              <div class="cond-cell__label">Temperature</div>
+              <div class="cond-cell__value">86°F</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Feels like</div>
+              <div class="cond-cell__value">92°F</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Dewpoint</div>
+              <div class="cond-cell__value">74°F</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Pressure</div>
+              <div class="cond-cell__value">29.94 inHg ↓</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Wind</div>
+              <div class="cond-cell__value">9 mph ENE</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Gusts</div>
+              <div class="cond-cell__value">17 mph</div>
+            </div>
+            <div class="cond-cell cond-cell--bolt">
+              <div class="cond-cell__label">Lightning</div>
+              <div class="cond-cell__value"><svg viewBox="0 0 24 24" width="14" height="14" fill="var(--lightning)" style="vertical-align:-1px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg> 3.2 mi NE</div>
+            </div>
+            <div class="cond-cell">
+              <div class="cond-cell__label">Sunset</div>
+              <div class="cond-cell__value">8:28 PM</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <nav class="navstrip" aria-label="Sections">
+        <button class="navstrip__btn" data-nav="home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12 12 3l9 9v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z" /></svg>
+          Home
+        </button>
+        <button class="navstrip__btn navstrip__btn--active" data-nav="weather">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 13a4 4 0 0 0-8 0" /><path d="M7 18h10a3 3 0 0 0 0-6h-.83A6 6 0 0 0 6 12a3 3 0 0 0 1 6z" /></svg>
+          Weather
+        </button>
+        <button class="navstrip__btn" data-nav="security">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z" /></svg>
+          Security
+        </button>
+        <button class="navstrip__btn" data-nav="media">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
+          Media
+        </button>
+        <button class="navstrip__btn" data-nav="settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </nav>
+    </main>
+
+    <!-- ===========================
+         SECURITY VIEW
+         =========================== -->
+    <main class="view view--security" data-view="security" hidden>
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="back" data-nav="home" aria-label="Back to home">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+            Home
+          </button>
+        </div>
+        <div class="topbar__center">
+          <div class="page-title">Security</div>
+        </div>
+        <div class="topbar__right">
+          <button class="sleep-toggle" data-sleep-toggle aria-label="Enter sleep mode" title="Sleep mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+          </button>
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="sec-grid">
+        <!-- Cameras: large feed + thumbs -->
+        <section class="card card--cam-main">
+          <header class="card__head">
+            <div class="card__title" id="camTitle">Front door</div>
+            <div class="card__sub">Live · 1080p · Local stream</div>
+          </header>
+          <div class="cam-main">
+            <div class="cam-main__view" id="camView" data-cam="front" style="background-image:url('assets/cams/cam-front.png')"></div>
+            <div class="cam-main__overlay">
+              <span class="cam-main__live"><span class="cam-thumb__dot"></span>LIVE</span>
+              <span class="cam-main__time" id="camTime">2:14 PM</span>
+            </div>
+          </div>
+          <div class="cam-rail">
+            <button class="cam-rail__btn cam-rail__btn--active" data-cam="front">
+              <div class="cam-thumb cam-thumb--front cam-thumb--small" style="background-image:url('assets/cams/cam-front.png')"></div>
+              <span>Front</span>
+            </button>
+            <button class="cam-rail__btn" data-cam="drive">
+              <div class="cam-thumb cam-thumb--drive cam-thumb--small" style="background-image:url('assets/cams/cam-drive.png')"></div>
+              <span>Driveway</span>
+            </button>
+            <button class="cam-rail__btn" data-cam="back">
+              <div class="cam-thumb cam-thumb--back cam-thumb--small" style="background-image:url('assets/cams/cam-back.png')"></div>
+              <span>Backyard</span>
+            </button>
+            <button class="cam-rail__btn" data-cam="gar">
+              <div class="cam-thumb cam-thumb--gar cam-thumb--small" style="background-image:url('assets/cams/cam-garage.png')"></div>
+              <span>Garage</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="card card--controls">
+          <header class="card__head">
+            <div class="card__title">Doors &amp; garage</div>
+            <div class="card__sub">Tap to act · PIN required</div>
+          </header>
+          <div class="controls">
+            <article class="control" data-control="front-door" data-state="locked">
+              <div class="control__icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              </div>
+              <div class="control__meta">
+                <div class="control__name">Front door</div>
+                <div class="control__state">Locked · Battery 87%</div>
+              </div>
+              <button class="control__btn" data-act="unlock" data-target="front-door">Unlock</button>
+            </article>
+
+            <article class="control" data-control="back-door" data-state="locked">
+              <div class="control__icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              </div>
+              <div class="control__meta">
+                <div class="control__name">Back door</div>
+                <div class="control__state">Locked · Battery 92%</div>
+              </div>
+              <button class="control__btn" data-act="unlock" data-target="back-door">Unlock</button>
+            </article>
+
+            <article class="control" data-control="garage" data-state="closed">
+              <div class="control__icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13" /><path d="M7 21v-9h10v9" /><path d="M7 15h10" /></svg>
+              </div>
+              <div class="control__meta">
+                <div class="control__name">Garage door</div>
+                <div class="control__state">Closed · Last opened 9:42 AM</div>
+              </div>
+              <button class="control__btn" data-act="open" data-target="garage">Open</button>
+            </article>
+          </div>
+
+          <header class="card__head card__head--inset">
+            <div class="card__title">Recent activity</div>
+          </header>
+          <ul class="log" role="list">
+            <li><span class="log__time">2:02p</span><span class="log__what">Front door — Locked by Mom</span></li>
+            <li><span class="log__time">12:14p</span><span class="log__what">Garage — Closed</span></li>
+            <li><span class="log__time">9:42a</span><span class="log__what">Garage — Opened</span></li>
+            <li><span class="log__time">9:41a</span><span class="log__what">Front door — Unlocked by Dad</span></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="navstrip" aria-label="Sections">
+        <button class="navstrip__btn" data-nav="home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12 12 3l9 9v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z" /></svg>
+          Home
+        </button>
+        <button class="navstrip__btn" data-nav="weather">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 13a4 4 0 0 0-8 0" /><path d="M7 18h10a3 3 0 0 0 0-6h-.83A6 6 0 0 0 6 12a3 3 0 0 0 1 6z" /></svg>
+          Weather
+        </button>
+        <button class="navstrip__btn navstrip__btn--active" data-nav="security">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z" /></svg>
+          Security
+        </button>
+        <button class="navstrip__btn" data-nav="media">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
+          Media
+        </button>
+        <button class="navstrip__btn" data-nav="settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+        <div class="navstrip__spacer"></div>
+        <div class="navstrip__hint">PIN required for changes</div>
+      </nav>
+    </main>
+
+    <!-- ===========================
+         MEDIA VIEW
+         =========================== -->
+    <main class="view view--media" data-view="media" hidden>
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="back" data-nav="home" aria-label="Back to home">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+            Home
+          </button>
+        </div>
+        <div class="topbar__center">
+          <div class="page-title">Media</div>
+        </div>
+        <div class="topbar__right">
+          <button class="sleep-toggle" data-sleep-toggle aria-label="Enter sleep mode" title="Sleep mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+          </button>
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="media-grid">
+        <!-- Source selector + Now Playing -->
+        <section class="card card--player">
+          <div class="src-tabs" role="tablist">
+            <button class="src-tab src-tab--active" data-src="sonos" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
+              Sonos
+              <span class="src-tab__badge">Playing</span>
+            </button>
+            <button class="src-tab" data-src="tv" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/></svg>
+              Living Room TV
+              <span class="src-tab__badge src-tab__badge--off">Off</span>
+            </button>
+          </div>
+
+          <!-- Now playing panel (Sonos active) -->
+          <div class="player" data-player="sonos">
+            <div class="player__art" aria-hidden="true">
+              <div class="player__art-bg"></div>
+              <div class="player__art-pulse"></div>
+              <svg viewBox="0 0 24 24" width="40" height="40" fill="#fff" class="player__art-icon"><path d="M9 3v10.55A4 4 0 1 0 11 17V7h8V3z"/></svg>
+            </div>
+            <div class="player__meta">
+              <div class="player__title">Margaritaville</div>
+              <div class="player__artist">Jimmy Buffett · Songs You Know by Heart</div>
+              <div class="player__rooms">
+                <span class="chip chip--on">Living Room</span>
+                <span class="chip chip--on">Kitchen</span>
+                <span class="chip">Primary Bedroom</span>
+                <span class="chip">Lanai</span>
+              </div>
+              <!-- progress -->
+              <div class="player__progress">
+                <span class="player__elapsed">1:42</span>
+                <div class="player__bar"><div class="player__bar-fill" style="width:42%"></div></div>
+                <span class="player__total">4:01</span>
+              </div>
+              <!-- transport -->
+              <div class="player__transport">
+                <button class="player__btn" aria-label="Previous"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg></button>
+                <button class="player__btn player__btn--lg" aria-label="Play / Pause"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1"/><rect x="13" y="5" width="4" height="14" rx="1"/></svg></button>
+                <button class="player__btn" aria-label="Next"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6v12l8.5-6z"/></svg></button>
+              </div>
+              <!-- volume -->
+              <div class="player__vol">
+                <button class="player__btn player__btn--sm" aria-label="Mute"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+                <div class="player__slider"><div class="player__slider-fill" style="width:38%"></div><div class="player__slider-knob" style="left:38%"></div></div>
+                <span class="player__vol-num">38</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Open Sonos app fallback -->
+          <div class="player__footer">
+            <button class="btn btn--ghost" data-action="open-sonos">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+              Open Sonos app
+            </button>
+            <button class="btn btn--ghost" data-action="browse-music">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Browse music
+            </button>
+          </div>
+        </section>
+
+        <!-- Sidebar: Queue + favorites + system -->
+        <aside class="media-side">
+          <section class="card">
+            <header class="card__head">
+              <div class="card__title">Up next</div>
+              <div class="card__sub">3 tracks queued</div>
+            </header>
+            <ul class="queue" role="list">
+              <li class="queue__row">
+                <div class="queue__art" data-art="a"></div>
+                <div class="queue__meta">
+                  <div class="queue__title">Cheeseburger in Paradise</div>
+                  <div class="queue__artist">Jimmy Buffett</div>
+                </div>
+                <span class="queue__dur">3:46</span>
+              </li>
+              <li class="queue__row">
+                <div class="queue__art" data-art="b"></div>
+                <div class="queue__meta">
+                  <div class="queue__title">Kokomo</div>
+                  <div class="queue__artist">The Beach Boys</div>
+                </div>
+                <span class="queue__dur">3:35</span>
+              </li>
+              <li class="queue__row">
+                <div class="queue__art" data-art="c"></div>
+                <div class="queue__meta">
+                  <div class="queue__title">Island in the Sun</div>
+                  <div class="queue__artist">Weezer</div>
+                </div>
+                <span class="queue__dur">3:20</span>
+              </li>
+            </ul>
+          </section>
+
+          <section class="card">
+            <header class="card__head">
+              <div class="card__title">System</div>
+            </header>
+            <div class="sys-row">
+              <div class="sys-row__label">Test alert chime</div>
+              <button class="btn btn--primary btn--sm" data-action="play-audio">Play</button>
+            </div>
+            <div class="sys-row">
+              <div class="sys-row__label">Alert volume</div>
+              <div class="player__slider sys-row__slider"><div class="player__slider-fill" style="width:65%"></div><div class="player__slider-knob" style="left:65%"></div></div>
+            </div>
+            <div class="sys-row">
+              <div class="sys-row__label">Lightning chime radius</div>
+              <div class="sys-row__value">12 mi</div>
+            </div>
+            <div class="sys-row">
+              <div class="sys-row__label">Re-alert cooldown</div>
+              <div class="sys-row__value">10 min</div>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <nav class="navstrip" aria-label="Sections">
+        <button class="navstrip__btn" data-nav="home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12 12 3l9 9v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z" /></svg>
+          Home
+        </button>
+        <button class="navstrip__btn" data-nav="weather">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 13a4 4 0 0 0-8 0" /><path d="M7 18h10a3 3 0 0 0 0-6h-.83A6 6 0 0 0 6 12a3 3 0 0 0 1 6z" /></svg>
+          Weather
+        </button>
+        <button class="navstrip__btn" data-nav="security">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z" /></svg>
+          Security
+        </button>
+        <button class="navstrip__btn navstrip__btn--active" data-nav="media">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
+          Media
+        </button>
+        <button class="navstrip__btn" data-nav="settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </nav>
+    </main>
+
+    <!-- ===========================
+         SETTINGS VIEW (DASH-5)
+         =========================== -->
+    <main class="view view--settings" data-view="settings" hidden>
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="back" data-nav="home" aria-label="Back to home">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            Home
+          </button>
+        </div>
+        <div class="topbar__center">
+          <div class="page-title">Settings</div>
+        </div>
+        <div class="topbar__right">
+          <button class="sleep-toggle" data-sleep-toggle aria-label="Enter sleep mode" title="Sleep mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+          </button>
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="settings-grid">
+        <div class="settings-row">
+        <!-- ALERT PRIORITY (drag to reorder) -->
+        <section class="card card--priority">
+          <header class="card__head">
+            <div>
+              <div class="card__title">Alert priority</div>
+              <div class="card__sub">Drag to reorder · toggle audible / hide</div>
+            </div>
+            <button class="btn btn--ghost btn--sm" data-action="reset-priority">Reset to defaults</button>
+          </header>
+          <ul class="priority-list" role="list" data-sortable>
+            <li class="priority-row priority-row--bolt" data-alert-type="tornado">
+              <span class="priority-row__handle" aria-label="Drag to reorder" title="Drag">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+              </span>
+              <span class="priority-row__rank">1</span>
+              <span class="priority-row__bar priority-row__bar--crit"></span>
+              <span class="priority-row__name">Tornado Warning</span>
+              <span class="priority-row__sev sev--crit">Critical</span>
+              <label class="toggle" title="Audible chime">
+                <input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span>
+                <span class="toggle__label">Audible</span>
+              </label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide alert type" title="Hide entirely">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </li>
+            <li class="priority-row priority-row--bolt" data-alert-type="hurricane">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">2</span>
+              <span class="priority-row__bar priority-row__bar--crit"></span>
+              <span class="priority-row__name">Hurricane Warning</span>
+              <span class="priority-row__sev sev--crit">Critical</span>
+              <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--bolt priority-row--active" data-alert-type="lightning">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">3</span>
+              <span class="priority-row__bar priority-row__bar--bolt"></span>
+              <span class="priority-row__name">Lightning nearby <span class="priority-row__live">• active</span></span>
+              <span class="priority-row__sev sev--bolt">High</span>
+              <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--warn" data-alert-type="severe-tstorm">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">4</span>
+              <span class="priority-row__bar priority-row__bar--warn"></span>
+              <span class="priority-row__name">Severe Thunderstorm</span>
+              <span class="priority-row__sev sev--warn">High</span>
+              <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--warn" data-alert-type="hail">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">5</span>
+              <span class="priority-row__bar priority-row__bar--warn"></span>
+              <span class="priority-row__name">Hail</span>
+              <span class="priority-row__sev sev--warn">High</span>
+              <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--warn" data-alert-type="flash-flood">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">6</span>
+              <span class="priority-row__bar priority-row__bar--warn"></span>
+              <span class="priority-row__name">Flash Flood Warning</span>
+              <span class="priority-row__sev sev--warn">High</span>
+              <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--watch priority-row--active" data-alert-type="rip-current">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">7</span>
+              <span class="priority-row__bar priority-row__bar--watch"></span>
+              <span class="priority-row__name">Rip Current Statement <span class="priority-row__live">• active</span></span>
+              <span class="priority-row__sev sev--watch">Moderate</span>
+              <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--info priority-row--active" data-alert-type="heat">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">8</span>
+              <span class="priority-row__bar priority-row__bar--info"></span>
+              <span class="priority-row__name">Heat Advisory <span class="priority-row__live">• active</span></span>
+              <span class="priority-row__sev sev--info">Low</span>
+              <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+            <li class="priority-row priority-row--info" data-alert-type="coastal-flood">
+              <span class="priority-row__handle"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>
+              <span class="priority-row__rank">9</span>
+              <span class="priority-row__bar priority-row__bar--info"></span>
+              <span class="priority-row__name">Coastal Flood Advisory</span>
+              <span class="priority-row__sev sev--info">Low</span>
+              <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Audible</span></label>
+              <button class="icon-btn icon-btn--ghost" aria-label="Hide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10 10 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
+            </li>
+          </ul>
+        </section>
+
+        <div class="settings-col">
+        <!-- AUDIBLE BEHAVIOR -->
+        <section class="card card--audible">
+          <header class="card__head">
+            <div class="card__title">Audible behavior</div>
+            <div class="card__sub">Chime + Sonos broadcast</div>
+          </header>
+          <div class="set-rows">
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Alert volume</div>
+                <div class="set-row__hint">Master output to chime + Sonos</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="player__slider player__slider--lg"><div class="player__slider-fill" style="width:65%"></div><div class="player__slider-knob" style="left:65%"></div></div>
+                <span class="set-row__value">65</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Lightning chime radius</div>
+                <div class="set-row__hint">Strike must be within radius to chime</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip">5 mi</button>
+                  <button class="chip chip--on">12 mi</button>
+                  <button class="chip">20 mi</button>
+                  <button class="chip">30 mi</button>
+                </div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Re-alert cooldown</div>
+                <div class="set-row__hint">Suppress repeat chimes for same alert type</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip">5 min</button>
+                  <button class="chip chip--on">10 min</button>
+                  <button class="chip">30 min</button>
+                </div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Quiet hours</div>
+                <div class="set-row__hint">Suppress non-critical audible alerts overnight</div>
+              </div>
+              <div class="set-row__ctrl set-row__ctrl--inline">
+                <span class="set-row__value">10:00 PM — 7:00 AM</span>
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span></label>
+              </div>
+            </div>
+            <div class="set-row set-row--cta">
+              <div class="set-row__main">
+                <div class="set-row__label">Test alert chime</div>
+                <div class="set-row__hint">Plays a 2-second tone on tablet + Sonos</div>
+              </div>
+              <div class="set-row__ctrl">
+                <button class="btn btn--primary btn--sm" data-action="play-audio">Play</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DASHBOARD BEHAVIOR -->
+        <section class="card card--dashbeh">
+          <header class="card__head">
+            <div class="card__title">Dashboard</div>
+            <div class="card__sub">Tabs and auto-switch</div>
+          </header>
+          <div class="set-rows">
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Auto-switch to Weather on audible alert</div>
+                <div class="set-row__hint">AUTO-7 · holds Weather tab for 5 minutes</div>
+              </div>
+              <div class="set-row__ctrl">
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span></label>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Hold duration on Weather tab</div>
+                <div class="set-row__hint">Time before auto-return to default tab</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip">2 min</button>
+                  <button class="chip chip--on">5 min</button>
+                  <button class="chip">15 min</button>
+                </div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Default tab</div>
+                <div class="set-row__hint">Shown after idle return</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip chip--on">Home</button>
+                  <button class="chip">Weather</button>
+                </div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Idle timeout</div>
+                <div class="set-row__hint">Return to default tab after inactivity</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip">1 min</button>
+                  <button class="chip chip--on">3 min</button>
+                  <button class="chip">10 min</button>
+                </div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Theme</div>
+                <div class="set-row__hint">Auto switches at sunset</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="chip-group">
+                  <button class="chip">Light</button>
+                  <button class="chip">Dark</button>
+                  <button class="chip chip--on">Auto</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        </div><!-- /.settings-col -->
+        </div><!-- /.settings-row -->
+
+        <!-- SLEEP MODE (DASH-6) -->
+        <section class="card card--sleep">
+          <header class="card__head">
+            <div class="card__title">Sleep mode</div>
+            <div class="card__sub">Minimal display · selective automations</div>
+          </header>
+          <div class="set-rows">
+            <div class="set-row set-row--cta">
+              <div class="set-row__main">
+                <div class="set-row__label">Sleep now</div>
+                <div class="set-row__hint">Same as tapping the bed icon on any tab</div>
+              </div>
+              <div class="set-row__ctrl">
+                <button class="btn btn--primary btn--sm" data-sleep-toggle>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M2 16h20"/><path d="M2 20h20"/><path d="M4 16V9a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v3"/><path d="M12 12h6a3 3 0 0 1 3 3v1"/></svg>
+                  Sleep now
+                </button>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Auto-activate on schedule</div>
+                <div class="set-row__hint">Turn sleep mode on at the scheduled times</div>
+              </div>
+              <div class="set-row__ctrl">
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span></label>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Schedule · weekdays</div>
+                <div class="set-row__hint">Sun–Thu nights</div>
+              </div>
+              <div class="set-row__ctrl set-row__ctrl--inline">
+                <span class="set-row__value">10:00 PM</span>
+                <span class="set-row__between">—</span>
+                <span class="set-row__value">7:00 AM</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Schedule · weekends</div>
+                <div class="set-row__hint">Fri–Sat nights</div>
+              </div>
+              <div class="set-row__ctrl set-row__ctrl--inline">
+                <span class="set-row__value">11:30 PM</span>
+                <span class="set-row__between">—</span>
+                <span class="set-row__value">8:00 AM</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Brightness during sleep</div>
+                <div class="set-row__hint">Tablet screen dim level</div>
+              </div>
+              <div class="set-row__ctrl">
+                <div class="player__slider player__slider--lg"><div class="player__slider-fill" style="width:8%"></div><div class="player__slider-knob" style="left:8%"></div></div>
+                <span class="set-row__value">8%</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-row__main">
+                <div class="set-row__label">Wake on Critical alert</div>
+                <div class="set-row__hint">Tornado · Hurricane · Severe Thunderstorm — always overrides sleep</div>
+              </div>
+              <div class="set-row__ctrl">
+                <label class="toggle toggle--locked" title="Required for life-safety"><input type="checkbox" checked disabled> <span class="toggle__track"><span class="toggle__thumb"></span></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="sleep-rules">
+            <div class="sleep-rules__head">
+              <div class="card__title card__title--sm">What runs during sleep</div>
+              <div class="card__sub">Toggle per automation — left side stays running, right side suppressed</div>
+            </div>
+            <ul class="rules-list" role="list">
+              <li class="rule-row rule-row--on">
+                <span class="rule-row__name">Severe weather chime (Critical)</span>
+                <span class="rule-row__sev sev--crit">Critical</span>
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row rule-row--on">
+                <span class="rule-row__name">Door + garage locks</span>
+                <span class="rule-row__sev sev--watch">Security</span>
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row rule-row--on">
+                <span class="rule-row__name">Doorbell chime (Ring / SimpliSafe)</span>
+                <span class="rule-row__sev sev--watch">Security</span>
+                <label class="toggle"><input type="checkbox" checked> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row">
+                <span class="rule-row__name">Lightning chime</span>
+                <span class="rule-row__sev sev--bolt">Weather</span>
+                <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row">
+                <span class="rule-row__name">Non-critical weather chimes (Heat, Rip Current…)</span>
+                <span class="rule-row__sev sev--info">Weather</span>
+                <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row">
+                <span class="rule-row__name">Sonos auto-play / TV automations</span>
+                <span class="rule-row__sev sev--info">Media</span>
+                <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+              <li class="rule-row">
+                <span class="rule-row__name">Theme auto-switch (day ↔ night)</span>
+                <span class="rule-row__sev sev--info">UI</span>
+                <label class="toggle"><input type="checkbox"> <span class="toggle__track"><span class="toggle__thumb"></span></span><span class="toggle__label">Allow</span></label>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- SYSTEM / FOOTER -->
+        <section class="card card--sysfoot">
+          <header class="card__head">
+            <div class="card__title">System</div>
+            <div class="card__sub">Home Assistant Green</div>
+          </header>
+          <div class="sys-grid">
+            <div class="sys-cell">
+              <div class="sys-cell__label">HA Core</div>
+              <div class="sys-cell__value">2026.6.2</div>
+            </div>
+            <div class="sys-cell">
+              <div class="sys-cell__label">Uptime</div>
+              <div class="sys-cell__value">14 days</div>
+            </div>
+            <div class="sys-cell">
+              <div class="sys-cell__label">CPU</div>
+              <div class="sys-cell__value">12%</div>
+            </div>
+            <div class="sys-cell">
+              <div class="sys-cell__label">RAM</div>
+              <div class="sys-cell__value">1.4 / 4 GB</div>
+            </div>
+            <div class="sys-cell">
+              <div class="sys-cell__label">Last alert poll</div>
+              <div class="sys-cell__value">30 s ago</div>
+            </div>
+            <div class="sys-cell">
+              <div class="sys-cell__label">Blitzortung</div>
+              <div class="sys-cell__value sys-cell__value--ok">Connected</div>
+            </div>
+          </div>
+          <div class="sys-actions">
+            <button class="btn btn--ghost btn--sm">Reload dashboard</button>
+            <button class="btn btn--ghost btn--sm">View HA logs</button>
+          </div>
+        </section>
+      </div>
+
+      <nav class="navstrip" aria-label="Sections">
+        <button class="navstrip__btn" data-nav="home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12 12 3l9 9v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z"/></svg>
+          Home
+        </button>
+        <button class="navstrip__btn" data-nav="weather">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 13a4 4 0 0 0-8 0"/><path d="M7 18h10a3 3 0 0 0 0-6h-.83A6 6 0 0 0 6 12a3 3 0 0 0 1 6z"/></svg>
+          Weather
+        </button>
+        <button class="navstrip__btn" data-nav="security">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z"/></svg>
+          Security
+        </button>
+        <button class="navstrip__btn" data-nav="media">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          Media
+        </button>
+        <button class="navstrip__btn navstrip__btn--active" data-nav="settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </nav>
+    </main>
+
+    <!-- ===========================
+         SLEEP VIEW (DASH-6)
+         Minimal black/grayscale display — essentials only.
+         =========================== -->
+    <main class="view view--sleep" data-view="sleep" hidden>
+      <!-- Optional Critical-alert ribbon (lives OUTSIDE .sleep-stage so it escapes the grayscale filter; only shown when a Critical-tier alert is active) -->
+      <div class="sleep-critical" hidden>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="sleep-critical__body">
+          <div class="sleep-critical__title">Tornado Warning</div>
+          <div class="sleep-critical__sub">Take shelter now · expires 11:42 PM</div>
+        </div>
+      </div>
+
+      <div class="sleep-stage">
+        <!-- Giant clock -->
+        <div class="sleep-clock">
+          <div class="sleep-clock__time"><span id="sleepClockTime">2:14</span><span class="sleep-clock__mer" id="sleepClockMer">AM</span></div>
+          <div class="sleep-clock__date" id="sleepClockDate">Saturday · June 20</div>
+        </div>
+
+        <!-- Essential lock status (read-only) -->
+        <div class="sleep-locks">
+          <div class="sleep-lock">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <span class="sleep-lock__name">Front door</span>
+            <span class="sleep-lock__state">Locked</span>
+          </div>
+          <div class="sleep-lock">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <span class="sleep-lock__name">Back door</span>
+            <span class="sleep-lock__state">Locked</span>
+          </div>
+          <div class="sleep-lock">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13"/><path d="M7 21v-9h10v9"/><path d="M7 15h10"/></svg>
+            <span class="sleep-lock__name">Garage</span>
+            <span class="sleep-lock__state">Closed</span>
+          </div>
+        </div>
+
+        <div class="sleep-hint">Tap anywhere to wake</div>
+      </div>
+
+      <button class="sleep-wake" data-sleep-toggle aria-label="Wake dashboard">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Wake
+      </button>
+    </main>
+
+    <!-- ===========================
+         FULL-SCREEN RADAR MODAL
+         =========================== -->
+    <div class="fsr" data-fsr hidden aria-hidden="true">
+      <div class="fsr__shell" role="dialog" aria-label="Full-screen radar" aria-modal="true">
+        <header class="fsr__head">
+          <div>
+            <div class="fsr__title">Live radar — Full screen</div>
+            <div class="fsr__sub">RainViewer + Blitzortung · Continental view</div>
+          </div>
+          <div class="fsr__head-actions">
+            <div class="fsr__window" role="group" aria-label="Lightning time window">
+              <button class="fsr__win-btn fsr__win-btn--active" data-fsr-window="10">10 min</button>
+              <button class="fsr__win-btn" data-fsr-window="30">30 min</button>
+              <button class="fsr__win-btn" data-fsr-window="60">1 hr</button>
+            </div>
+            <button class="fsr__close" data-fsr-close aria-label="Close full-screen radar">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M6 18 18 6"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="fsr__body" data-radar="fs">
+          <div class="radar__ctrls radar__ctrls--fs">
+            <button class="radar__ctrl" data-radar-action="reset" data-radar-target="fs" aria-label="Reset radar view" title="Reset view">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+            </button>
+          </div>
+          <div class="fsr__zoom-readout" data-fsr-readout>1.0×</div>
+
+          <svg viewBox="0 0 1600 1000" class="radar__svg radar__svg--fs" data-radar-svg-fs preserveAspectRatio="xMidYMid meet" aria-label="Continental US radar with state borders, lightning clusters, and heatmap">
+            <defs>
+              <radialGradient id="fsRain1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.75"/>
+                <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.6"/>
+                <stop offset="75%" stop-color="#22c55e" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="fsRain2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#22c55e" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="fsHeat" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fffadc" stop-opacity="0.95"/>
+                <stop offset="30%" stop-color="#ffd84d" stop-opacity="0.7"/>
+                <stop offset="70%" stop-color="#e69400" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#e69400" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="fsBoltGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <g data-radar-viewport>
+              <!-- Ocean / background -->
+              <rect width="1600" height="1000" fill="#bfd8e6"/>
+
+              <!-- US continental outline (stylized) + Gulf + offshore Atlantic.
+                   Coords drawn so Florida sits at roughly x=1080, y=720 with St. Augustine ~ (1115, 710). -->
+              <g data-radar-states stroke="#9ba89b" stroke-width="1" fill="#e8ebe5">
+                <!-- US lower 48 mass (simplified) -->
+                <path d="M120 380 L140 320 L210 280 L300 260 L420 250 L560 245 L700 240 L840 245 L980 250 L1100 260 L1220 280 L1320 310 L1360 360 L1380 420 L1390 480 L1370 510 L1330 520 L1290 525 L1260 540 L1240 560 L1230 590 L1220 620 L1210 650 L1190 680 L1160 700 L1130 705 L1115 712 L1100 740 L1090 780 L1080 820 L1070 850 L1050 870 L1020 875 L1000 870 L985 850 L975 820 L960 790 L940 770 L920 765 L900 770 L870 780 L820 790 L760 795 L700 790 L640 780 L580 760 L520 740 L460 720 L400 700 L350 680 L310 660 L280 640 L260 620 L240 590 L220 560 L200 530 L185 500 L170 470 L155 440 L140 410 Z"/>
+                <!-- Florida peninsula refinement -->
+                <path d="M1080 760 Q1095 800 1100 840 Q1095 880 1080 910 Q1060 925 1040 920 Q1025 905 1025 880 Q1025 850 1035 820 Q1045 790 1060 770 Z"/>
+              </g>
+
+              <!-- State borders (always-on; thin gray lines) -->
+              <g data-radar-state-borders stroke="#a5b0a5" stroke-width="0.8" fill="none" stroke-dasharray="2 3">
+                <!-- Vertical-ish division lines representing major state borders -->
+                <path d="M210 280 L240 580"/> <!-- WA/OR -->
+                <path d="M320 260 L340 600"/> <!-- ID/MT line -->
+                <path d="M440 250 L440 700"/> <!-- ND/MN, KS/MO -->
+                <path d="M560 245 L570 740"/> <!-- IA/IL -->
+                <path d="M700 240 L700 780"/> <!-- IL/IN, KY/TN -->
+                <path d="M840 245 L840 790"/> <!-- OH/PA -->
+                <path d="M980 250 L1000 770"/> <!-- NY -->
+                <path d="M1100 270 L1115 720"/> <!-- East coast -->
+                <!-- Horizontal-ish bands -->
+                <path d="M150 400 L1370 410"/> <!-- North band -->
+                <path d="M180 500 L1330 510"/> <!-- Middle band -->
+                <path d="M220 590 L1230 600"/> <!-- Southern band (TX/OK/AR/TN/NC) -->
+                <path d="M260 660 L1140 700"/> <!-- Gulf/FL line (LA/MS/AL/GA/FL) -->
+              </g>
+
+              <!-- City labels (counter-scale, appear at low zoom) -->
+              <g data-radar-labels="cities" fill="#5e6b5e" font-family="Satoshi, sans-serif" font-size="11" font-weight="700" opacity="0">
+                <g><circle cx="1115" cy="712" r="3" fill="#5e6b5e"/><text x="1122" y="716">St. Augustine</text></g>
+                <g><circle cx="1095" cy="670" r="2.5" fill="#5e6b5e"/><text x="1102" y="674">Jacksonville</text></g>
+                <g><circle cx="1100" cy="760" r="2.5" fill="#5e6b5e"/><text x="1107" y="764">Daytona</text></g>
+                <g><circle cx="1080" cy="820" r="2.5" fill="#5e6b5e"/><text x="1087" y="824">Orlando</text></g>
+                <g><circle cx="1075" cy="880" r="2.5" fill="#5e6b5e"/><text x="1082" y="884">Miami</text></g>
+                <g><circle cx="950" cy="680" r="2.5" fill="#5e6b5e"/><text x="957" y="684">Atlanta</text></g>
+                <g><circle cx="560" cy="480" r="2.5" fill="#5e6b5e"/><text x="567" y="484">Denver</text></g>
+                <g><circle cx="820" cy="560" r="2.5" fill="#5e6b5e"/><text x="827" y="564">Chicago</text></g>
+                <g><circle cx="1080" cy="460" r="2.5" fill="#5e6b5e"/><text x="1087" y="464">New York</text></g>
+              </g>
+
+              <!-- State name labels (counter-scale, appear at lowest zoom) -->
+              <g data-radar-labels="states" fill="#7a8772" font-family="Satoshi, sans-serif" font-size="22" font-weight="800" letter-spacing="0.1em" opacity="0" text-anchor="middle">
+                <text x="1060" y="840">FLORIDA</text>
+                <text x="960" y="640">GEORGIA</text>
+                <text x="880" y="600">ALABAMA</text>
+                <text x="600" y="560">TEXAS</text>
+                <text x="560" y="420">COLORADO</text>
+                <text x="820" y="460">ILLINOIS</text>
+                <text x="1060" y="400">NEW YORK</text>
+                <text x="260" y="380">WASHINGTON</text>
+                <text x="380" y="360">MONTANA</text>
+              </g>
+
+              <!-- Precipitation overlay over Florida (matches card view) -->
+              <g opacity="0.85">
+                <ellipse cx="1180" cy="720" rx="60" ry="34" fill="url(#fsRain1)"/>
+                <ellipse cx="1210" cy="680" rx="45" ry="28" fill="url(#fsRain2)"/>
+                <ellipse cx="1155" cy="760" rx="40" ry="22" fill="url(#fsRain2)"/>
+                <!-- Distant cells across southeast -->
+                <ellipse cx="950" cy="650" rx="55" ry="32" fill="url(#fsRain2)"/>
+                <ellipse cx="850" cy="610" rx="48" ry="28" fill="url(#fsRain2)"/>
+                <ellipse cx="760" cy="640" rx="42" ry="24" fill="url(#fsRain2)"/>
+              </g>
+
+              <!-- Lightning bolts (individual, visible at high zoom) -->
+              <g data-radar-lightning-bolts filter="url(#fsBoltGlow)">
+                <g transform="translate(1130 705)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(1175 715)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(1195 695)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(1210 730)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(1150 750)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(940 645)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(870 615)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+                <g transform="translate(770 635)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
+              </g>
+
+              <!-- Lightning clusters (mid-zoom, shows count badges) -->
+              <g data-radar-lightning-clusters filter="url(#fsBoltGlow)" opacity="0">
+                <g transform="translate(1175 720)">
+                  <circle r="18" fill="#ffd84d" stroke="#b8860b" stroke-width="1.2"/>
+                  <path d="M0 -10 L-7 4 L-2 4 L-4 12 L6 -2 L0 -2 Z" fill="#3a2606" transform="translate(0 -2)"/>
+                  <text x="6" y="6" font-family="Satoshi, sans-serif" font-size="11" font-weight="800" fill="#3a2606">5</text>
+                </g>
+                <g transform="translate(905 630)">
+                  <circle r="16" fill="#ffd84d" stroke="#b8860b" stroke-width="1.2"/>
+                  <path d="M0 -9 L-6 3 L-2 3 L-3 10 L5 -1 L0 -1 Z" fill="#3a2606" transform="translate(0 -2)"/>
+                  <text x="5" y="5" font-family="Satoshi, sans-serif" font-size="10" font-weight="800" fill="#3a2606">3</text>
+                </g>
+              </g>
+
+              <!-- Lightning heatmap (lowest zoom, gradient blobs) -->
+              <g data-radar-lightning-heat opacity="0">
+                <ellipse cx="1175" cy="720" rx="55" ry="42" fill="url(#fsHeat)"/>
+                <ellipse cx="905" cy="630" rx="45" ry="32" fill="url(#fsHeat)"/>
+                <ellipse cx="770" cy="640" rx="30" ry="22" fill="url(#fsHeat)"/>
+              </g>
+
+              <!-- Range rings around home -->
+              <g data-radar-rings stroke="#0b3a52" stroke-opacity="0.22" fill="none" stroke-dasharray="3 4">
+                <circle cx="1115" cy="712" r="22"/> <!-- 5 mi -->
+                <circle cx="1115" cy="712" r="45"/> <!-- 10 mi -->
+              </g>
+              <!-- Home marker -->
+              <g data-radar-home transform="translate(1115 712)">
+                <circle r="6" fill="#0b3a52"/>
+                <circle r="2.5" fill="#fff"/>
+                <text x="10" y="4" fill="#0b3a52" font-size="11" font-family="Satoshi, sans-serif" font-weight="700">Home</text>
+              </g>
+            </g>
+          </svg>
+
+          <div class="radar__legend radar__legend--fs">
+            <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
+            <span class="radar__chip"><i style="background:#f59e0b"></i>Moderate</span>
+            <span class="radar__chip"><i style="background:#ef4444"></i>Heavy</span>
+            <span class="radar__chip radar__chip--bolt"><i style="background:#ffd84d"></i><span data-fsr-lightning-label>Lightning · last 10 min</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================
+         PIN MODAL
+         =========================== -->
+    <div class="pin" data-pin hidden aria-hidden="true">
+      <div class="pin__card" role="dialog" aria-labelledby="pinTitle" aria-modal="true">
+        <div class="pin__head">
+          <div class="pin__title" id="pinTitle">Enter PIN</div>
+          <div class="pin__sub" id="pinSub">Confirm: Unlock front door</div>
+        </div>
+        <div class="pin__display" id="pinDisplay">
+          <span class="pin__dot"></span><span class="pin__dot"></span><span class="pin__dot"></span><span class="pin__dot"></span>
+        </div>
+        <div class="pin__pad">
+          <button class="pin__key" data-pin-key="1">1</button>
+          <button class="pin__key" data-pin-key="2">2</button>
+          <button class="pin__key" data-pin-key="3">3</button>
+          <button class="pin__key" data-pin-key="4">4</button>
+          <button class="pin__key" data-pin-key="5">5</button>
+          <button class="pin__key" data-pin-key="6">6</button>
+          <button class="pin__key" data-pin-key="7">7</button>
+          <button class="pin__key" data-pin-key="8">8</button>
+          <button class="pin__key" data-pin-key="9">9</button>
+          <button class="pin__key pin__key--ghost" data-pin-cancel>Cancel</button>
+          <button class="pin__key" data-pin-key="0">0</button>
+          <button class="pin__key pin__key--ghost" data-pin-back>←</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" data-toast hidden>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+      <span data-toast-text>Front door unlocked</span>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
