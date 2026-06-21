@@ -1231,10 +1231,10 @@ svg {
   color: var(--color-text);
 }
 
-/* toast */
+/* toast — moved to TOP so it never blocks the navstrip on iPad */
 .toast {
   position: fixed;
-  bottom: 32px;
+  top: 76px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-text);
@@ -2490,6 +2490,15 @@ svg {
   .settings-row > .card--priority { flex: 1.35 1 0; min-width: 0; }
   .settings-row > .settings-col { flex: 1 1 0; min-width: 0; }
 }
+/* CRITICAL iPad fix: cards inside .settings-grid must size to content, not collapse.
+   Default `.card { min-height: 0 }` plus flex column container caused Sleep/System
+   cards to collapse to ~34px header-height while their content overflowed visibly. */
+.settings-grid > .card,
+.settings-grid .settings-col > .card,
+.settings-grid .settings-row > .card {
+  min-height: auto !important;
+  flex-shrink: 0;
+}
 
 /* ----- Numeric stepper (lightning radius, re-alert cooldown) ----- */
 .stepper {
@@ -2574,6 +2583,7 @@ svg {
 
 /* ----- Card muted state (when source unavailable, eg Up next during TV) ----- */
 .card--muted {
+  position: relative; /* scope position:relative to muted cards only */
   opacity: 0.5;
   pointer-events: none;
   filter: saturate(0.5);
@@ -2592,7 +2602,6 @@ svg {
   padding: 2px 6px;
   border-radius: 4px;
 }
-.card { position: relative; } /* enable ::after positioning */
 
 /* ----- Weather tab fixes: alert-pill wrap, conditions alignment, tide overflow ----- */
 .alerts-bar, .alert-pills, [data-alerts] {
@@ -2623,3 +2632,151 @@ svg {
   border-radius: 999px;
   margin-right: 6px;
 }
+
+/* ===== Home tile: hourly forecast strip ===== */
+.hourly {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.hourly::-webkit-scrollbar { height: 4px; }
+.hourly::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+.hourly__cell {
+  flex: 0 0 auto;
+  width: 52px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.hourly__cell .hourly__icon { width: 26px; height: 26px; }
+.hourly__when {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+}
+.hourly__icon { display: block; }
+.hourly__temp {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.hourly__precip {
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.hourly__precip--dry { color: var(--color-text-faint, var(--color-text-muted)); }
+.hourly__precip--wet { color: var(--rain, #4ea7c4); }
+
+/* ===== Weather tab: 4-day forecast strip inside Conditions card ===== */
+.forecast4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+}
+.forecast4__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 2px;
+}
+.forecast4__when {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+}
+.forecast4__temp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.forecast4__temp strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--color-text);
+}
+.forecast4__temp span {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ===== Live radar (Leaflet) ===== */
+.radar__map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+  z-index: 0;
+}
+.radar__ctrls { z-index: 401; } /* keep above Leaflet controls (which use z-index 400) */
+.radar__legend { z-index: 401; }
+.radar__pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 401;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.radar__pill--err {
+  background: #b8434f;
+  top: 36px;
+}
+[data-theme="dark"] .radar__pill { background: rgba(0,0,0,0.7); }
+
+/* home marker: small yellow-bordered dot anchored on Casa Cola Creek */
+.radar-home-icon { background: none; border: none; }
+.radar-home-dot {
+  display: block;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #f5b942;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 0 8px rgba(245,185,66,0.7);
+}
+
+/* Leaflet attribution: tone down for dashboard polish */
+.leaflet-control-attribution {
+  font-size: 9px !important;
+  background: rgba(255,255,255,0.7) !important;
+  padding: 0 4px !important;
+}
+[data-theme="dark"] .leaflet-control-attribution {
+  background: rgba(0,0,0,0.5) !important;
+  color: #ccc !important;
+}
+[data-theme="dark"] .leaflet-control-attribution a { color: #9cf !important; }
+
+/* FS radar map fills its modal body */
+.radar__map--fs { border-radius: 0; }

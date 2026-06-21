@@ -17,6 +17,9 @@
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <!-- Leaflet for live radar map (CARTO basemap + RainViewer precipitation overlay) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -149,26 +152,54 @@
             <span class="tile__chev" aria-hidden="true">›</span>
           </div>
           <div class="tile__body">
-            <div class="forecast">
-              <div class="forecast__day">
-                <div class="forecast__when">Today</div>
-                <svg viewBox="0 0 32 32" width="34" height="34"><circle cx="16" cy="16" r="7" fill="var(--sun)" /><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6" /><line x1="16" y1="26" x2="16" y2="29" /><line x1="3" y1="16" x2="6" y2="16" /><line x1="26" y1="16" x2="29" y2="16" /></g></svg>
-                <div class="forecast__temp">88° <span>74°</span></div>
+            <div class="hourly" role="list" aria-label="Hourly forecast">
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">Now</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="7" fill="var(--sun)"/><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6"/><line x1="16" y1="26" x2="16" y2="29"/><line x1="3" y1="16" x2="6" y2="16"/><line x1="26" y1="16" x2="29" y2="16"/></g></svg>
+                <div class="hourly__temp">88°</div>
+                <div class="hourly__precip hourly__precip--dry">0%</div>
               </div>
-              <div class="forecast__day">
-                <div class="forecast__when">Sun</div>
-                <svg viewBox="0 0 32 32" width="34" height="34"><circle cx="16" cy="16" r="7" fill="var(--sun)" /><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6" /><line x1="16" y1="26" x2="16" y2="29" /><line x1="3" y1="16" x2="6" y2="16" /><line x1="26" y1="16" x2="29" y2="16" /></g></svg>
-                <div class="forecast__temp">89° <span>76°</span></div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">8 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">85°</div>
+                <div class="hourly__precip hourly__precip--dry">5%</div>
               </div>
-              <div class="forecast__day">
-                <div class="forecast__when">Mon</div>
-                <svg viewBox="0 0 32 32" width="34" height="34"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)" /><path d="M12 27 l-2 3 M16 27 l-2 3 M20 27 l-2 3" stroke="var(--rain)" stroke-width="2" stroke-linecap="round" /></svg>
-                <div class="forecast__temp">84° <span>73°</span></div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">9 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">82°</div>
+                <div class="hourly__precip hourly__precip--dry">10%</div>
               </div>
-              <div class="forecast__day">
-                <div class="forecast__when">Tue</div>
-                <svg viewBox="0 0 32 32" width="34" height="34"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)" /></svg>
-                <div class="forecast__temp">86° <span>74°</span></div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">10 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">79°</div>
+                <div class="hourly__precip hourly__precip--wet">40%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">11 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3 M14 27 l-1.5 3 M18 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">77°</div>
+                <div class="hourly__precip hourly__precip--wet">65%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">12 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">75°</div>
+                <div class="hourly__precip hourly__precip--wet">50%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">1 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">20%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">2 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">15%</div>
               </div>
             </div>
           </div>
@@ -317,115 +348,9 @@
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
               </button>
             </div>
-            <svg viewBox="0 0 600 380" class="radar__svg" data-radar-svg preserveAspectRatio="xMidYMid slice" aria-label="Radar with road map showing precipitation and lightning strikes east of St. Augustine">
-              <defs>
-                <radialGradient id="rain1" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#ef4444" stop-opacity="0.85" />
-                  <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.75" />
-                  <stop offset="75%" stop-color="#22c55e" stop-opacity="0.5" />
-                  <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
-                </radialGradient>
-                <radialGradient id="rain2" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#22c55e" stop-opacity="0.7" />
-                  <stop offset="60%" stop-color="#22c55e" stop-opacity="0.35" />
-                  <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
-                </radialGradient>
-                <filter id="boltGlow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3" result="blur"/>
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
-
-              <!-- ===== Pan/zoom viewport group ===== -->
-              <g data-radar-viewport>
-
-              <!-- ===== Road-map base layer (light) ===== -->
-              <!-- Land -->
-              <rect width="600" height="380" fill="#e8ebe5" />
-              <!-- Water (Atlantic + Intracoastal + Matanzas Bay) -->
-              <path d="M205 0 Q195 60 220 110 Q245 160 215 210 Q190 260 220 320 Q235 360 215 380 L600 380 L600 0 Z" fill="#bfd8e6" />
-              <!-- Anastasia Island strip -->
-              <path d="M260 30 Q275 110 268 200 Q262 290 280 380 L320 380 Q302 290 308 200 Q316 110 300 30 Z" fill="#e3e8da" />
-              <!-- Inlet -->
-              <path d="M268 175 Q285 180 305 175 L300 195 Q285 192 270 195 Z" fill="#bfd8e6" />
-              <!-- Parks/green -->
-              <path d="M40 280 Q90 270 130 290 Q150 310 120 330 Q70 340 40 320 Z" fill="#d4dcc6" />
-              <path d="M275 60 Q310 70 305 110 Q295 130 275 125 Z" fill="#d4dcc6" />
-
-              <!-- Roads -->
-              <g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">
-                <!-- I-95 vertical -->
-                <path d="M50 0 L50 380" stroke-width="5" stroke="#ffd27a" />
-                <path d="M50 0 L50 380" />
-                <!-- US-1 -->
-                <path d="M120 0 Q125 100 130 200 Q140 300 145 380" stroke="#fff" />
-                <!-- A1A on island -->
-                <path d="M285 0 Q290 100 285 200 Q282 300 290 380" stroke="#fff" />
-                <!-- Bridge of Lions / connectors -->
-                <path d="M155 195 L280 185" />
-                <path d="M155 260 L285 260" />
-                <!-- 16/207 cross streets -->
-                <path d="M0 130 L210 145" />
-                <path d="M0 310 L210 305" />
-                <!-- Local grid -->
-                <path d="M75 70 L210 75" stroke-width="2" />
-                <path d="M75 220 L210 225" stroke-width="2" />
-                <path d="M90 0 L95 380" stroke-width="2" />
-                <path d="M175 0 L180 380" stroke-width="2" />
-              </g>
-              <!-- Road labels (counter-scale layer) -->
-              <g data-radar-labels="roads" fill="#7a8772" font-family="Satoshi, sans-serif" font-size="9" font-weight="700">
-                <text x="34" y="50" transform="rotate(-90 34 50)">I-95</text>
-                <text x="108" y="60" transform="rotate(-88 108 60)">US-1</text>
-                <text x="273" y="55" transform="rotate(-86 273 55)">A1A</text>
-              </g>
-
-              <!-- ===== Precipitation overlay ===== -->
-              <g opacity="0.8">
-                <ellipse cx="410" cy="230" rx="125" ry="75" fill="url(#rain1)" />
-                <ellipse cx="495" cy="125" rx="100" ry="60" fill="url(#rain2)" />
-                <ellipse cx="345" cy="330" rx="85" ry="42" fill="url(#rain2)" />
-              </g>
-
-              <!-- ===== Lightning strikes ===== -->
-              <g data-radar-lightning filter="url(#boltGlow)">
-                <!-- Closest strike: 3.2 mi NE -->
-                <g transform="translate(245 165)">
-                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
-                </g>
-                <g transform="translate(400 145)">
-                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
-                </g>
-                <g transform="translate(465 95)">
-                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
-                </g>
-                <g transform="translate(440 255)">
-                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
-                </g>
-                <g transform="translate(355 280)">
-                  <path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/>
-                </g>
-              </g>
-
-              <!-- ===== Range rings + home marker ===== -->
-              <g data-radar-rings stroke="#0b3a52" stroke-opacity="0.18" fill="none" stroke-dasharray="3 4">
-                <circle cx="215" cy="190" r="55" />
-                <circle cx="215" cy="190" r="120" />
-                <circle cx="215" cy="190" r="200" />
-              </g>
-              <g data-radar-home transform="translate(215 190)">
-                <circle r="7" fill="#0b3a52" />
-                <circle r="3" fill="#fff" />
-                <text x="12" y="4" fill="#0b3a52" font-size="12" font-family="Satoshi, sans-serif" font-weight="700">Home</text>
-              </g>
-              <!-- distance ring labels (counter-scale layer) -->
-              <g data-radar-labels="rings" fill="#0b3a52" font-family="Satoshi, sans-serif" font-size="9" font-weight="600" opacity="0.55">
-                <text x="215" y="138" text-anchor="middle">5 mi</text>
-                <text x="215" y="73" text-anchor="middle">10 mi</text>
-              </g>
-
-              </g><!-- /data-radar-viewport -->
-            </svg>
+            <div class="radar__map" data-radar-map id="radar-map" aria-label="Live radar map of St. Augustine with precipitation and lightning"></div>
+            <div class="radar__pill" data-radar-ts hidden>Radar &middot; <span data-radar-age>--</span></div>
+            <div class="radar__pill radar__pill--err" data-radar-err hidden>Radar offline</div>
 
             <div class="radar__legend">
               <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
@@ -535,9 +460,31 @@
         <!-- Conditions table -->
         <section class="card card--cond">
           <header class="card__head">
-            <div class="card__title">Conditions</div>
-            <div class="card__sub">Right now</div>
+            <div class="card__title">Conditions &middot; 4-day</div>
+            <div class="card__sub">Right now &middot; outlook</div>
           </header>
+          <div class="forecast4">
+            <div class="forecast4__cell">
+              <div class="forecast4__when">Today</div>
+              <svg viewBox="0 0 32 32" width="28" height="28"><circle cx="16" cy="16" r="7" fill="var(--sun)"/><g stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="6"/><line x1="16" y1="26" x2="16" y2="29"/><line x1="3" y1="16" x2="6" y2="16"/><line x1="26" y1="16" x2="29" y2="16"/></g></svg>
+              <div class="forecast4__temp"><strong>88°</strong><span>74°</span></div>
+            </div>
+            <div class="forecast4__cell">
+              <div class="forecast4__when">Sun</div>
+              <svg viewBox="0 0 32 32" width="28" height="28"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
+              <div class="forecast4__temp"><strong>89°</strong><span>76°</span></div>
+            </div>
+            <div class="forecast4__cell">
+              <div class="forecast4__when">Mon</div>
+              <svg viewBox="0 0 32 32" width="28" height="28"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div class="forecast4__temp"><strong>84°</strong><span>73°</span></div>
+            </div>
+            <div class="forecast4__cell">
+              <div class="forecast4__when">Tue</div>
+              <svg viewBox="0 0 32 32" width="28" height="28"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+              <div class="forecast4__temp"><strong>86°</strong><span>74°</span></div>
+            </div>
+          </div>
           <div class="cond-grid">
             <div class="cond-cell">
               <div class="cond-cell__label">Temperature</div>
@@ -847,7 +794,7 @@
           <!-- App launchers -->
           <div class="player__footer">
             <button class="btn btn--ghost" data-action="open-sonos">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-label="Sonos"><circle cx="12" cy="12" r="10" fill="#111"/><path d="M5.5 9.3c0-.55.45-1 1-1h11c.55 0 1 .45 1 1v.4c0 .55-.45 1-1 1h-11c-.55 0-1-.45-1-1zM5.5 12c0-.55.45-1 1-1h11c.55 0 1 .45 1 1v.4c0 .55-.45 1-1 1h-11c-.55 0-1-.45-1-1zM5.5 14.7c0-.55.45-1 1-1h11c.55 0 1 .45 1 1v.4c0 .55-.45 1-1 1h-11c-.55 0-1-.45-1-1z" fill="#fff"/></svg>
               Sonos
             </button>
             <button class="btn btn--ghost" data-action="open-spotify">
@@ -855,11 +802,11 @@
               Spotify
             </button>
             <button class="btn btn--ghost" data-action="open-siriusxm">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12c0-2 1.5-3 3-3 1.5 0 2.5 1 2.5 2.5S12.5 14 11 14H8"/><path d="M15 9v6"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-label="SiriusXM"><circle cx="12" cy="12" r="10" fill="#0033A0"/><text x="12" y="15" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="7.2" font-weight="900" fill="#fff" letter-spacing="-0.4">SXM</text></svg>
               SiriusXM
             </button>
             <button class="btn btn--ghost" data-action="open-amazon-music">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-label="Amazon Music"><circle cx="12" cy="12" r="10" fill="#25D1DA"/><path d="M9 7v10" stroke="#0a2540" stroke-width="1.6" stroke-linecap="round"/><path d="M9 7c3.5 0 5.5 1.4 5.5 3.4S12.5 13.8 9 13.8" stroke="#0a2540" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="7" cy="16.6" r="1.4" fill="#0a2540"/><path d="M11 16.5c1.6 1.2 4.2 1.4 6 0" stroke="#0a2540" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
               Amazon Music
             </button>
           </div>
@@ -1079,7 +1026,7 @@
                 <div class="set-row__hint">Strike must be within radius to chime · 1–30 mi</div>
               </div>
               <div class="set-row__ctrl">
-                <div class="stepper" data-stepper data-min="1" data-max="30" data-step="1" data-value="12" data-unit="mi">
+                <div class="stepper" data-stepper="lightning-radius" data-min="1" data-max="30" data-step="1" data-value="12" data-unit="mi">
                   <button class="stepper__btn" data-stepper-minus aria-label="Decrease">−</button>
                   <span class="stepper__value" data-stepper-value>12 mi</span>
                   <button class="stepper__btn" data-stepper-plus aria-label="Increase">+</button>
@@ -1450,146 +1397,9 @@
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
             </button>
           </div>
-          <div class="fsr__zoom-readout" data-fsr-readout>1.0×</div>
 
-          <svg viewBox="0 0 1600 1000" class="radar__svg radar__svg--fs" data-radar-svg-fs preserveAspectRatio="xMidYMid meet" aria-label="Continental US radar with state borders, lightning clusters, and heatmap">
-            <defs>
-              <radialGradient id="fsRain1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.75"/>
-                <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.6"/>
-                <stop offset="75%" stop-color="#22c55e" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="fsRain2" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#22c55e" stop-opacity="0.55"/>
-                <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="fsHeat" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#fffadc" stop-opacity="0.95"/>
-                <stop offset="30%" stop-color="#ffd84d" stop-opacity="0.7"/>
-                <stop offset="70%" stop-color="#e69400" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="#e69400" stop-opacity="0"/>
-              </radialGradient>
-              <filter id="fsBoltGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
 
-            <g data-radar-viewport>
-              <!-- Ocean / background -->
-              <rect width="1600" height="1000" fill="#bfd8e6"/>
-
-              <!-- US continental outline (stylized) + Gulf + offshore Atlantic.
-                   Coords drawn so Florida sits at roughly x=1080, y=720 with St. Augustine ~ (1115, 710). -->
-              <g data-radar-states stroke="#9ba89b" stroke-width="1" fill="#e8ebe5">
-                <!-- US lower 48 mass (simplified) -->
-                <path d="M120 380 L140 320 L210 280 L300 260 L420 250 L560 245 L700 240 L840 245 L980 250 L1100 260 L1220 280 L1320 310 L1360 360 L1380 420 L1390 480 L1370 510 L1330 520 L1290 525 L1260 540 L1240 560 L1230 590 L1220 620 L1210 650 L1190 680 L1160 700 L1130 705 L1115 712 L1100 740 L1090 780 L1080 820 L1070 850 L1050 870 L1020 875 L1000 870 L985 850 L975 820 L960 790 L940 770 L920 765 L900 770 L870 780 L820 790 L760 795 L700 790 L640 780 L580 760 L520 740 L460 720 L400 700 L350 680 L310 660 L280 640 L260 620 L240 590 L220 560 L200 530 L185 500 L170 470 L155 440 L140 410 Z"/>
-                <!-- Florida peninsula refinement -->
-                <path d="M1080 760 Q1095 800 1100 840 Q1095 880 1080 910 Q1060 925 1040 920 Q1025 905 1025 880 Q1025 850 1035 820 Q1045 790 1060 770 Z"/>
-              </g>
-
-              <!-- State borders (always-on; thin gray lines) -->
-              <g data-radar-state-borders stroke="#a5b0a5" stroke-width="0.8" fill="none" stroke-dasharray="2 3">
-                <!-- Vertical-ish division lines representing major state borders -->
-                <path d="M210 280 L240 580"/> <!-- WA/OR -->
-                <path d="M320 260 L340 600"/> <!-- ID/MT line -->
-                <path d="M440 250 L440 700"/> <!-- ND/MN, KS/MO -->
-                <path d="M560 245 L570 740"/> <!-- IA/IL -->
-                <path d="M700 240 L700 780"/> <!-- IL/IN, KY/TN -->
-                <path d="M840 245 L840 790"/> <!-- OH/PA -->
-                <path d="M980 250 L1000 770"/> <!-- NY -->
-                <path d="M1100 270 L1115 720"/> <!-- East coast -->
-                <!-- Horizontal-ish bands -->
-                <path d="M150 400 L1370 410"/> <!-- North band -->
-                <path d="M180 500 L1330 510"/> <!-- Middle band -->
-                <path d="M220 590 L1230 600"/> <!-- Southern band (TX/OK/AR/TN/NC) -->
-                <path d="M260 660 L1140 700"/> <!-- Gulf/FL line (LA/MS/AL/GA/FL) -->
-              </g>
-
-              <!-- City labels (counter-scale, appear at low zoom) -->
-              <g data-radar-labels="cities" fill="#5e6b5e" font-family="Satoshi, sans-serif" font-size="11" font-weight="700" opacity="0">
-                <g><circle cx="1115" cy="712" r="3" fill="#5e6b5e"/><text x="1122" y="716">St. Augustine</text></g>
-                <g><circle cx="1095" cy="670" r="2.5" fill="#5e6b5e"/><text x="1102" y="674">Jacksonville</text></g>
-                <g><circle cx="1100" cy="760" r="2.5" fill="#5e6b5e"/><text x="1107" y="764">Daytona</text></g>
-                <g><circle cx="1080" cy="820" r="2.5" fill="#5e6b5e"/><text x="1087" y="824">Orlando</text></g>
-                <g><circle cx="1075" cy="880" r="2.5" fill="#5e6b5e"/><text x="1082" y="884">Miami</text></g>
-                <g><circle cx="950" cy="680" r="2.5" fill="#5e6b5e"/><text x="957" y="684">Atlanta</text></g>
-                <g><circle cx="560" cy="480" r="2.5" fill="#5e6b5e"/><text x="567" y="484">Denver</text></g>
-                <g><circle cx="820" cy="560" r="2.5" fill="#5e6b5e"/><text x="827" y="564">Chicago</text></g>
-                <g><circle cx="1080" cy="460" r="2.5" fill="#5e6b5e"/><text x="1087" y="464">New York</text></g>
-              </g>
-
-              <!-- State name labels (counter-scale, appear at lowest zoom) -->
-              <g data-radar-labels="states" fill="#7a8772" font-family="Satoshi, sans-serif" font-size="22" font-weight="800" letter-spacing="0.1em" opacity="0" text-anchor="middle">
-                <text x="1060" y="840">FLORIDA</text>
-                <text x="960" y="640">GEORGIA</text>
-                <text x="880" y="600">ALABAMA</text>
-                <text x="600" y="560">TEXAS</text>
-                <text x="560" y="420">COLORADO</text>
-                <text x="820" y="460">ILLINOIS</text>
-                <text x="1060" y="400">NEW YORK</text>
-                <text x="260" y="380">WASHINGTON</text>
-                <text x="380" y="360">MONTANA</text>
-              </g>
-
-              <!-- Precipitation overlay over Florida (matches card view) -->
-              <g opacity="0.85">
-                <ellipse cx="1180" cy="720" rx="60" ry="34" fill="url(#fsRain1)"/>
-                <ellipse cx="1210" cy="680" rx="45" ry="28" fill="url(#fsRain2)"/>
-                <ellipse cx="1155" cy="760" rx="40" ry="22" fill="url(#fsRain2)"/>
-                <!-- Distant cells across southeast -->
-                <ellipse cx="950" cy="650" rx="55" ry="32" fill="url(#fsRain2)"/>
-                <ellipse cx="850" cy="610" rx="48" ry="28" fill="url(#fsRain2)"/>
-                <ellipse cx="760" cy="640" rx="42" ry="24" fill="url(#fsRain2)"/>
-              </g>
-
-              <!-- Lightning bolts (individual, visible at high zoom) -->
-              <g data-radar-lightning-bolts filter="url(#fsBoltGlow)">
-                <g transform="translate(1130 705)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(1175 715)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(1195 695)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(1210 730)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(1150 750)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(940 645)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(870 615)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-                <g transform="translate(770 635)"><path d="M2 -10 L-5 4 L0 4 L-2 12 L8 -2 L2 -2 Z" fill="#ffd84d" stroke="#b8860b" stroke-width="0.8"/></g>
-              </g>
-
-              <!-- Lightning clusters (mid-zoom, shows count badges) -->
-              <g data-radar-lightning-clusters filter="url(#fsBoltGlow)" opacity="0">
-                <g transform="translate(1175 720)">
-                  <circle r="18" fill="#ffd84d" stroke="#b8860b" stroke-width="1.2"/>
-                  <path d="M0 -10 L-7 4 L-2 4 L-4 12 L6 -2 L0 -2 Z" fill="#3a2606" transform="translate(0 -2)"/>
-                  <text x="6" y="6" font-family="Satoshi, sans-serif" font-size="11" font-weight="800" fill="#3a2606">5</text>
-                </g>
-                <g transform="translate(905 630)">
-                  <circle r="16" fill="#ffd84d" stroke="#b8860b" stroke-width="1.2"/>
-                  <path d="M0 -9 L-6 3 L-2 3 L-3 10 L5 -1 L0 -1 Z" fill="#3a2606" transform="translate(0 -2)"/>
-                  <text x="5" y="5" font-family="Satoshi, sans-serif" font-size="10" font-weight="800" fill="#3a2606">3</text>
-                </g>
-              </g>
-
-              <!-- Lightning heatmap (lowest zoom, gradient blobs) -->
-              <g data-radar-lightning-heat opacity="0">
-                <ellipse cx="1175" cy="720" rx="55" ry="42" fill="url(#fsHeat)"/>
-                <ellipse cx="905" cy="630" rx="45" ry="32" fill="url(#fsHeat)"/>
-                <ellipse cx="770" cy="640" rx="30" ry="22" fill="url(#fsHeat)"/>
-              </g>
-
-              <!-- Range rings around home -->
-              <g data-radar-rings stroke="#0b3a52" stroke-opacity="0.22" fill="none" stroke-dasharray="3 4">
-                <circle cx="1115" cy="712" r="22"/> <!-- 5 mi -->
-                <circle cx="1115" cy="712" r="45"/> <!-- 10 mi -->
-              </g>
-              <!-- Home marker -->
-              <g data-radar-home transform="translate(1115 712)">
-                <circle r="6" fill="#0b3a52"/>
-                <circle r="2.5" fill="#fff"/>
-                <text x="10" y="4" fill="#0b3a52" font-size="11" font-family="Satoshi, sans-serif" font-weight="700">Home</text>
-              </g>
-            </g>
-          </svg>
+            <div class="radar__map radar__map--fs" data-radar-map-fs id="radar-map-fs" aria-label="Live radar map full-screen"></div>
 
           <div class="radar__legend radar__legend--fs">
             <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
