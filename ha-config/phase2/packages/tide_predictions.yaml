@@ -1,0 +1,17 @@
+# why: NOAA Tides sensor (HACS) only exposes next/last/following metadata,
+# not a usable timeseries for apexcharts. This REST sensor pulls 48h of hourly
+# predictions from NOAA CO-OPS directly for station 8720587 (St Augustine Beach).
+# Refreshed every 6 hours -- predictions are stable.
+
+rest:
+  - resource_template: >-
+      https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date={{ now().strftime('%Y%m%d') }}&end_date={{ (now() + timedelta(days=2)).strftime('%Y%m%d') }}&datum=MLLW&station=8720587&time_zone=lst_ldt&units=english&interval=h&format=json
+    scan_interval: 21600  # 6 hours
+    sensor:
+      - name: "Tide Predictions 48h"
+        unique_id: tide_predictions_48h_8720587
+        # Sensor state = count of predictions (sanity check; real data is in attribute)
+        value_template: "{{ value_json.predictions | count }}"
+        json_attributes:
+          - predictions
+        icon: mdi:waves
