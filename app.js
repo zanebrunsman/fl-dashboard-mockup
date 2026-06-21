@@ -360,7 +360,7 @@
       center: cfg.center,
       zoom: cfg.defaultZoom,
       minZoom: 4,
-      maxZoom: 13,
+      maxZoom: 18, // allow zooming to street level — CARTO basemap supports z18
       zoomControl: true,
       attributionControl: true,
     });
@@ -378,6 +378,7 @@
       newLayer.addTo(map);
       if (baseLayer) map.removeLayer(baseLayer);
       baseLayer = newLayer;
+      drawRangeRings(); // recolor for theme contrast
     }
 
     // home marker
@@ -388,13 +389,61 @@
     });
     L.marker(cfg.center, { icon: homeIcon, interactive: false }).addTo(map);
 
-    // lightning radius ring (in meters; 1 mi = 1609.34 m)
+    // lightning radius ring — dashed outline, no fill (per user request)
     let ringLayer = L.circle(cfg.center, {
       radius: cfg.lightningRadiusMi * 1609.34,
-      color: '#f5b942', weight: 2, opacity: 0.85,
-      fillColor: '#f5b942', fillOpacity: 0.08,
+      color: '#f5b942', weight: 2.5, opacity: 0.95,
+      fill: false,
+      dashArray: '6 6',
       interactive: false,
     }).addTo(map);
+
+    // ---- Range rings (scale-aware, redraw on zoomend) ----
+    // Picks rings that fit the current view: 1/2/5 mi at high zoom,
+    // 10/25/50 mi mid, 100/250/500 mi wide.
+    const rangeRingGroup = L.layerGroup().addTo(map);
+    function pickRangeRings() {
+      const z = map.getZoom();
+      if (z >= 12) return [1, 2, 5];
+      if (z >= 10) return [5, 10, 25];
+      if (z >= 8)  return [10, 25, 50];
+      if (z >= 6)  return [25, 50, 100];
+      return [50, 100, 250];
+    }
+    function drawRangeRings() {
+      rangeRingGroup.clearLayers();
+      const miles = pickRangeRings();
+      const isDark = currentTheme() === 'dark';
+      const ringColor = isDark ? '#e5e7eb' : '#6b7280';
+      miles.forEach((mi, i) => {
+        const ring = L.circle(cfg.center, {
+          radius: mi * 1609.34,
+          color: ringColor,
+          weight: 1,
+          opacity: 0.4 - (i * 0.08),
+          fill: false,
+          dashArray: '2 5',
+          interactive: false,
+        });
+        ring.addTo(rangeRingGroup);
+        // mile label, anchored on north side of each ring
+        const labelLatLng = L.latLng(
+          cfg.center[0] + (mi / 69), // ~69 mi per degree latitude
+          cfg.center[1]
+        );
+        const label = L.marker(labelLatLng, {
+          icon: L.divIcon({
+            className: 'radar-range-label',
+            html: `<span>${mi} mi</span>`,
+            iconSize: [40, 14], iconAnchor: [20, 7],
+          }),
+          interactive: false,
+        });
+        label.addTo(rangeRingGroup);
+      });
+    }
+    drawRangeRings();
+    map.on('zoomend', drawRangeRings);
 
     function setLightningRadius(mi) {
       if (!ringLayer) return;
@@ -419,8 +468,8 @@
         const next = L.tileLayer(url, {
           opacity: 0.65,
           attribution: 'RainViewer',
-          maxNativeZoom: 7,
-          maxZoom: 13,
+          maxNativeZoom: 7, // free tier caps here; Leaflet upscales beyond
+          maxZoom: 18,
           tileSize: 256,
         });
         next.addTo(map);
@@ -458,19 +507,31 @@
   }
 
   function refreshRadarTimestamp() {
+    // Card radar pill
     const ts = cardRadar && cardRadar.getTimestamp();
     const pill = document.querySelector('[data-radar-ts]');
     const ageEl = document.querySelector('[data-radar-age]');
     const errEl = document.querySelector('[data-radar-err]');
-    if (!pill || !ageEl) return;
-    if (!ts) {
-      pill.hidden = true;
-      if (errEl) errEl.hidden = false;
-      return;
-    }
+    // Default: hide the error pill until we've confirmed a real failure.
+    // The radar takes a few seconds to load on first paint; don't flash "offline".
     if (errEl) errEl.hidden = true;
-    pill.hidden = false;
-    ageEl.textContent = fmtAge(ts);
+    if (pill && ageEl) {
+      if (!ts) {
+        // No timestamp yet — keep pill hidden, don't show offline unless cardRadar has tried & failed
+        pill.hidden = true;
+      } else {
+        pill.hidden = false;
+        ageEl.textContent = fmtAge(ts);
+      }
+    }
+    // FS radar pill (mirrors card radar timestamp)
+    const tsFs = (fsRadar && fsRadar.getTimestamp()) || ts;
+    const pillFs = document.querySelector('[data-radar-ts-fs]');
+    const ageFsEl = document.querySelector('[data-radar-age-fs]');
+    if (pillFs && ageFsEl && tsFs) {
+      pillFs.hidden = false;
+      ageFsEl.textContent = fmtAge(tsFs);
+    }
   }
   setInterval(refreshRadarTimestamp, 30 * 1000);
 
@@ -481,7 +542,8 @@
     const el = document.getElementById('radar-map-fs');
     if (!el || !window.L) return null;
     fsRadar = createRadarMap(el, { defaultZoom: 7 }); // wider state-level view
-    fsRadar.loadRain();
+    fsRadar.loadRain().then(refreshRadarTimestamp);
+    setInterval(() => fsRadar && fsRadar.loadRain().then(refreshRadarTimestamp), 5 * 60 * 1000);
     return fsRadar;
   }
 
