@@ -154,6 +154,22 @@ with open(LOVELACE, "w") as f:
     json.dump(store, f, indent=2)
 print(f"  wrote {LOVELACE}")
 
+print("=== STEP 7: nudge HA to reload lovelace storage ===")
+# HA caches the dashboard in memory. Bump the storage version-ish via the
+# minor_version field so HA picks it up, and also touch the on-disk mtime.
+try:
+    # bump minor_version inside the .storage file so HA invalidates its cache
+    with open(LOVELACE) as f:
+        s2 = json.load(f)
+    s2["minor_version"] = s2.get("minor_version", 1) + 1
+    with open(LOVELACE, "w") as f:
+        json.dump(s2, f, indent=2)
+    print(f"  bumped minor_version -> {s2['minor_version']}")
+except Exception as e:
+    print(f"  (skip) {e}")
+
 print("=== DONE ===")
-print("Now hard-refresh the browser on /lovelace-fl/weather (Ctrl+Shift+R).")
+print("IMPORTANT: After running this, in the browser do:")
+print("  1. Hard-refresh /lovelace-fl/weather (Ctrl+Shift+R)")
+print("  2. If overlays/subview still don't appear, go to Settings → System → restart HA")
 print(f"Backup at {BACKUP}")
