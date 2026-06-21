@@ -1,31 +1,54 @@
-# why: Custom Leaflet radar matching the mockup. CARTO Positron/Dark Matter basemap,
-# RainViewer overlay, home pin, live range rings from helpers (with on/off toggles),
-# multi-strike geo_location entities, mockup-style top-right cluster with data-age
-# pills + reset button, mockup legend, theme-aware basemap.
+# why: Full-screen animated radar (subview /lovelace-fl/radar-fs). 24 past frames
+# + 3 forecast frames from RainViewer. Scrubber timeline, play/pause, speed control
+# (0.5x/1x/2x). Now marker between past and forecast. Same overlays as embedded:
+# CARTO basemap, home pin, range rings, multi-strike lightning, age pills.
 type: custom:html-template-card
 ignore_line_breaks: true
 content: |
-  <div id="radar-wrap-fs" style="position:relative;width:100%;height:calc(100vh - 120px);border-radius:14px;overflow:hidden;font-family:system-ui,sans-serif;">
+  <div id="radar-wrap-fs" style="position:relative;width:100%;height:calc(100vh - 120px);border-radius:14px;overflow:hidden;font-family:system-ui,sans-serif;background:#0b1929;">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <div id="radar-map-fs" style="width:100%;height:100%;background:#0b1929;"></div>
+    <div id="radar-map-fs" style="width:100%;height:100%;"></div>
 
-    <!-- top-right cluster: data-age pills + map controls -->
+    <!-- top-right: data-age pills + reset -->
     <div id="radar-topbar-fs" style="position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:6px;z-index:600;">
-      <span id="radar-pill-radar-fs" style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;backdrop-filter:blur(4px);">Radar · <span id="radar-age-fs">--</span></span>
-      <span id="radar-pill-lightning-fs" style="background:rgba(255,216,77,0.85);color:#1c2a35;font-size:11px;padding:4px 8px;border-radius:999px;font-weight:600;">Lightning · <span id="lightning-age-fs">--</span></span>
-      <span id="radar-pill-err-fs" style="display:none;background:#b42318;color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;">Radar offline</span>
-      <button id="radar-reset-fs" title="Reset view" style="width:30px;height:30px;border:none;border-radius:8px;background:rgba(0,0,0,0.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+      <span id="radar-pill-radar-fs" style="background:rgba(0,0,0,0.6);color:#fff;font-size:12px;padding:5px 10px;border-radius:999px;">Radar · <span id="radar-age-fs">--</span></span>
+      <span id="radar-pill-lightning-fs" style="background:rgba(255,216,77,0.85);color:#1c2a35;font-size:12px;padding:5px 10px;border-radius:999px;font-weight:600;">Lightning · <span id="lightning-age-fs">--</span></span>
+      <span id="radar-pill-err-fs" style="display:none;background:#b42318;color:#fff;font-size:12px;padding:5px 10px;border-radius:999px;">Radar offline</span>
+      <button id="radar-reset-fs" title="Reset view" style="width:34px;height:34px;border:none;border-radius:8px;background:rgba(0,0,0,0.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
       </button>
-      
     </div>
 
     <!-- bottom-left legend -->
-    <div id="radar-legend-fs" style="position:absolute;bottom:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:8px;pointer-events:none;z-index:600;">
+    <div id="radar-legend-fs" style="position:absolute;bottom:60px;left:8px;display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:#fff;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:8px;pointer-events:none;z-index:600;">
       <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#22c55e;border-radius:2px;display:inline-block;"></i>Light</span>
       <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#f59e0b;border-radius:2px;display:inline-block;"></i>Moderate</span>
       <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#ef4444;border-radius:2px;display:inline-block;"></i>Heavy</span>
-      <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#ffd84d;border-radius:50%;display:inline-block;"></i>Lightning · last 10 min</span>
+      <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#ffd84d;border-radius:50%;display:inline-block;"></i>Lightning · last 60 min</span>
+    </div>
+
+    <!-- timeline controls -->
+    <div id="radar-timeline-fs" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.75);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:12px;z-index:700;backdrop-filter:blur(6px);">
+      <button id="play-pause-fs" title="Play/Pause" style="width:38px;height:38px;border:none;border-radius:50%;background:#ffd84d;color:#1c2a35;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg id="pp-icon-fs" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 4l14 8-14 8V4z"/></svg>
+      </button>
+      <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px;">
+          <span id="frame-label-fs">--</span>
+          <span><span id="frame-pos-fs">0</span> / <span id="frame-count-fs">0</span></span>
+        </div>
+        <div id="scrubber-track-fs" style="position:relative;height:18px;cursor:pointer;display:flex;align-items:center;">
+          <div style="position:absolute;left:0;right:0;height:4px;background:rgba(255,255,255,0.18);border-radius:2px;"></div>
+          <div id="scrubber-past-fs" style="position:absolute;left:0;height:4px;background:linear-gradient(90deg,#5da8c9,#ffd84d);border-radius:2px;"></div>
+          <div id="scrubber-now-fs" style="position:absolute;width:2px;height:14px;background:#fff;"></div>
+          <div id="scrubber-thumb-fs" style="position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #ffd84d;transform:translateX(-50%);"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0;">
+        <button data-speed="0.5" class="speed-btn-fs" style="border:1px solid rgba(255,255,255,0.3);background:transparent;color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;">0.5x</button>
+        <button data-speed="1" class="speed-btn-fs" style="border:1px solid #ffd84d;background:rgba(255,216,77,0.15);color:#ffd84d;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;">1x</button>
+        <button data-speed="2" class="speed-btn-fs" style="border:1px solid rgba(255,255,255,0.3);background:transparent;color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;">2x</button>
+      </div>
     </div>
   </div>
   <script>
@@ -33,9 +56,13 @@ content: |
       if (window.__radarInitFs) { window.__radarRefreshFs && window.__radarRefreshFs(); return; }
       window.__radarInitFs = true;
       var HOME = [29.9, -81.31];
-      var HOME_ZOOM = 9;
+      var HOME_ZOOM = 8;
+      var BASE_FRAME_MS = 260;
+      var speedMul = 1;
       var radarFrameTs = null;
       var lastStrikeTs = null;
+      var playing = true;
+      var lastInteract = Date.now();
 
       var loadLeaflet = function(cb) {
         if (window.L) { cb(); return; }
@@ -47,10 +74,25 @@ content: |
 
       var fmtAge = function(tsSec) {
         if (!tsSec) return '--';
-        var diff = Math.max(0, Math.floor(Date.now()/1000 - tsSec));
+        var diff = Math.floor(Date.now()/1000 - tsSec);
+        if (diff < 0) {
+          var f = Math.abs(diff);
+          if (f < 3600) return 'in ' + Math.floor(f/60) + 'm';
+          return 'in ' + Math.floor(f/3600) + 'h';
+        }
         if (diff < 60) return diff + 's ago';
         if (diff < 3600) return Math.floor(diff/60) + 'm ago';
         return Math.floor(diff/3600) + 'h ago';
+      };
+
+      var fmtTime = function(tsSec) {
+        if (!tsSec) return '--';
+        var d = new Date(tsSec * 1000);
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12; if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
       };
 
       var updateAges = function() {
@@ -64,11 +106,7 @@ content: |
         var mapEl = document.getElementById('radar-map-fs');
         if (!mapEl || mapEl._leaflet_id) return;
         var getTheme = function() {
-          // Casa Cola Creek themes don't set data-theme; sniff card background luminance instead.
-          var t = document.documentElement.getAttribute('data-theme');
-          if (t === 'dark' || t === 'light') return t;
           var bg = getComputedStyle(document.documentElement).getPropertyValue('--primary-background-color').trim();
-          if (!bg) return 'light';
           var m = bg.match(/#([0-9a-f]{6})/i);
           if (!m) return 'light';
           var r = parseInt(m[1].substr(0,2),16), g = parseInt(m[1].substr(2,2),16), b = parseInt(m[1].substr(4,2),16);
@@ -82,32 +120,154 @@ content: |
         var baseLayer = L.tileLayer(basemapUrls[getTheme()], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
         L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OSM © CARTO | RainViewer').addTo(map);
 
-        var rainLayer = null;
-        var refreshRain = function() {
+        // frames: array of {ts, layer, isForecast}
+        var frames = [];
+        var pastCount = 0;
+        var currentIdx = 0;
+        var animTimer = null;
+
+        var loadFrames = function() {
           fetch('https://api.rainviewer.com/public/weather-maps.json').then(function(r){return r.json();}).then(function(j){
-            var frames = j.radar && j.radar.past ? j.radar.past : [];
-            if (!frames.length) {
+            var past = (j.radar && j.radar.past) || [];
+            var fc = (j.radar && j.radar.nowcast) || [];
+            if (!past.length) {
               var err = document.getElementById('radar-pill-err-fs');
               if (err) err.style.display = 'inline-block';
               return;
             }
             var errEl = document.getElementById('radar-pill-err-fs');
             if (errEl) errEl.style.display = 'none';
-            var latest = frames[frames.length - 1];
-            radarFrameTs = latest.time;
-            var url = j.host + latest.path + '/512/{z}/{x}/{y}/2/1_1.png';
-            if (rainLayer) map.removeLayer(rainLayer);
-            rainLayer = L.tileLayer(url, { opacity: 0.7, maxZoom: 18 }).addTo(map);
-            updateAges();
+            frames.forEach(function(f){ if (f.layer && map.hasLayer(f.layer)) map.removeLayer(f.layer); });
+            frames = [];
+            past.forEach(function(f){
+              var url = j.host + f.path + '/512/{z}/{x}/{y}/2/1_1.png';
+              var layer = L.tileLayer(url, { opacity: 0, maxZoom: 18, zIndex: 200 }).addTo(map);
+              frames.push({ ts: f.time, layer: layer, isForecast: false });
+            });
+            pastCount = frames.length;
+            fc.forEach(function(f){
+              var url = j.host + f.path + '/512/{z}/{x}/{y}/2/1_1.png';
+              var layer = L.tileLayer(url, { opacity: 0, maxZoom: 18, zIndex: 200 }).addTo(map);
+              frames.push({ ts: f.time, layer: layer, isForecast: true });
+            });
+            currentIdx = Math.max(0, pastCount - 1);
+            updateScrubberStatic();
+            showFrame(currentIdx);
+            if (!animTimer) startAnimation();
           }).catch(function(){
             var err = document.getElementById('radar-pill-err-fs');
             if (err) err.style.display = 'inline-block';
           });
         };
-        refreshRain();
-        setInterval(refreshRain, 5 * 60 * 1000);
 
-        var homeIcon = L.divIcon({ className: 'home-pin', html: '<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 0 2px #ef4444;"></div>', iconSize: [14,14] });
+        var showFrame = function(idx) {
+          if (!frames.length) return;
+          frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.78 : 0); });
+          radarFrameTs = frames[idx].ts;
+          updateAges();
+          updateScrubber();
+        };
+
+        var updateScrubberStatic = function() {
+          var fc = document.getElementById('frame-count-fs');
+          if (fc) fc.textContent = frames.length;
+          var nowEl = document.getElementById('scrubber-now-fs');
+          if (nowEl && frames.length) {
+            var pct = (pastCount - 1) / Math.max(1, frames.length - 1) * 100;
+            nowEl.style.left = pct + '%';
+          }
+        };
+
+        var updateScrubber = function() {
+          if (!frames.length) return;
+          var pct = currentIdx / Math.max(1, frames.length - 1) * 100;
+          var thumb = document.getElementById('scrubber-thumb-fs');
+          if (thumb) thumb.style.left = pct + '%';
+          var past = document.getElementById('scrubber-past-fs');
+          if (past) past.style.width = pct + '%';
+          var lbl = document.getElementById('frame-label-fs');
+          if (lbl) lbl.textContent = fmtTime(frames[currentIdx].ts) + (frames[currentIdx].isForecast ? ' (forecast)' : '');
+          var pos = document.getElementById('frame-pos-fs');
+          if (pos) pos.textContent = (currentIdx + 1);
+        };
+
+        var startAnimation = function() {
+          var tick = function() {
+            if (animTimer) clearTimeout(animTimer);
+            animTimer = setTimeout(function() {
+              if (playing && frames.length) {
+                currentIdx = (currentIdx + 1) % frames.length;
+                showFrame(currentIdx);
+              }
+              tick();
+            }, BASE_FRAME_MS / speedMul);
+          };
+          tick();
+        };
+
+        // Play/pause
+        var ppBtn = document.getElementById('play-pause-fs');
+        var ppIcon = document.getElementById('pp-icon-fs');
+        if (ppBtn) ppBtn.addEventListener('click', function(){
+          playing = !playing;
+          if (ppIcon) ppIcon.innerHTML = playing
+            ? '<path d="M6 4l14 8-14 8V4z"/>'
+            : '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>';
+          lastInteract = Date.now();
+        });
+
+        // Speed buttons
+        document.querySelectorAll('.speed-btn-fs').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            speedMul = parseFloat(btn.getAttribute('data-speed'));
+            document.querySelectorAll('.speed-btn-fs').forEach(function(b){
+              b.style.border = '1px solid rgba(255,255,255,0.3)';
+              b.style.background = 'transparent';
+              b.style.color = '#fff';
+            });
+            btn.style.border = '1px solid #ffd84d';
+            btn.style.background = 'rgba(255,216,77,0.15)';
+            btn.style.color = '#ffd84d';
+            lastInteract = Date.now();
+          });
+        });
+
+        // Scrubber drag
+        var track = document.getElementById('scrubber-track-fs');
+        var dragging = false;
+        var pickFromX = function(clientX) {
+          if (!track || !frames.length) return;
+          var rect = track.getBoundingClientRect();
+          var pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+          var idx = Math.round(pct * (frames.length - 1));
+          currentIdx = idx;
+          playing = false;
+          if (ppIcon) ppIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>';
+          showFrame(currentIdx);
+          lastInteract = Date.now();
+        };
+        if (track) {
+          track.addEventListener('mousedown', function(e){ dragging = true; pickFromX(e.clientX); });
+          window.addEventListener('mousemove', function(e){ if (dragging) pickFromX(e.clientX); });
+          window.addEventListener('mouseup', function(){ dragging = false; });
+          track.addEventListener('touchstart', function(e){ dragging = true; pickFromX(e.touches[0].clientX); });
+          window.addEventListener('touchmove', function(e){ if (dragging) pickFromX(e.touches[0].clientX); });
+          window.addEventListener('touchend', function(){ dragging = false; });
+        }
+
+        // Auto-pause after 5 min idle
+        setInterval(function(){
+          if (Date.now() - lastInteract > 5 * 60 * 1000 && playing) {
+            playing = false;
+            if (ppIcon) ppIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>';
+          }
+        }, 30000);
+
+        loadFrames();
+        setInterval(loadFrames, 5 * 60 * 1000);
+
+        // Static overlays
+        var homeIcon = L.divIcon({ className: 'home-pin-fs', html: '<div style="width:16px;height:16px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 0 2px #ef4444;"></div>', iconSize: [16,16] });
         L.marker(HOME, { icon: homeIcon, zIndexOffset: 1000 }).addTo(map);
 
         var miToM = function(mi) { return mi * 1609.34; };
@@ -132,7 +292,7 @@ content: |
             if (ageMin > 60) return;
             if (pubMs > newest) newest = pubMs;
             var opacity = Math.max(0.15, 1 - ageMin / 60);
-            var size = ageMin < 2 ? 9 : (ageMin < 10 ? 6 : 4);
+            var size = ageMin < 2 ? 11 : (ageMin < 10 ? 7 : 5);
             L.circleMarker([lat, lon], { radius: size, color:'#fff', weight: 1, fillColor:'#ffd84d', fillOpacity: opacity }).addTo(strikeLayer);
           });
           lastStrikeTs = newest ? Math.floor(newest/1000) : null;
@@ -159,23 +319,18 @@ content: |
         };
         setInterval(applyRangeRings, 5000);
         applyRangeRings();
-
         setInterval(updateAges, 30000);
 
-        // Reset button → recenter home + zoom
         var resetBtn = document.getElementById('radar-reset-fs');
-        if (resetBtn) resetBtn.addEventListener('click', function(){ map.setView(HOME, HOME_ZOOM); });
+        if (resetBtn) resetBtn.addEventListener('click', function(){ map.setView(HOME, HOME_ZOOM); lastInteract = Date.now(); });
 
-        // Theme observer
         var applyTheme = function() {
           var t = getTheme();
           if (baseLayer) map.removeLayer(baseLayer);
           baseLayer = L.tileLayer(basemapUrls[t], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
           baseLayer.bringToBack();
-          if (rainLayer) rainLayer.bringToFront();
         };
-        var themeObs = new MutationObserver(applyTheme);
-        themeObs.observe(document.documentElement, { attributes: true });
+        new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true });
 
         window.__radarRefreshFs = function() {
           setTimeout(function(){ map.invalidateSize(); }, 100);
