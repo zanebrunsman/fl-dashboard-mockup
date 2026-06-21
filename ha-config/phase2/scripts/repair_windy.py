@@ -76,14 +76,23 @@ def is_windy_forecast(card):
 
 def is_ring_readout(card):
     if not isinstance(card, dict): return False
-    if card.get("type") != "horizontal-stack": return False
-    inner = card.get("cards") or []
-    return any(
-        isinstance(c, dict)
-        and c.get("type") == "custom:mushroom-template-card"
-        and "lightning_audible_radius_mi" in (c.get("secondary") or "")
-        for c in inner
-    )
+    # New glance-card variant
+    if card.get("type") == "glance":
+        ents = card.get("entities") or []
+        return any(
+            isinstance(e, dict) and "lightning_audible_radius_mi" in (e.get("entity") or "")
+            for e in ents
+        )
+    # Legacy horizontal-stack with mushroom-template-card
+    if card.get("type") == "horizontal-stack":
+        inner = card.get("cards") or []
+        return any(
+            isinstance(c, dict)
+            and c.get("type") == "custom:mushroom-template-card"
+            and "lightning_audible_radius_mi" in (c.get("secondary") or "")
+            for c in inner
+        )
+    return False
 
 def is_tide_card(card):
     if not isinstance(card, dict): return False
