@@ -1,0 +1,33 @@
+# why: User-tunable range rings on the radar. Two rings (audible / visual)
+# each have a radius slider and an enable toggle. The radar card reads these
+# four helpers live and re-renders within 5s of any change.
+
+input_number:
+  lightning_audible_radius_mi:
+    name: Audible ring radius
+    icon: mdi:circle-outline
+    min: 1
+    max: 50
+    step: 1
+    unit_of_measurement: mi
+    initial: 12
+    mode: slider
+  lightning_visual_radius_mi:
+    name: Visual ring radius
+    icon: mdi:circle-double
+    min: 1
+    max: 100
+    step: 1
+    unit_of_measurement: mi
+    initial: 30
+    mode: slider
+
+input_boolean:
+  lightning_audible_ring_enabled:
+    name: Audible ring
+    icon: mdi:circle-outline
+    initial: true
+  lightning_visual_ring_enabled:
+    name: Visual ring
+    icon: mdi:circle-double
+    initial: true

@@ -91,8 +91,16 @@ content: |
           if (!hass) return;
           var aud = hass.states['input_number.lightning_audible_radius_mi'];
           var vis = hass.states['input_number.lightning_visual_radius_mi'];
+          var audEn = hass.states['input_boolean.lightning_audible_ring_enabled'];
+          var visEn = hass.states['input_boolean.lightning_visual_ring_enabled'];
           if (aud) audibleRing.setRadius(miToM(parseFloat(aud.state)));
           if (vis) visualRing.setRadius(miToM(parseFloat(vis.state)));
+          var audOn = !audEn || audEn.state === 'on';
+          var visOn = !visEn || visEn.state === 'on';
+          if (audOn && !map.hasLayer(audibleRing)) audibleRing.addTo(map);
+          if (!audOn && map.hasLayer(audibleRing)) map.removeLayer(audibleRing);
+          if (visOn && !map.hasLayer(visualRing)) visualRing.addTo(map);
+          if (!visOn && map.hasLayer(visualRing)) map.removeLayer(visualRing);
         };
         var ringTimer = setInterval(applyRangeRings, 5000);
         applyRangeRings();
