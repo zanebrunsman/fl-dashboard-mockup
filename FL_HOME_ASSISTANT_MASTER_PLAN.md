@@ -702,6 +702,28 @@ Known gaps to close in future batches: Blitzortung integration (HACS custom fork
 
 Commit: `a3e5728` on zanebrunsman/fl-home-assistant-config.
 
+### Phase 1.1 SHIPPED — NWS rename + Blitzortung wired (June 21, 2026)
+
+Follow-up to close two Phase 1 gaps the same night.
+
+- **WX-A1 rename** — `weather.nws_29_983614497008826_81_35461539030075_ksgj` renamed in the HA UI to `weather.casa_cola_creek` (friendly name "Casa Cola Creek"). Dashboard YAML updated to match (4 references).
+- **WX-A8 Blitzortung SHIPPED** — Installed `mrk-its/homeassistant-blitzortung` v1.5.0 from HACS default store (NOT a custom repo — the correct author is `mrk-its`, not `mrk1869` as previously noted). Integration added with default radius. Three sensors live:
+  - `sensor.home_lightning_distance` (state: unknown until first strike in radius)
+  - `sensor.home_lightning_azimuth` (state: unknown)
+  - `sensor.home_lightning_counter` (state: 0)
+  Entity prefix is `home_` (not `blitzortung_`) because the integration follows the device-name pattern and the device was bound to zone.home during setup.
+- **DASH-1 v3** — Dashboard YAML rewritten to 133 lines:
+  - Home `Now` card now lists 5 entities (Conditions / Tide / Active alerts / Nearest strike / Strikes last hr).
+  - Home adds a conditional Lightning-nearby markdown card (shows when `sensor.home_lightning_distance` is below 30; hidden at "unknown").
+  - Weather Current conditions card adds 3 lightning rows (Nearest strike / Strike bearing / Strikes last hr).
+  - Lightning placeholder markdown removed from both tabs — real sensors wired.
+- **Deploy tactic learned the hard way** — First attempt to write the 133-line YAML via a single `echo '<long-base64>' | base64 -d` command into the SSH add-on terminal silently truncated to 85 lines + corrupted with a non-UTF-8 byte at position 3000 (likely a terminal paste-buffer limit in the ingress web SSH). Restored from `.bak`, then deployed v3 via `curl -fsSL` from a staged GitHub raw URL (`ha-config/dashboard.yaml` on the public mockup repo). `ha core check` passes; all three tabs render real data after hard refresh.
+- **Tide sensor transient unavailable** — noted at QA time; will recover on next NOAA poll cycle.
+
+Known gaps still open: audio target for Test chime (Sonos / Fully Kiosk), Matter add-on cleanup, real-iPad on-wall QA.
+
+Commits: `001ed9c` on zanebrunsman/fl-home-assistant-config (canonical YAML); `d1141ff` on zanebrunsman/fl-dashboard-mockup (staged `ha-config/dashboard.yaml` used as the curl source).
+
 ---
 
 ## Standing orders
