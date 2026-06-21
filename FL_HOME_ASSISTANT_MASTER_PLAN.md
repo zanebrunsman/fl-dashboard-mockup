@@ -724,6 +724,27 @@ Known gaps still open: audio target for Test chime (Sonos / Fully Kiosk), Matter
 
 Commits: `001ed9c` on zanebrunsman/fl-home-assistant-config (canonical YAML); `d1141ff` on zanebrunsman/fl-dashboard-mockup (staged `ha-config/dashboard.yaml` used as the curl source).
 
+### Phase 1.2 SHIPPED — Dashboard converted to UI-managed mode (June 21, 2026)
+
+Dashboard "Casa Cola Creek" converted from `mode: yaml` (file-include) to `mode: storage` (UI-managed) so the pencil ✏️ editor is now available. The user can drag cards, edit any card via GUI, add/remove cards from the picker, and reorder tabs without touching YAML. Advanced HACS card options (radar `extra_layers`, lightning ring SVG overlay) still drop into YAML via each card's "Show code editor" toggle.
+
+What changed under the hood:
+
+1. `/config/.storage/lovelace.lovelace-fl` created from the v3 `dashboard.yaml` content (Python wrap into HA storage schema: `{version, minor_version, key, data: {config: <yaml>}}`). HA grew the file to ~7634 bytes after load (added internal fields).
+2. `/config/.storage/lovelace_dashboards` — added `lovelace-fl` registry entry with `mode: storage`, alongside the pre-existing `map` entry.
+3. `/config/configuration.yaml` — removed the `dashboards:` block (with its `mode: yaml` + `filename:` keys) under `lovelace:`. Top-level `lovelace: mode: storage` retained.
+4. `ha core restart` → pencil icon appears, all 3 tabs (Home/Weather/Settings) render with verified cards (weather forecast, Now entities, tide, alerts, lightning, radar, current conditions, 4-day outlook, all 8 helper sliders/toggles, Test chime button).
+
+Failed first attempt — the schema rule: per-dashboard entries under `lovelace.dashboards:` MUST use `mode: yaml` + `filename:`. You cannot declare a child dashboard as `mode: storage` in `configuration.yaml`. To get UI mode, the dashboard must be registered in `.storage/lovelace_dashboards` instead and absent from `configuration.yaml`.
+
+Going-forward Git strategy — `dashboard.yaml` no longer the source of truth for runtime. We keep it in the repo as v3 reference (useful for diffs). New canonical files live under `.storage-snapshots/` in the private repo, refreshed on major UI changes (not every edit).
+
+Rollback path — Git tag `rollback/pre-ui-mode-2026-06-21` snapshot of pre-conversion state on private repo. To rollback: restore `configuration.yaml.bak` (kept on HA), delete `/config/.storage/lovelace.lovelace-fl`, remove `lovelace-fl` from `/config/.storage/lovelace_dashboards`, `ha core restart`.
+
+Known content bug to fix in next batch — `UndefinedError: list object has no element 0` shows on the Home conditional alert markdown card when `sensor.weatheralerts...` has no alerts. Needs `{% if state_attr(...) %}` guard. Trivially fixable now via the visual editor.
+
+Commits: snapshot files in `.storage-snapshots/` on zanebrunsman/fl-home-assistant-config.
+
 ---
 
 ## Standing orders
