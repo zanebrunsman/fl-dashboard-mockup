@@ -131,7 +131,7 @@
 
   var showFrame = function(idx) {
     if (!frames.length) return;
-    frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.75 : 0); });
+    frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.55 : 0); });
     radarFrameTs = frames[idx].ts;
     updateAges();
     var pb = document.getElementById('rv-progress-bar');
