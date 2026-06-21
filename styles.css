@@ -749,10 +749,12 @@ svg {
 .wx-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 1.4fr 1.1fr;
   gap: var(--space-4);
   min-height: 0;
 }
+.card--cond { min-height: 0; overflow: hidden; }
+.card--cond > .cond-grid { flex: 1; min-height: 0; }
 .card--radar { grid-column: 1; grid-row: 1; }
 .card--cond { grid-column: 1; grid-row: 2; }
 .card--alerts { grid-column: 2; grid-row: 1; }
@@ -829,7 +831,8 @@ svg {
   display: inline-block;
 }
 
-/* alerts list */
+/* alerts list — fixed flex parent, internal scroll if rows exceed card height
+   so each row can grow to fit its description without clipping at the bottom. */
 .alerts {
   list-style: none;
   display: flex;
@@ -837,9 +840,12 @@ svg {
   gap: var(--space-2);
   flex: 1;
   min-height: 0;
-  overflow: visible;
+  overflow-y: auto;
+  padding-right: 2px; /* breathing room for the optional scrollbar */
 }
-.alert-row { min-height: 0; }
+.alerts::-webkit-scrollbar { width: 6px; }
+.alerts::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+.alert-row { min-height: 0; flex: 0 0 auto; }
 .alert-row {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -919,47 +925,55 @@ svg {
   margin-right: 6px;
 }
 
-/* conditions grid — stacked label/value pairs for consistent column rhythm */
+/* conditions grid — compact two-column list (label | value on same row) */
 .cond-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3) var(--space-3);
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
   flex: 1;
   align-content: start;
+  border-top: 1px solid var(--color-border);
 }
 .cond-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 4px;
-  padding: var(--space-2) var(--space-2);
-  min-width: 0; /* allow text to fit without forcing wrap */
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
 }
-[data-theme="dark"] .cond-cell {
-  background: var(--color-surface-offset);
+.cond-cell__value svg {
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 2px;
 }
+.cond-cell:nth-child(odd) {
+  border-right: 1px solid var(--color-border);
+}
+[data-theme="dark"] .cond-cell { background: transparent; }
 .cond-cell__label {
-  font-size: var(--text-xs);
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 .cond-cell__value {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--text-sm);
+  font-size: 13px;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
+  text-align: right;
+  line-height: 1.2;
 }
 
 /* ============================================================
@@ -2667,18 +2681,25 @@ svg {
 }
 
 /* ===== Home tile: hourly forecast list (each hour is one horizontal row) ===== */
+.tile--weather { overflow: hidden; }
 .tile--weather .tile__body {
   align-items: stretch;
   padding-top: 4px;
+  min-height: 0;
+  flex: 1;
+  display: flex;
 }
 .hourly {
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
 }
+.hourly__cell { flex: 0 0 auto; }
 .hourly::-webkit-scrollbar { width: 4px; }
 .hourly::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
 
@@ -2730,61 +2751,66 @@ svg {
 
 /* ===== Weather tab: section labels above sub-components inside Conditions card ===== */
 .section-label {
-  font-size: var(--text-xs);
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin: var(--space-3) 0 var(--space-2);
+  margin: 6px 0 4px;
 }
 .card__head + .section-label {
   margin-top: 0;
 }
 
-/* ===== Weather tab: 4-day forecast strip inside Conditions card ===== */
+/* ===== Weather tab: 4-day forecast strip inside Conditions card =====
+   Horizontal layout per cell: [icon] [day] [hi°/lo°] in a single line.
+   Keeps the forecast strip compact so the cond-grid below has room for all 8 metrics. */
 .forecast4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-2);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-3);
+  gap: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 0;
 }
 .forecast4__cell {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 20px 1fr;
   align-items: center;
-  gap: 6px;
-  padding: 10px 6px;
+  gap: 4px;
+  padding: 4px 6px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  border-radius: var(--radius-sm);
+  min-width: 0;
 }
+.forecast4__cell .forecast4__temp { justify-self: end; }
 [data-theme="dark"] .forecast4__cell {
   background: var(--color-surface-offset);
 }
-.forecast4__icon { width: 48px; height: 48px; display: block; }
+.forecast4__icon { width: 20px; height: 20px; display: block; }
 .forecast4__when {
-  font-size: var(--text-xs);
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--color-text-muted);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .forecast4__temp {
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 4px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .forecast4__temp strong {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--text-md);
+  font-size: 13px;
   color: var(--color-text);
 }
 .forecast4__temp span {
-  font-size: var(--text-sm);
+  font-size: 11px;
   color: var(--color-text-muted);
   font-weight: 500;
 }
