@@ -1,33 +1,73 @@
-# why: Animated Leaflet radar with overlays injected via Leaflet's native control
-# API (rather than absolute-positioned divs). Controls always render above the map
-# and inside the same stacking context, avoiding shadow-DOM / z-index issues with
-# html-template-card. 30-min auto-loop, pause-on-hover, CARTO basemap, home pin,
+# why: Embedded animated Leaflet radar. Inlines all Leaflet CSS (no external <link>
+# to avoid CSP/shadow-DOM load failures). No overflow:hidden on the wrap (was clipping
+# controls). Overlays added via Leaflet Control API so they live inside the map's own
+# stacking context. 6-frame 30-min loop, pause-on-hover, CARTO basemap, home pin,
 # live range rings, multi-strike lightning.
 type: custom:html-template-card
 ignore_line_breaks: true
 content: |
-  <div id="radar-wrap" style="position:relative;width:100%;height:480px;border-radius:14px;overflow:hidden;font-family:system-ui,sans-serif;background:#0b1929;">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <div id="radar-wrap" style="position:relative;width:100%;height:480px;border-radius:14px;font-family:system-ui,sans-serif;background:#0b1929;">
     <style>
-      .rv-pill { background:rgba(0,0,0,0.65); color:#fff; font-size:11px; padding:4px 8px; border-radius:999px; line-height:1; }
-      .rv-pill--lightning { background:rgba(255,216,77,0.9); color:#1c2a35; font-weight:600; }
+      /* ===== Inlined Leaflet 1.9.4 essentials (control positioning + tiles) ===== */
+      #radar-map { position:relative; outline:none; }
+      #radar-map .leaflet-pane,
+      #radar-map .leaflet-tile,
+      #radar-map .leaflet-marker-icon,
+      #radar-map .leaflet-marker-shadow,
+      #radar-map .leaflet-tile-container,
+      #radar-map .leaflet-pane > svg,
+      #radar-map .leaflet-pane > canvas,
+      #radar-map .leaflet-zoom-box,
+      #radar-map .leaflet-image-layer,
+      #radar-map .leaflet-layer { position:absolute; left:0; top:0; }
+      #radar-map .leaflet-container { overflow:hidden; }
+      #radar-map .leaflet-tile,
+      #radar-map .leaflet-marker-icon,
+      #radar-map .leaflet-marker-shadow { -webkit-user-select:none; user-select:none; -webkit-user-drag:none; }
+      #radar-map .leaflet-tile { filter:inherit; visibility:hidden; }
+      #radar-map .leaflet-tile-loaded { visibility:inherit; }
+      #radar-map .leaflet-zoom-animated { transform-origin:0 0; }
+      #radar-map .leaflet-pane { z-index:400; }
+      #radar-map .leaflet-tile-pane { z-index:200; }
+      #radar-map .leaflet-overlay-pane { z-index:400; }
+      #radar-map .leaflet-shadow-pane { z-index:500; }
+      #radar-map .leaflet-marker-pane { z-index:600; }
+      #radar-map .leaflet-tooltip-pane { z-index:650; }
+      #radar-map .leaflet-popup-pane { z-index:700; }
+      #radar-map .leaflet-map-pane canvas { z-index:100; }
+      #radar-map .leaflet-map-pane svg { z-index:200; }
+      #radar-map .leaflet-control-container .leaflet-control { position:relative; z-index:800; pointer-events:auto; }
+      #radar-map .leaflet-top, #radar-map .leaflet-bottom { position:absolute; z-index:1000; pointer-events:none; }
+      #radar-map .leaflet-top { top:0; }
+      #radar-map .leaflet-right { right:0; }
+      #radar-map .leaflet-bottom { bottom:0; }
+      #radar-map .leaflet-left { left:0; }
+      #radar-map .leaflet-control { float:left; clear:both; margin:8px; }
+      #radar-map .leaflet-right .leaflet-control { float:right; }
+      #radar-map .leaflet-control-zoom { box-shadow:0 1px 5px rgba(0,0,0,0.4); border-radius:4px; background:#fff; }
+      #radar-map .leaflet-control-zoom a { display:block; width:30px; height:30px; line-height:30px; text-align:center; color:#000; text-decoration:none; font:bold 18px/30px Tahoma,sans-serif; }
+      #radar-map .leaflet-control-zoom a:first-child { border-bottom:1px solid #ccc; border-radius:4px 4px 0 0; }
+      #radar-map .leaflet-control-zoom a:last-child { border-radius:0 0 4px 4px; }
+      #radar-map .leaflet-control-attribution { background:rgba(255,255,255,0.7); padding:0 5px; font-size:11px; color:#333; }
+      /* ===== Custom radar overlay styles ===== */
+      .rv-pill { background:rgba(0,0,0,0.7); color:#fff; font-size:11px; padding:5px 9px; border-radius:999px; line-height:1; white-space:nowrap; }
+      .rv-pill--lightning { background:rgba(255,216,77,0.92); color:#1c2a35; font-weight:600; }
       .rv-pill--err { background:#b42318; display:none; }
-      .rv-btn { width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.65); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-      .rv-btn:hover { background:rgba(0,0,0,0.85); }
+      .rv-btn { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:none; border-radius:8px; background:rgba(0,0,0,0.7); color:#fff; cursor:pointer; text-decoration:none; }
+      .rv-btn:hover { background:rgba(0,0,0,0.9); }
       .rv-cluster { display:flex; align-items:center; gap:6px; }
-      .rv-legend { display:flex; flex-wrap:wrap; gap:6px; font-size:11px; color:#fff; background:rgba(0,0,0,0.65); padding:6px 10px; border-radius:8px; pointer-events:none; }
+      .rv-legend { display:flex; flex-wrap:wrap; gap:8px; font-size:11px; color:#fff; background:rgba(0,0,0,0.7); padding:6px 10px; border-radius:8px; }
       .rv-legend span { display:flex; align-items:center; gap:4px; }
       .rv-legend i { width:10px; height:10px; display:inline-block; }
-      .rv-progress-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.18); pointer-events:none; }
-      .rv-progress-bar { height:100%; width:0%; background:#ffd84d; transition:width 0.18s linear; }
+      #rv-progress-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.18); pointer-events:none; border-radius:0 0 14px 14px; overflow:hidden; z-index:500; }
+      #rv-progress-bar { height:100%; width:0%; background:#ffd84d; transition:width 0.18s linear; }
     </style>
-    <div id="radar-map" style="width:100%;height:100%;"></div>
-    <div class="rv-progress-track"><div id="rv-progress-bar" class="rv-progress-bar"></div></div>
+    <div id="radar-map" style="width:100%;height:100%;border-radius:14px;overflow:hidden;"></div>
+    <div id="rv-progress-track"><div id="rv-progress-bar"></div></div>
   </div>
   <script>
     (function() {
       if (window.__radarInit) { window.__radarRefresh && window.__radarRefresh(); return; }
-      window.__radarInit = true;
       var HOME = [29.9, -81.31];
       var HOME_ZOOM = 9;
       var FRAMES_BACK = 6;
@@ -41,6 +81,7 @@ content: |
         var s = document.createElement('script');
         s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
         s.onload = cb;
+        s.onerror = function(){ console.error('Leaflet JS failed to load'); };
         document.head.appendChild(s);
       };
 
@@ -52,10 +93,15 @@ content: |
         return Math.floor(diff/3600) + 'h ago';
       };
 
-      loadLeaflet(function() {
+      var initWhenReady = function() {
         var mapEl = document.getElementById('radar-map');
-        if (!mapEl || mapEl._leaflet_id) return;
+        if (!mapEl) { setTimeout(initWhenReady, 200); return; }
+        if (mapEl._leaflet_id) return;
+        window.__radarInit = true;
+        loadLeaflet(function() { initMap(mapEl); });
+      };
 
+      var initMap = function(mapEl) {
         var getTheme = function() {
           var bg = getComputedStyle(document.documentElement).getPropertyValue('--primary-background-color').trim();
           var m = bg.match(/#([0-9a-f]{6})/i);
@@ -72,7 +118,6 @@ content: |
         var baseLayer = L.tileLayer(basemapUrls[getTheme()], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
         L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OSM © CARTO | RainViewer').addTo(map);
 
-        // ===== Top-right cluster as Leaflet control =====
         var ageRadarSpan, ageLightningSpan, errPill;
         var TopBar = L.Control.extend({
           options: { position: 'topright' },
@@ -86,29 +131,28 @@ content: |
             errPill = L.DomUtil.create('span', 'rv-pill rv-pill--err', d);
             errPill.textContent = 'Radar offline';
             var resetBtn = L.DomUtil.create('button', 'rv-btn', d);
+            resetBtn.type = 'button';
             resetBtn.title = 'Reset view';
             resetBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>';
-            L.DomEvent.on(resetBtn, 'click', function(){ map.setView(HOME, HOME_ZOOM); });
+            L.DomEvent.on(resetBtn, 'click', function(e){ L.DomEvent.stop(e); map.setView(HOME, HOME_ZOOM); });
             var expandBtn = L.DomUtil.create('a', 'rv-btn', d);
             expandBtn.href = '/lovelace-fl/radar-fs';
             expandBtn.title = 'Full screen';
-            expandBtn.style.textDecoration = 'none';
             expandBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
             return d;
           }
         });
         new TopBar().addTo(map);
 
-        // ===== Bottom-left legend as Leaflet control =====
         var Legend = L.Control.extend({
           options: { position: 'bottomleft' },
           onAdd: function() {
             var d = L.DomUtil.create('div', 'rv-legend');
             d.innerHTML =
               '<span><i style="background:#22c55e;border-radius:2px;"></i>Light</span>' +
-              '<span><i style="background:#f59e0b;border-radius:2px;"></i>Moderate</span>' +
+              '<span><i style="background:#f59e0b;border-radius:2px;"></i>Mod</span>' +
               '<span><i style="background:#ef4444;border-radius:2px;"></i>Heavy</span>' +
-              '<span><i style="background:#ffd84d;border-radius:50%;"></i>Lightning · last 10 min</span>';
+              '<span><i style="background:#ffd84d;border-radius:50%;"></i>⚡ &lt;10m</span>';
             return d;
           }
         });
@@ -121,7 +165,6 @@ content: |
           if (la) la.textContent = lastStrikeTs ? fmtAge(lastStrikeTs) : 'none';
         };
 
-        // ===== Animated rain frames =====
         var frames = [];
         var currentIdx = 0;
         var animTimer = null;
@@ -171,7 +214,6 @@ content: |
         loadFrames();
         setInterval(loadFrames, 5 * 60 * 1000);
 
-        // ===== Static overlays =====
         var homeIcon = L.divIcon({ className: 'home-pin', html: '<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 0 2px #ef4444;"></div>', iconSize: [14,14] });
         L.marker(HOME, { icon: homeIcon, zIndexOffset: 1000 }).addTo(map);
 
@@ -234,12 +276,16 @@ content: |
         };
         new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true });
 
+        setTimeout(function(){ map.invalidateSize(); }, 200);
+
         window.__radarRefresh = function() {
           setTimeout(function(){ map.invalidateSize(); }, 100);
           renderStrikes();
           applyRangeRings();
           updateAges();
         };
-      });
+      };
+
+      initWhenReady();
     })();
   </script>
