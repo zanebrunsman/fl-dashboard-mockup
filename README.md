@@ -1,18 +1,37 @@
-# FL Home Dashboard — Mockup
+# Casa Cola Creek Dashboard Mockup
 
-A tablet UI mockup for a Home Assistant dashboard at a new Florida coastal house. Designed for a wall-mounted iPad running Fully Kiosk.
+Visual mockup for an iPad-mounted Home Assistant dashboard at Casa Cola Creek
+(St. Augustine, FL). Built as a static site for design review — no live data;
+all readouts are placeholders unless explicitly wired (clock + sleep clock are
+live).
 
-**Live preview:** https://zanebrunsman.github.io/fl-dashboard-mockup/
+**Live demo:** https://zanebrunsman.github.io/fl-dashboard-mockup/
 
-## What's in it
+## Features
 
-- Home tab — live weather, top-priority alert banner, cameras, doors, Now Playing
-- Weather tab — radar with lightning, active alerts, conditions, tide
-- Security tab — live camera, doors and garage controls, recent activity
-- Media tab — Sonos and TV control
-- Settings tab — drag-to-reorder alert priority, audible behavior, dashboard behavior, sleep mode
-- Sleep mode — minimal black/grayscale display with giant clock, lock status, and red Critical-alert ribbon
+- Five tabs: Home, Weather, Security, Media, Settings
+- Light / dark theme with auto-switch toggle
+- iOS Add-to-Home-Screen ready (manifest + apple-touch-icon)
+- Sleep mode with bedside-clock view
+- Demo data badge in every topbar
+- LG OLED C6H TV control surface (power / volume / mute / HDMI inputs)
+- Sonos source picker with gated Up Next queue
+- App launchers: Sonos, Spotify, SiriusXM, Amazon Music
+- Alert priority drag-list and per-alert audible toggles
+- Numeric steppers for lightning chime radius (1-30 mi) and re-alert cooldown
+  (0-120 min)
+- Real Date() wiring for clock, sleep clock, freshness pills
 
-## Notes
+## Files
 
-This is a static HTML/CSS/JS visual prototype. Drag-to-reorder is mocked; the production version uses sortable.js inside a Home Assistant Lovelace card. See `FL_HOME_ASSISTANT_MASTER_PLAN.md` in the private config repo for the full backlog.
+- `index.html` — markup for all five tabs + sleep view
+- `styles.css` — full design system (tokens, components, theme inversion)
+- `app.js` — tab routing, theme toggle, clock, sleep, media, steppers
+- `assets/` — camera placeholders, app icons
+- `manifest.webmanifest` — PWA manifest for Add-to-Home-Screen
+
+## Pending (next session)
+
+- Live radar with Leaflet + CARTO Voyager basemap + RainViewer overlay +
+  Blitzortung lightning strikes (currently a stylized SVG placeholder)
+- Apple Music launcher (replace Amazon Music if Dad prefers)
