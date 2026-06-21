@@ -36,16 +36,9 @@ print("=== STEP 0: backup ===")
 shutil.copy(LOVELACE, BACKUP)
 print(f"  backup -> {BACKUP}")
 
-print("=== STEP 0b: install /config/www/radar.html ===")
-os.makedirs(WWW_DIR, exist_ok=True)
-try:
-    html = fetch_text(RADAR_HTML)
-    with open(RADAR_HTML_PATH, "w") as f:
-        f.write(html)
-    print(f"  wrote {RADAR_HTML_PATH} ({len(html)} bytes)")
-except Exception as e:
-    print(f"  ERROR fetching/writing radar.html: {e}")
-    sys.exit(1)
+# STEP 0b removed: iframe now uses srcdoc with HTML inline in the card YAML.
+# No /config/www/ filesystem dependency. This sidesteps the SSH add-on hung
+# bind-mount issue.
 
 print("=== STEP 1: load storage ===")
 with open(LOVELACE) as f:
