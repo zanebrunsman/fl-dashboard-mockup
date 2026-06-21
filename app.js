@@ -156,7 +156,7 @@
     clearTimeout(toastTimer);
     toastText.textContent = msg;
     toast.hidden = false;
-    toastTimer = setTimeout(() => (toast.hidden = true), 2400);
+    toastTimer = setTimeout(() => (toast.hidden = true), 1300);
   }
 
   // ---- Control actions ----
@@ -324,297 +324,242 @@
       if (valueEl) valueEl.textContent = `${v}${unit ? ' ' + unit : ''}`;
       if (minus) minus.disabled = v <= min;
       if (plus) plus.disabled = v >= max;
+      root.dataset.value = String(v); // expose for listeners (radar lightning radius, etc.)
     }
     if (minus) minus.addEventListener('click', () => { v = Math.max(min, v - step); paint(); });
     if (plus) plus.addEventListener('click', () => { v = Math.min(max, v + step); paint(); });
     paint();
   });
 
-  // ---- Radar pan/zoom engine ----
-  // why: lets dad zoom from neighborhood (4×) out to whole US (0.05×)
-  //      with smooth pan, pinch on touch, wheel on desktop
-  function createRadar(container, opts) {
-    const svg = container.querySelector('[data-radar-svg], [data-radar-svg-fs]');
-    const viewport = container.querySelector('[data-radar-viewport]');
-    if (!svg || !viewport) return null;
+  // ---- Radar (Leaflet + CARTO basemap + RainViewer overlay) ----
+  // why: real map tiles + live RainViewer precipitation, far more useful than the
+  //      stylized SVG. Lazy-inits on first weather-tab activation to keep boot light.
+  const RADAR_HOME = [29.90, -81.31]; // Casa Cola Creek, St. Augustine
+  const CARTO = {
+    light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+  };
+  const CARTO_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  const RAINVIEWER_API = 'https://api.rainviewer.com/public/weather-maps.json';
 
-    const vb = svg.viewBox.baseVal; // viewBox width/height in svg units
-    const state = { scale: opts.defaultScale, tx: 0, ty: 0 };
-    const minScale = opts.minScale;
-    const maxScale = opts.maxScale;
-    const isFs = opts.mode === 'fs';
-
-    // Label groups for counter-scaling + threshold fade
-    const labelGroups = Array.from(container.querySelectorAll('[data-radar-labels]'));
-    // Capture each text element's design font-size so counter-scaling math is correct
-    labelGroups.forEach((g) => {
-      g.querySelectorAll('text').forEach((t) => {
-        if (!t.dataset.baseFs) {
-          const fs = parseFloat(getComputedStyle(t).fontSize) || parseFloat(t.getAttribute('font-size')) || 11;
-          t.dataset.baseFs = String(fs);
-        }
-      });
-    });
-    // Range rings also fade out at low zoom (so they aren't a giant ring across continent)
-    const ringsGroup = container.querySelector('[data-radar-rings]');
-    const homeGroup = container.querySelector('[data-radar-home]');
-
-    // Lightning layers (fs only)
-    const bolts = container.querySelector('[data-radar-lightning-bolts]');
-    const clusters = container.querySelector('[data-radar-lightning-clusters]');
-    const heat = container.querySelector('[data-radar-lightning-heat]');
-    // Card has single lightning group (always shown)
-    const cardLightning = container.querySelector('[data-radar-lightning]');
-
-    function svgPointFromClient(clientX, clientY) {
-      const rect = svg.getBoundingClientRect();
-      // map client coords -> svg user-units using the active viewBox
-      const px = (clientX - rect.left) / rect.width;
-      const py = (clientY - rect.top) / rect.height;
-      return { x: px * vb.width, y: py * vb.height };
-    }
-
-    function apply() {
-      viewport.setAttribute(
-        'transform',
-        `translate(${state.tx.toFixed(3)} ${state.ty.toFixed(3)}) scale(${state.scale.toFixed(4)})`
-      );
-      // Counter-scale label text + fade thresholds
-      labelGroups.forEach((g) => {
-        const kind = g.dataset.radarLabels;
-        let op = 1;
-        if (kind === 'roads') {
-          // visible 1.0× and above, fade out by 0.5×
-          op = clamp((state.scale - 0.5) / 0.5, 0, 1);
-        } else if (kind === 'rings') {
-          // visible 4× down to 0.4× (fade between 0.4 and 0.6)
-          op = clamp((state.scale - 0.4) / 0.2, 0, 1);
-        } else if (kind === 'cities') {
-          // appear ≤ 0.3× (1 below 0.3, fade up to 0 above 0.45)
-          op = clamp((0.45 - state.scale) / 0.15, 0, 1);
-        } else if (kind === 'states') {
-          // appear ≤ 0.15× (fade in between 0.22 → 0.12)
-          op = clamp((0.22 - state.scale) / 0.1, 0, 1);
-        }
-        g.setAttribute('opacity', op.toFixed(2));
-        // Counter-scale text size so labels remain readable
-        g.querySelectorAll('text').forEach((t) => {
-          const base = parseFloat(t.dataset.baseFs) || 11;
-          t.setAttribute('font-size', (base / state.scale).toFixed(2));
-        });
-      });
-
-      // Range rings: fade out below 0.3× (no longer useful at continental zoom)
-      if (ringsGroup) {
-        const ringOp = clamp((state.scale - 0.3) / 0.2, 0, 1);
-        ringsGroup.setAttribute('opacity', ringOp.toFixed(2));
-      }
-      // Home marker text counter-scales but circle scales with map
-      if (homeGroup) {
-        const homeText = homeGroup.querySelector('text');
-        if (homeText) {
-          if (!homeText.dataset.baseFs) homeText.dataset.baseFs = homeText.getAttribute('font-size') || '12';
-          const base = parseFloat(homeText.dataset.baseFs);
-          homeText.setAttribute('font-size', (base / state.scale).toFixed(2));
-        }
-      }
-
-      // Lightning rendering mode (fs only)
-      if (isFs && bolts && clusters && heat) {
-        let bOp = 0, cOp = 0, hOp = 0;
-        if (state.scale >= 0.5) bOp = 1;
-        else if (state.scale >= 0.15) cOp = 1;
-        else hOp = 1;
-        bolts.setAttribute('opacity', bOp);
-        clusters.setAttribute('opacity', cOp);
-        heat.setAttribute('opacity', hOp);
-      }
-      if (cardLightning) {
-        // card view is always neighborhood-scale → always show bolts
-        cardLightning.setAttribute('opacity', '1');
-      }
-
-      // Zoom readout (fs only)
-      const readout = container.querySelector('[data-fsr-readout]');
-      if (readout) readout.textContent = state.scale >= 1
-        ? `${state.scale.toFixed(1)}×`
-        : `${state.scale.toFixed(2)}×`;
-    }
-
-    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-
-    function setScaleAround(newScale, pivotX, pivotY) {
-      newScale = clamp(newScale, minScale, maxScale);
-      // Keep the svg point under (pivotX,pivotY) fixed during zoom
-      const k = newScale / state.scale;
-      state.tx = pivotX - k * (pivotX - state.tx);
-      state.ty = pivotY - k * (pivotY - state.ty);
-      state.scale = newScale;
-    }
-
-    function reset(animate = true) {
-      if (!animate) container.classList.add('is-zooming');
-      state.scale = opts.defaultScale;
-      // Center the home marker (or the viewBox center) at reset
-      const cx = opts.homeX != null ? opts.homeX : vb.width / 2;
-      const cy = opts.homeY != null ? opts.homeY : vb.height / 2;
-      state.tx = vb.width / 2 - state.scale * cx;
-      state.ty = vb.height / 2 - state.scale * cy;
-      apply();
-      if (!animate) requestAnimationFrame(() => container.classList.remove('is-zooming'));
-    }
-
-    // ---- pointer-based pan + pinch ----
-    const pointers = new Map();
-    let lastPinchDist = 0;
-    let lastPinchMid = null;
-
-    container.addEventListener('pointerdown', (e) => {
-      // Don't pan when user clicks a control button
-      if (e.target.closest('.radar__ctrl, .radar__ctrls')) return;
-      container.setPointerCapture(e.pointerId);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (pointers.size === 1) {
-        container.classList.add('is-panning');
-      } else if (pointers.size === 2) {
-        container.classList.remove('is-panning');
-        container.classList.add('is-zooming');
-        const [a, b] = [...pointers.values()];
-        lastPinchDist = Math.hypot(a.x - b.x, a.y - b.y);
-        lastPinchMid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-      }
-    });
-
-    container.addEventListener('pointermove', (e) => {
-      if (!pointers.has(e.pointerId)) return;
-      const prev = pointers.get(e.pointerId);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-      if (pointers.size === 1) {
-        // Pan — translate svg coords
-        const rect = svg.getBoundingClientRect();
-        const dx = ((e.clientX - prev.x) / rect.width) * vb.width;
-        const dy = ((e.clientY - prev.y) / rect.height) * vb.height;
-        state.tx += dx;
-        state.ty += dy;
-        apply();
-      } else if (pointers.size === 2) {
-        const [a, b] = [...pointers.values()];
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-        if (lastPinchDist > 0) {
-          const factor = dist / lastPinchDist;
-          const pivot = svgPointFromClient(mid.x, mid.y);
-          setScaleAround(state.scale * factor, pivot.x, pivot.y);
-          // Also pan with midpoint drift
-          const rect = svg.getBoundingClientRect();
-          const ddx = ((mid.x - lastPinchMid.x) / rect.width) * vb.width;
-          const ddy = ((mid.y - lastPinchMid.y) / rect.height) * vb.height;
-          state.tx += ddx;
-          state.ty += ddy;
-          apply();
-        }
-        lastPinchDist = dist;
-        lastPinchMid = mid;
-      }
-    });
-
-    function endPointer(e) {
-      if (pointers.has(e.pointerId)) pointers.delete(e.pointerId);
-      if (pointers.size < 2) { lastPinchDist = 0; lastPinchMid = null; }
-      if (pointers.size === 0) {
-        container.classList.remove('is-panning', 'is-zooming');
-      }
-    }
-    container.addEventListener('pointerup', endPointer);
-    container.addEventListener('pointercancel', endPointer);
-    container.addEventListener('pointerleave', endPointer);
-
-    // ---- wheel zoom (desktop) ----
-    container.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const pivot = svgPointFromClient(e.clientX, e.clientY);
-      const factor = Math.exp(-e.deltaY * 0.0015);
-      container.classList.add('is-zooming');
-      setScaleAround(state.scale * factor, pivot.x, pivot.y);
-      apply();
-      clearTimeout(container._zoomTimer);
-      container._zoomTimer = setTimeout(() => container.classList.remove('is-zooming'), 180);
-    }, { passive: false });
-
-    // ---- reset button ----
-    container.querySelectorAll('[data-radar-action="reset"]').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        reset(true);
-      });
-    });
-
-    // Initial layout
-    reset(false);
-
-    return {
-      reset,
-      getState: () => ({ ...state }),
-      setState: (s) => {
-        if (s.scale != null) state.scale = clamp(s.scale, minScale, maxScale);
-        if (s.tx != null) state.tx = s.tx;
-        if (s.ty != null) state.ty = s.ty;
-        apply();
-      },
-    };
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') || 'light';
+  }
+  function fmtAge(ts) {
+    const s = Math.max(0, Math.floor((Date.now() - ts * 1000) / 1000));
+    if (s < 60) return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m} min ago`;
+    return `${Math.floor(m / 60)} h ago`;
   }
 
-  // Card radar
-  const cardEl = document.querySelector('[data-radar="card"]');
-  const cardRadar = cardEl ? createRadar(cardEl, {
-    mode: 'card',
-    minScale: 0.75,
-    maxScale: 4,
-    defaultScale: 1,
-    homeX: 215, homeY: 190,
-  }) : null;
+  function createRadarMap(mapEl, opts) {
+    if (!mapEl || !window.L) return null;
+    const cfg = Object.assign({ defaultZoom: 11, center: RADAR_HOME, lightningRadiusMi: 12 }, opts || {});
+    const map = L.map(mapEl, {
+      center: cfg.center,
+      zoom: cfg.defaultZoom,
+      minZoom: 4,
+      maxZoom: 13,
+      zoomControl: true,
+      attributionControl: true,
+    });
 
-  // Full-screen radar
+    // basemap layer (swappable on theme change)
+    let baseLayer = L.tileLayer(CARTO[currentTheme() === 'dark' ? 'dark' : 'light'], {
+      subdomains: 'abcd', maxZoom: 19, attribution: CARTO_ATTR,
+    }).addTo(map);
+
+    function applyTheme(theme) {
+      const target = theme === 'dark' ? 'dark' : 'light';
+      const nextUrl = CARTO[target];
+      if (baseLayer && baseLayer._url === nextUrl) return;
+      const newLayer = L.tileLayer(nextUrl, { subdomains: 'abcd', maxZoom: 19, attribution: CARTO_ATTR });
+      newLayer.addTo(map);
+      if (baseLayer) map.removeLayer(baseLayer);
+      baseLayer = newLayer;
+    }
+
+    // home marker
+    const homeIcon = L.divIcon({
+      className: 'radar-home-icon',
+      html: '<span class="radar-home-dot"></span>',
+      iconSize: [16, 16], iconAnchor: [8, 8],
+    });
+    L.marker(cfg.center, { icon: homeIcon, interactive: false }).addTo(map);
+
+    // lightning radius ring (in meters; 1 mi = 1609.34 m)
+    let ringLayer = L.circle(cfg.center, {
+      radius: cfg.lightningRadiusMi * 1609.34,
+      color: '#f5b942', weight: 2, opacity: 0.85,
+      fillColor: '#f5b942', fillOpacity: 0.08,
+      interactive: false,
+    }).addTo(map);
+
+    function setLightningRadius(mi) {
+      if (!ringLayer) return;
+      ringLayer.setRadius(mi * 1609.34);
+    }
+
+    // rainviewer overlay
+    let rainLayer = null;
+    let rainTimestamp = null;
+    async function loadRain() {
+      try {
+        const r = await fetch(RAINVIEWER_API, { cache: 'no-store' });
+        const j = await r.json();
+        const radar = j.radar && j.radar.past && j.radar.past.length ? j.radar.past[j.radar.past.length - 1] : null;
+        if (!radar) throw new Error('no radar frame');
+        // RainViewer: /size/{z}/{x}/{y}/{color}/{options}.png
+        // size 256, color 2 (universal blue), options 1_1 (smooth + snow)
+        const url = `${j.host}${radar.path}/256/{z}/{x}/{y}/2/1_1.png`;
+        // RainViewer's public free tier caps at z7 — above that it serves a 1.4 KB
+        // "Zoom Level Not Supported" placeholder. Cap maxNativeZoom so Leaflet upscales
+        // z7 tiles instead of requesting unsupported zooms.
+        const next = L.tileLayer(url, {
+          opacity: 0.65,
+          attribution: 'RainViewer',
+          maxNativeZoom: 7,
+          maxZoom: 13,
+          tileSize: 256,
+        });
+        next.addTo(map);
+        if (rainLayer) map.removeLayer(rainLayer);
+        rainLayer = next;
+        rainTimestamp = radar.time;
+        return radar.time;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function reset() {
+      map.setView(cfg.center, cfg.defaultZoom, { animate: true });
+    }
+
+    // resize hook: Leaflet must recompute size after parent unhides
+    function invalidate() { setTimeout(() => map.invalidateSize(), 50); }
+
+    return { map, applyTheme, setLightningRadius, loadRain, reset, invalidate, getTimestamp: () => rainTimestamp };
+  }
+
+  // Lazy initialize card-radar when weather tab is first shown
+  let cardRadar = null;
+  function ensureCardRadar() {
+    if (cardRadar) { cardRadar.invalidate(); return cardRadar; }
+    const el = document.getElementById('radar-map');
+    if (!el || !window.L) return null;
+    cardRadar = createRadarMap(el, { defaultZoom: 11 });
+    refreshRadarTimestamp();
+    cardRadar.loadRain().then(refreshRadarTimestamp);
+    // re-fetch rainviewer every 5 minutes
+    setInterval(() => cardRadar && cardRadar.loadRain().then(refreshRadarTimestamp), 5 * 60 * 1000);
+    return cardRadar;
+  }
+
+  function refreshRadarTimestamp() {
+    const ts = cardRadar && cardRadar.getTimestamp();
+    const pill = document.querySelector('[data-radar-ts]');
+    const ageEl = document.querySelector('[data-radar-age]');
+    const errEl = document.querySelector('[data-radar-err]');
+    if (!pill || !ageEl) return;
+    if (!ts) {
+      pill.hidden = true;
+      if (errEl) errEl.hidden = false;
+      return;
+    }
+    if (errEl) errEl.hidden = true;
+    pill.hidden = false;
+    ageEl.textContent = fmtAge(ts);
+  }
+  setInterval(refreshRadarTimestamp, 30 * 1000);
+
+  // FS radar — same engine, different container
+  let fsRadar = null;
+  function ensureFsRadar() {
+    if (fsRadar) { fsRadar.invalidate(); return fsRadar; }
+    const el = document.getElementById('radar-map-fs');
+    if (!el || !window.L) return null;
+    fsRadar = createRadarMap(el, { defaultZoom: 7 }); // wider state-level view
+    fsRadar.loadRain();
+    return fsRadar;
+  }
+
+  // Hook: weather tab activation -> init card radar
+  document.querySelectorAll('[data-nav="weather"]').forEach((btn) => {
+    btn.addEventListener('click', () => setTimeout(ensureCardRadar, 50));
+  });
+  // If we ever land on weather tab directly, init immediately
+  if (document.querySelector('[data-view="weather"]') && !document.querySelector('[data-view="weather"]').hidden) {
+    setTimeout(ensureCardRadar, 50);
+  }
+
+  // Reset buttons (card + fs)
+  document.querySelectorAll('[data-radar-action="reset"]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const fs = btn.dataset.radarTarget === 'fs';
+      const r = fs ? ensureFsRadar() : ensureCardRadar();
+      if (r) r.reset();
+    });
+  });
+
+  // Expand to full-screen
   const fsEl = document.querySelector('[data-fsr]');
-  const fsBody = fsEl ? fsEl.querySelector('[data-radar="fs"]') : null;
-  const fsRadar = fsBody ? createRadar(fsBody, {
-    mode: 'fs',
-    minScale: 0.05,
-    maxScale: 4,
-    defaultScale: 0.7,
-    homeX: 1115, homeY: 712,
-  }) : null;
-
-  // ---- Expand button: open full-screen modal ----
   document.querySelectorAll('[data-radar-action="expand"]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!fsEl) return;
       fsEl.hidden = false;
       fsEl.setAttribute('aria-hidden', 'false');
-      // Open at the FS default (continental view) so user can see whole state + offshore
-      if (fsRadar) fsRadar.reset(false);
+      setTimeout(() => { const r = ensureFsRadar(); if (r) r.reset(); }, 80);
     });
   });
 
-  // ---- Close button + backdrop click ----
+  // Close full-screen
   function closeFsr() {
     if (!fsEl) return;
     fsEl.hidden = true;
     fsEl.setAttribute('aria-hidden', 'true');
   }
-  document.querySelectorAll('[data-fsr-close]').forEach((btn) => {
-    btn.addEventListener('click', closeFsr);
-  });
+  document.querySelectorAll('[data-fsr-close]').forEach((btn) => btn.addEventListener('click', closeFsr));
   if (fsEl) {
-    fsEl.addEventListener('click', (e) => {
-      if (e.target === fsEl) closeFsr();
-    });
+    fsEl.addEventListener('click', (e) => { if (e.target === fsEl) closeFsr(); });
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && fsEl && !fsEl.hidden) closeFsr();
   });
+
+  // Theme change -> swap basemaps
+  const themeObserver = new MutationObserver(() => {
+    const t = currentTheme();
+    if (cardRadar) cardRadar.applyTheme(t);
+    if (fsRadar) fsRadar.applyTheme(t);
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // Lightning radius stepper -> resize ring
+  const radiusStepper = document.querySelector('[data-stepper="lightning-radius"]');
+  if (radiusStepper) {
+    const observer = new MutationObserver(() => {
+      const v = parseInt(radiusStepper.dataset.value || '12', 10);
+      if (cardRadar) cardRadar.setLightningRadius(v);
+      if (fsRadar) fsRadar.setLightningRadius(v);
+    });
+    observer.observe(radiusStepper, { attributes: true, attributeFilter: ['data-value'] });
+    // also catch click-driven changes (stepper rewrites .stepper__value text)
+    radiusStepper.addEventListener('click', () => {
+      setTimeout(() => {
+        const valEl = radiusStepper.querySelector('.stepper__value');
+        if (!valEl) return;
+        const mi = parseInt(valEl.textContent || '12', 10);
+        if (!isNaN(mi)) {
+          if (cardRadar) cardRadar.setLightningRadius(mi);
+          if (fsRadar) fsRadar.setLightningRadius(mi);
+        }
+      }, 10);
+    });
+  }
 
   // ---- Lightning window toggle (10/30/60 min) ----
   const windowLabel = document.querySelector('[data-fsr-lightning-label]');
