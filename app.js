@@ -2,30 +2,36 @@
 // why: keeps every state-changing action behind a PIN, per standing order #9
 
 (() => {
-  // ---- Clock ----
+  // ---- Clock (drives topbar clock, sleep clock, camera timestamp) ----
   const tEl = document.getElementById('clockTime');
   const mEl = document.getElementById('clockMeridiem');
   const dEl = document.getElementById('clockDate');
+  const stEl = document.getElementById('sleepClockTime');
+  const smEl = document.getElementById('sleepClockMer');
+  const sdEl = document.getElementById('sleepClockDate');
   function tick() {
     const now = new Date();
     let h = now.getHours();
     const m = now.getMinutes().toString().padStart(2, '0');
     const mer = h >= 12 ? 'PM' : 'AM';
     h = h % 12 || 12;
-    if (tEl) tEl.textContent = `${h}:${m}`;
+    const time = `${h}:${m}`;
+    const dateStr = now.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    }).replace(',', ' ·');
+    if (tEl) tEl.textContent = time;
     if (mEl) mEl.textContent = mer;
-    if (dEl) {
-      dEl.textContent = now.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      }).replace(',', ' ·');
-    }
+    if (dEl) dEl.textContent = dateStr;
+    if (stEl) stEl.textContent = time;
+    if (smEl) smEl.textContent = mer;
+    if (sdEl) sdEl.textContent = dateStr;
     const camTime = document.getElementById('camTime');
-    if (camTime) camTime.textContent = `${h}:${m} ${mer}`;
+    if (camTime) camTime.textContent = `${time} ${mer}`;
   }
   tick();
-  setInterval(tick, 15000);
+  setInterval(tick, 1000);
 
   // ---- View routing ----
   const views = document.querySelectorAll('[data-view]');
@@ -43,13 +49,22 @@
 
   // ---- Sleep mode toggle (DASH-6) ----
   // Tapping the bed icon on any topbar (or the 'Sleep now' button in Settings)
-  // routes to the sleep view. The 'Wake' bar inside the sleep view routes back to home.
+  // routes to the sleep view. While the sleep view is shown, tapping ANYWHERE
+  // on the sleep view (not just the Wake button) returns to home.
   document.body.addEventListener('click', (e) => {
+    const sleepView = document.querySelector('[data-view="sleep"]');
+    const sleepShown = sleepView && !sleepView.hidden;
+    // 1) Any click inside the sleep view wakes the dashboard
+    if (sleepShown && sleepView.contains(e.target)) {
+      e.preventDefault();
+      go('home');
+      return;
+    }
+    // 2) Otherwise, sleep-toggle buttons enter sleep mode
     const btn = e.target.closest('[data-sleep-toggle]');
     if (!btn) return;
     e.preventDefault();
-    const currentlySleeping = !document.querySelector('[data-view="sleep"]').hidden;
-    go(currentlySleeping ? 'home' : 'sleep');
+    go(sleepShown ? 'home' : 'sleep');
   });
 
   // ---- Theme toggle ----
@@ -190,27 +205,129 @@
     });
   });
 
-  // ---- Media tab: source tabs ----
+  // ---- Media tab: source tabs (Sonos vs TV) ----
+  function setMediaSource(src) {
+    document.querySelectorAll('[data-src]').forEach((t) => {
+      const active = t.dataset.src === src;
+      t.classList.toggle('src-tab--active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    const sonosPanel = document.querySelector('[data-player="sonos"]');
+    const tvPanel = document.querySelector('[data-tv-panel]');
+    const queueCard = document.querySelector('.media-side .card:first-child');
+    if (src === 'tv') {
+      if (sonosPanel) sonosPanel.hidden = true;
+      if (tvPanel) tvPanel.hidden = false;
+      // gate Up next on Sonos availability — TV has no queue
+      if (queueCard) queueCard.classList.add('card--muted');
+    } else {
+      if (sonosPanel) sonosPanel.hidden = false;
+      if (tvPanel) tvPanel.hidden = true;
+      if (queueCard) queueCard.classList.remove('card--muted');
+    }
+  }
   document.querySelectorAll('[data-src]').forEach((tab) => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('[data-src]').forEach((t) => {
-        const active = t === tab;
-        t.classList.toggle('src-tab--active', active);
-        t.setAttribute('aria-selected', active ? 'true' : 'false');
-      });
-      showToast(`Switched to ${tab.dataset.src === 'sonos' ? 'Sonos' : 'TV'} controls`);
+      setMediaSource(tab.dataset.src);
+      showToast(`Switched to ${tab.dataset.src === 'sonos' ? 'Sonos' : 'Living Room TV'}`);
     });
   });
+  setMediaSource('sonos');
 
   // ---- Media tab: extra actions ----
-  document.querySelectorAll('[data-action="open-sonos"]').forEach((btn) => {
-    btn.addEventListener('click', () => showToast('Launching Sonos app…'));
-  });
-  document.querySelectorAll('[data-action="browse-music"]').forEach((btn) => {
-    btn.addEventListener('click', () => showToast('Opening music library'));
+  const mediaApps = {
+    'open-sonos': 'Launching Sonos app…',
+    'open-spotify': 'Launching Spotify…',
+    'open-siriusxm': 'Launching SiriusXM…',
+    'open-amazon-music': 'Launching Amazon Music…',
+  };
+  Object.entries(mediaApps).forEach(([action, msg]) => {
+    document.querySelectorAll(`[data-action="${action}"]`).forEach((btn) => {
+      btn.addEventListener('click', () => showToast(msg));
+    });
   });
   document.querySelectorAll('[data-action="test-chime"]').forEach((btn) => {
     btn.addEventListener('click', () => showToast('Playing test chime on Sonos + tablet'));
+  });
+
+  // ---- LG C6H TV controls ----
+  let tvOn = true;
+  let tvVol = 24;
+  let tvMuted = false;
+  let tvInput = 'HDMI 1 · Apple TV';
+  function syncTv() {
+    const power = document.querySelector('[data-tv-power-state]');
+    const volNum = document.querySelector('[data-tv-vol-num]');
+    const volFill = document.querySelector('[data-tv-vol-fill]');
+    const volKnob = document.querySelector('[data-tv-vol-knob]');
+    const muteBtn = document.querySelector('[data-action="tv-mute"]');
+    const inputLabel = document.querySelector('[data-tv-input-label]');
+    if (power) power.textContent = tvOn ? 'Power off' : 'Power on';
+    if (volNum) volNum.textContent = tvMuted ? 'Muted' : String(tvVol);
+    if (volFill) volFill.style.width = (tvMuted ? 0 : tvVol) + '%';
+    if (volKnob) volKnob.style.left = (tvMuted ? 0 : tvVol) + '%';
+    if (muteBtn) muteBtn.classList.toggle('btn--on', tvMuted);
+    if (inputLabel) inputLabel.textContent = tvInput;
+  }
+  document.querySelectorAll('[data-action="tv-power"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tvOn = !tvOn;
+      syncTv();
+      showToast(`TV ${tvOn ? 'on' : 'off'}`);
+    });
+  });
+  document.querySelectorAll('[data-action="tv-vol-up"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tvMuted = false;
+      tvVol = Math.min(100, tvVol + 2);
+      syncTv();
+    });
+  });
+  document.querySelectorAll('[data-action="tv-vol-down"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tvMuted = false;
+      tvVol = Math.max(0, tvVol - 2);
+      syncTv();
+    });
+  });
+  document.querySelectorAll('[data-action="tv-mute"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tvMuted = !tvMuted;
+      syncTv();
+      showToast(tvMuted ? 'TV muted' : 'TV unmuted');
+    });
+  });
+  document.querySelectorAll('[data-tv-input]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const label = btn.dataset.tvInput;
+      tvInput = label;
+      document.querySelectorAll('[data-tv-input]').forEach((b) =>
+        b.classList.toggle('chip--on', b === btn)
+      );
+      syncTv();
+      showToast(`Switched to ${label}`);
+    });
+  });
+  syncTv();
+
+  // ---- Settings: numeric steppers (lightning radius, re-alert cooldown) ----
+  document.querySelectorAll('[data-stepper]').forEach((root) => {
+    const valueEl = root.querySelector('[data-stepper-value]');
+    const minus = root.querySelector('[data-stepper-minus]');
+    const plus = root.querySelector('[data-stepper-plus]');
+    const min = parseInt(root.dataset.min || '0', 10);
+    const max = parseInt(root.dataset.max || '100', 10);
+    const step = parseInt(root.dataset.step || '1', 10);
+    const unit = root.dataset.unit || '';
+    let v = parseInt(root.dataset.value || '0', 10);
+    function paint() {
+      if (valueEl) valueEl.textContent = `${v}${unit ? ' ' + unit : ''}`;
+      if (minus) minus.disabled = v <= min;
+      if (plus) plus.disabled = v >= max;
+    }
+    if (minus) minus.addEventListener('click', () => { v = Math.max(min, v - step); paint(); });
+    if (plus) plus.addEventListener('click', () => { v = Math.min(max, v + step); paint(); });
+    paint();
   });
 
   // ---- Radar pan/zoom engine ----
