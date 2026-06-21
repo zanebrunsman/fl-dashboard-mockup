@@ -1,291 +1,55 @@
-# why: Embedded animated Leaflet radar. Inlines all Leaflet CSS (no external <link>
-# to avoid CSP/shadow-DOM load failures). No overflow:hidden on the wrap (was clipping
-# controls). Overlays added via Leaflet Control API so they live inside the map's own
-# stacking context. 6-frame 30-min loop, pause-on-hover, CARTO basemap, home pin,
-# live range rings, multi-strike lightning.
+# why: Iframe-based radar to bypass card-mod / shadow-DOM / overflow:hidden / CSP
+# issues that prevented Leaflet controls (zoom, pills, legend, progress bar) from
+# rendering inline. The iframe loads a self-contained page from /local/radar.html
+# which has full control over the document. A small bridge script syncs lightning
+# state + range-ring settings via postMessage every 5s. Embedded mode uses ?embed=1
+# which renders the expand button + tighter zoom + 30-min loop.
 type: custom:html-template-card
 ignore_line_breaks: true
 content: |
-  <div id="radar-wrap" style="position:relative;width:100%;height:480px;border-radius:14px;font-family:system-ui,sans-serif;background:#0b1929;">
-    <style>
-      /* ===== Inlined Leaflet 1.9.4 essentials (control positioning + tiles) ===== */
-      #radar-map { position:relative; outline:none; }
-      #radar-map .leaflet-pane,
-      #radar-map .leaflet-tile,
-      #radar-map .leaflet-marker-icon,
-      #radar-map .leaflet-marker-shadow,
-      #radar-map .leaflet-tile-container,
-      #radar-map .leaflet-pane > svg,
-      #radar-map .leaflet-pane > canvas,
-      #radar-map .leaflet-zoom-box,
-      #radar-map .leaflet-image-layer,
-      #radar-map .leaflet-layer { position:absolute; left:0; top:0; }
-      #radar-map .leaflet-container { overflow:hidden; }
-      #radar-map .leaflet-tile,
-      #radar-map .leaflet-marker-icon,
-      #radar-map .leaflet-marker-shadow { -webkit-user-select:none; user-select:none; -webkit-user-drag:none; }
-      #radar-map .leaflet-tile { filter:inherit; visibility:hidden; }
-      #radar-map .leaflet-tile-loaded { visibility:inherit; }
-      #radar-map .leaflet-zoom-animated { transform-origin:0 0; }
-      #radar-map .leaflet-pane { z-index:400; }
-      #radar-map .leaflet-tile-pane { z-index:200; }
-      #radar-map .leaflet-overlay-pane { z-index:400; }
-      #radar-map .leaflet-shadow-pane { z-index:500; }
-      #radar-map .leaflet-marker-pane { z-index:600; }
-      #radar-map .leaflet-tooltip-pane { z-index:650; }
-      #radar-map .leaflet-popup-pane { z-index:700; }
-      #radar-map .leaflet-map-pane canvas { z-index:100; }
-      #radar-map .leaflet-map-pane svg { z-index:200; }
-      #radar-map .leaflet-control-container .leaflet-control { position:relative; z-index:800; pointer-events:auto; }
-      #radar-map .leaflet-top, #radar-map .leaflet-bottom { position:absolute; z-index:1000; pointer-events:none; }
-      #radar-map .leaflet-top { top:0; }
-      #radar-map .leaflet-right { right:0; }
-      #radar-map .leaflet-bottom { bottom:0; }
-      #radar-map .leaflet-left { left:0; }
-      #radar-map .leaflet-control { float:left; clear:both; margin:8px; }
-      #radar-map .leaflet-right .leaflet-control { float:right; }
-      #radar-map .leaflet-control-zoom { box-shadow:0 1px 5px rgba(0,0,0,0.4); border-radius:4px; background:#fff; }
-      #radar-map .leaflet-control-zoom a { display:block; width:30px; height:30px; line-height:30px; text-align:center; color:#000; text-decoration:none; font:bold 18px/30px Tahoma,sans-serif; }
-      #radar-map .leaflet-control-zoom a:first-child { border-bottom:1px solid #ccc; border-radius:4px 4px 0 0; }
-      #radar-map .leaflet-control-zoom a:last-child { border-radius:0 0 4px 4px; }
-      #radar-map .leaflet-control-attribution { background:rgba(255,255,255,0.7); padding:0 5px; font-size:11px; color:#333; }
-      /* ===== Custom radar overlay styles ===== */
-      .rv-pill { background:rgba(0,0,0,0.7); color:#fff; font-size:11px; padding:5px 9px; border-radius:999px; line-height:1; white-space:nowrap; }
-      .rv-pill--lightning { background:rgba(255,216,77,0.92); color:#1c2a35; font-weight:600; }
-      .rv-pill--err { background:#b42318; display:none; }
-      .rv-btn { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:none; border-radius:8px; background:rgba(0,0,0,0.7); color:#fff; cursor:pointer; text-decoration:none; }
-      .rv-btn:hover { background:rgba(0,0,0,0.9); }
-      .rv-cluster { display:flex; align-items:center; gap:6px; }
-      .rv-legend { display:flex; flex-wrap:wrap; gap:8px; font-size:11px; color:#fff; background:rgba(0,0,0,0.7); padding:6px 10px; border-radius:8px; }
-      .rv-legend span { display:flex; align-items:center; gap:4px; }
-      .rv-legend i { width:10px; height:10px; display:inline-block; }
-      #rv-progress-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.18); pointer-events:none; border-radius:0 0 14px 14px; overflow:hidden; z-index:500; }
-      #rv-progress-bar { height:100%; width:0%; background:#ffd84d; transition:width 0.18s linear; }
-    </style>
-    <div id="radar-map" style="width:100%;height:100%;border-radius:14px;overflow:hidden;"></div>
-    <div id="rv-progress-track"><div id="rv-progress-bar"></div></div>
+  <div style="position:relative;width:100%;height:480px;border-radius:14px;overflow:hidden;background:#0b1929;">
+    <iframe id="radar-iframe" src="/local/radar.html?embed=1" style="border:0;width:100%;height:100%;display:block;" allow="geolocation"></iframe>
   </div>
   <script>
-    (function() {
-      if (window.__radarInit) { window.__radarRefresh && window.__radarRefresh(); return; }
-      var HOME = [29.9, -81.31];
-      var HOME_ZOOM = 9;
-      var FRAMES_BACK = 6;
-      var FRAME_MS = 220;
-      var radarFrameTs = null;
-      var lastStrikeTs = null;
-      var paused = false;
-
-      var loadLeaflet = function(cb) {
-        if (window.L) { cb(); return; }
-        var s = document.createElement('script');
-        s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-        s.onload = cb;
-        s.onerror = function(){ console.error('Leaflet JS failed to load'); };
-        document.head.appendChild(s);
-      };
-
-      var fmtAge = function(tsSec) {
-        if (!tsSec) return '--';
-        var diff = Math.max(0, Math.floor(Date.now()/1000 - tsSec));
-        if (diff < 60) return diff + 's ago';
-        if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-        return Math.floor(diff/3600) + 'h ago';
-      };
-
-      var initWhenReady = function() {
-        var mapEl = document.getElementById('radar-map');
-        if (!mapEl) { setTimeout(initWhenReady, 200); return; }
-        if (mapEl._leaflet_id) return;
-        window.__radarInit = true;
-        loadLeaflet(function() { initMap(mapEl); });
-      };
-
-      var initMap = function(mapEl) {
-        var getTheme = function() {
-          var bg = getComputedStyle(document.documentElement).getPropertyValue('--primary-background-color').trim();
-          var m = bg.match(/#([0-9a-f]{6})/i);
-          if (!m) return 'light';
+    (function(){
+      if (window.__radarBridge) return;
+      window.__radarBridge = true;
+      var pickIframe = function(){ return document.getElementById('radar-iframe'); };
+      var send = function(){
+        var ifr = pickIframe(); if (!ifr || !ifr.contentWindow) return;
+        var hass = document.querySelector('home-assistant') && document.querySelector('home-assistant').hass;
+        if (!hass) return;
+        var strikes = [];
+        Object.keys(hass.states).forEach(function(eid){
+          if (!eid.startsWith('geo_location.lightning_strike_')) return;
+          var s = hass.states[eid];
+          strikes.push({ lat: s.attributes.latitude, lon: s.attributes.longitude, t: s.attributes.publication_date });
+        });
+        var aud = hass.states['input_number.lightning_audible_radius_mi'];
+        var vis = hass.states['input_number.lightning_visual_radius_mi'];
+        var audEn = hass.states['input_boolean.lightning_audible_ring_enabled'];
+        var visEn = hass.states['input_boolean.lightning_visual_ring_enabled'];
+        var bg = getComputedStyle(document.documentElement).getPropertyValue('--primary-background-color').trim();
+        var m = bg.match(/#([0-9a-f]{6})/i);
+        var theme = 'light';
+        if (m) {
           var r = parseInt(m[1].substr(0,2),16), g = parseInt(m[1].substr(2,2),16), b = parseInt(m[1].substr(4,2),16);
-          return (r*0.299+g*0.587+b*0.114) < 128 ? 'dark' : 'light';
-        };
-        var basemapUrls = {
-          light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-          dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        };
-
-        var map = L.map(mapEl, { zoomControl: true, attributionControl: false }).setView(HOME, HOME_ZOOM);
-        var baseLayer = L.tileLayer(basemapUrls[getTheme()], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
-        L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OSM © CARTO | RainViewer').addTo(map);
-
-        var ageRadarSpan, ageLightningSpan, errPill;
-        var TopBar = L.Control.extend({
-          options: { position: 'topright' },
-          onAdd: function() {
-            var d = L.DomUtil.create('div', 'rv-cluster');
-            L.DomEvent.disableClickPropagation(d);
-            ageRadarSpan = L.DomUtil.create('span', 'rv-pill', d);
-            ageRadarSpan.innerHTML = 'Radar · <span id="rv-radar-age">--</span>';
-            ageLightningSpan = L.DomUtil.create('span', 'rv-pill rv-pill--lightning', d);
-            ageLightningSpan.innerHTML = 'Lightning · <span id="rv-lightning-age">--</span>';
-            errPill = L.DomUtil.create('span', 'rv-pill rv-pill--err', d);
-            errPill.textContent = 'Radar offline';
-            var resetBtn = L.DomUtil.create('button', 'rv-btn', d);
-            resetBtn.type = 'button';
-            resetBtn.title = 'Reset view';
-            resetBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>';
-            L.DomEvent.on(resetBtn, 'click', function(e){ L.DomEvent.stop(e); map.setView(HOME, HOME_ZOOM); });
-            var expandBtn = L.DomUtil.create('a', 'rv-btn', d);
-            expandBtn.href = '/lovelace-fl/radar-fs';
-            expandBtn.title = 'Full screen';
-            expandBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
-            return d;
-          }
-        });
-        new TopBar().addTo(map);
-
-        var Legend = L.Control.extend({
-          options: { position: 'bottomleft' },
-          onAdd: function() {
-            var d = L.DomUtil.create('div', 'rv-legend');
-            d.innerHTML =
-              '<span><i style="background:#22c55e;border-radius:2px;"></i>Light</span>' +
-              '<span><i style="background:#f59e0b;border-radius:2px;"></i>Mod</span>' +
-              '<span><i style="background:#ef4444;border-radius:2px;"></i>Heavy</span>' +
-              '<span><i style="background:#ffd84d;border-radius:50%;"></i>⚡ &lt;10m</span>';
-            return d;
-          }
-        });
-        new Legend().addTo(map);
-
-        var updateAges = function() {
-          var ra = document.getElementById('rv-radar-age');
-          var la = document.getElementById('rv-lightning-age');
-          if (ra) ra.textContent = fmtAge(radarFrameTs);
-          if (la) la.textContent = lastStrikeTs ? fmtAge(lastStrikeTs) : 'none';
-        };
-
-        var frames = [];
-        var currentIdx = 0;
-        var animTimer = null;
-
-        var loadFrames = function() {
-          fetch('https://api.rainviewer.com/public/weather-maps.json').then(function(r){return r.json();}).then(function(j){
-            var past = (j.radar && j.radar.past) || [];
-            if (!past.length) { if (errPill) errPill.style.display = 'inline-block'; return; }
-            if (errPill) errPill.style.display = 'none';
-            var slice = past.slice(-FRAMES_BACK);
-            frames.forEach(function(f){ if (f.layer && map.hasLayer(f.layer)) map.removeLayer(f.layer); });
-            frames = [];
-            slice.forEach(function(f) {
-              var url = j.host + f.path + '/512/{z}/{x}/{y}/2/1_1.png';
-              var layer = L.tileLayer(url, { opacity: 0, maxZoom: 18, zIndex: 200 }).addTo(map);
-              frames.push({ ts: f.time, layer: layer });
-            });
-            currentIdx = frames.length - 1;
-            showFrame(currentIdx);
-            if (!animTimer) startAnimation();
-          }).catch(function(){ if (errPill) errPill.style.display = 'inline-block'; });
-        };
-
-        var showFrame = function(idx) {
-          if (!frames.length) return;
-          frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.75 : 0); });
-          radarFrameTs = frames[idx].ts;
-          updateAges();
-          var pb = document.getElementById('rv-progress-bar');
-          if (pb) pb.style.width = ((idx + 1) / frames.length * 100) + '%';
-        };
-
-        var startAnimation = function() {
-          animTimer = setInterval(function() {
-            if (paused || !frames.length) return;
-            currentIdx = (currentIdx + 1) % frames.length;
-            showFrame(currentIdx);
-          }, FRAME_MS);
-        };
-
-        var wrap = document.getElementById('radar-wrap');
-        if (wrap) {
-          wrap.addEventListener('mouseenter', function(){ paused = true; });
-          wrap.addEventListener('mouseleave', function(){ paused = false; });
+          theme = (r*0.299+g*0.587+b*0.114) < 128 ? 'dark' : 'light';
         }
-
-        loadFrames();
-        setInterval(loadFrames, 5 * 60 * 1000);
-
-        var homeIcon = L.divIcon({ className: 'home-pin', html: '<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 0 2px #ef4444;"></div>', iconSize: [14,14] });
-        L.marker(HOME, { icon: homeIcon, zIndexOffset: 1000 }).addTo(map);
-
-        var miToM = function(mi) { return mi * 1609.34; };
-        var audibleRing = L.circle(HOME, { radius: miToM(12), color: '#ffd84d', weight: 2, fill: false, dashArray: '6,6' });
-        var visualRing = L.circle(HOME, { radius: miToM(30), color: '#fbbf24', weight: 1.5, fill: false, dashArray: '4,8', opacity: 0.7 });
-        audibleRing.addTo(map); visualRing.addTo(map);
-
-        var strikeLayer = L.layerGroup().addTo(map);
-        var renderStrikes = function() {
-          strikeLayer.clearLayers();
-          var hass = document.querySelector('home-assistant') && document.querySelector('home-assistant').hass;
-          if (!hass) return;
-          var now = Date.now();
-          var newest = 0;
-          Object.keys(hass.states).forEach(function(eid){
-            if (!eid.startsWith('geo_location.lightning_strike_')) return;
-            var s = hass.states[eid];
-            var lat = s.attributes.latitude, lon = s.attributes.longitude;
-            if (lat == null || lon == null) return;
-            var pubMs = s.attributes.publication_date ? new Date(s.attributes.publication_date).getTime() : now;
-            var ageMin = (now - pubMs) / 60000;
-            if (ageMin > 60) return;
-            if (pubMs > newest) newest = pubMs;
-            var opacity = Math.max(0.15, 1 - ageMin / 60);
-            var size = ageMin < 2 ? 9 : (ageMin < 10 ? 6 : 4);
-            L.circleMarker([lat, lon], { radius: size, color:'#fff', weight: 1, fillColor:'#ffd84d', fillOpacity: opacity }).addTo(strikeLayer);
-          });
-          lastStrikeTs = newest ? Math.floor(newest/1000) : null;
-          updateAges();
-        };
-        renderStrikes();
-        setInterval(renderStrikes, 20000);
-
-        var applyRangeRings = function() {
-          var hass = document.querySelector('home-assistant') && document.querySelector('home-assistant').hass;
-          if (!hass) return;
-          var aud = hass.states['input_number.lightning_audible_radius_mi'];
-          var vis = hass.states['input_number.lightning_visual_radius_mi'];
-          var audEn = hass.states['input_boolean.lightning_audible_ring_enabled'];
-          var visEn = hass.states['input_boolean.lightning_visual_ring_enabled'];
-          if (aud) audibleRing.setRadius(miToM(parseFloat(aud.state)));
-          if (vis) visualRing.setRadius(miToM(parseFloat(vis.state)));
-          var audOn = !audEn || audEn.state === 'on';
-          var visOn = !visEn || visEn.state === 'on';
-          if (audOn && !map.hasLayer(audibleRing)) audibleRing.addTo(map);
-          if (!audOn && map.hasLayer(audibleRing)) map.removeLayer(audibleRing);
-          if (visOn && !map.hasLayer(visualRing)) visualRing.addTo(map);
-          if (!visOn && map.hasLayer(visualRing)) map.removeLayer(visualRing);
-        };
-        setInterval(applyRangeRings, 5000);
-        applyRangeRings();
-        setInterval(updateAges, 30000);
-
-        var applyTheme = function() {
-          var t = getTheme();
-          if (baseLayer) map.removeLayer(baseLayer);
-          baseLayer = L.tileLayer(basemapUrls[t], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
-          baseLayer.bringToBack();
-        };
-        new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true });
-
-        setTimeout(function(){ map.invalidateSize(); }, 200);
-
-        window.__radarRefresh = function() {
-          setTimeout(function(){ map.invalidateSize(); }, 100);
-          renderStrikes();
-          applyRangeRings();
-          updateAges();
-        };
+        ifr.contentWindow.postMessage({
+          type: 'radar-update',
+          strikes: strikes,
+          aud: aud ? parseFloat(aud.state) : undefined,
+          vis: vis ? parseFloat(vis.state) : undefined,
+          audOn: audEn ? audEn.state === 'on' : undefined,
+          visOn: visEn ? visEn.state === 'on' : undefined,
+          theme: theme
+        }, '*');
       };
-
-      initWhenReady();
+      window.addEventListener('message', function(ev){
+        if (ev.data && ev.data.type === 'radar-ready') send();
+      });
+      setInterval(send, 5000);
+      setTimeout(send, 1500);
     })();
   </script>

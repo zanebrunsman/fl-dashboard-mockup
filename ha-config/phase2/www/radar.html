@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Radar</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; font-family:system-ui,sans-serif; background:#0b1929; }
+  #map { width:100vw; height:100vh; }
+  .rv-pill { background:rgba(0,0,0,0.7); color:#fff; font-size:11px; padding:5px 9px; border-radius:999px; line-height:1; white-space:nowrap; }
+  .rv-pill--lightning { background:rgba(255,216,77,0.92); color:#1c2a35; font-weight:600; }
+  .rv-pill--err { background:#b42318; display:none; }
+  .rv-btn { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:none; border-radius:8px; background:rgba(0,0,0,0.7); color:#fff; cursor:pointer; text-decoration:none; }
+  .rv-btn:hover { background:rgba(0,0,0,0.9); }
+  .rv-cluster { display:flex; align-items:center; gap:6px; }
+  .rv-legend { display:flex; flex-wrap:wrap; gap:8px; font-size:11px; color:#fff; background:rgba(0,0,0,0.7); padding:6px 10px; border-radius:8px; }
+  .rv-legend span { display:flex; align-items:center; gap:4px; }
+  .rv-legend i { width:10px; height:10px; display:inline-block; }
+  #rv-progress-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.18); pointer-events:none; z-index:1500; }
+  #rv-progress-bar { height:100%; width:0%; background:#ffd84d; transition:width 0.18s linear; }
+  .home-pin div { box-shadow:0 0 0 2px #ef4444; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="rv-progress-track"><div id="rv-progress-bar"></div></div>
+<script>
+(function(){
+  // ===== Read query params: theme, embed flag =====
+  var qp = new URLSearchParams(window.location.search);
+  var embed = qp.get('embed') === '1';
+  var theme = qp.get('theme') || 'light';
+  var miAud = parseFloat(qp.get('aud') || '12');
+  var miVis = parseFloat(qp.get('vis') || '30');
+  var audOn = qp.get('audOn') !== '0';
+  var visOn = qp.get('visOn') !== '0';
+  var HOME = [29.9, -81.31];
+  var HOME_ZOOM = embed ? 9 : 8;
+  var FRAMES_BACK = embed ? 6 : 24;
+  var FRAME_MS = embed ? 220 : 280;
+  var radarFrameTs = null, lastStrikeTs = null, paused = false, speed = 1;
+
+  var basemapUrls = {
+    light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+  };
+
+  var fmtAge = function(tsSec) {
+    if (!tsSec) return '--';
+    var diff = Math.max(0, Math.floor(Date.now()/1000 - tsSec));
+    if (diff < 60) return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    return Math.floor(diff/3600) + 'h ago';
+  };
+
+  var map = L.map('map', { zoomControl: true, attributionControl: false }).setView(HOME, HOME_ZOOM);
+  var baseLayer = L.tileLayer(basemapUrls[theme], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
+  L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OSM © CARTO | RainViewer').addTo(map);
+
+  var ageRadarSpan, ageLightningSpan, errPill;
+  var TopBar = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd: function() {
+      var d = L.DomUtil.create('div', 'rv-cluster');
+      L.DomEvent.disableClickPropagation(d);
+      ageRadarSpan = L.DomUtil.create('span', 'rv-pill', d);
+      ageRadarSpan.innerHTML = 'Radar · <span id="rv-radar-age">--</span>';
+      ageLightningSpan = L.DomUtil.create('span', 'rv-pill rv-pill--lightning', d);
+      ageLightningSpan.innerHTML = 'Lightning · <span id="rv-lightning-age">--</span>';
+      errPill = L.DomUtil.create('span', 'rv-pill rv-pill--err', d);
+      errPill.textContent = 'Radar offline';
+      var resetBtn = L.DomUtil.create('button', 'rv-btn', d);
+      resetBtn.type = 'button'; resetBtn.title = 'Reset view';
+      resetBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>';
+      L.DomEvent.on(resetBtn, 'click', function(e){ L.DomEvent.stop(e); map.setView(HOME, HOME_ZOOM); });
+      if (embed) {
+        var expandBtn = L.DomUtil.create('a', 'rv-btn', d);
+        expandBtn.href = '../lovelace-fl/radar-fs';
+        expandBtn.target = '_top';
+        expandBtn.title = 'Full screen';
+        expandBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+      }
+      return d;
+    }
+  });
+  new TopBar().addTo(map);
+
+  var Legend = L.Control.extend({
+    options: { position: 'bottomleft' },
+    onAdd: function() {
+      var d = L.DomUtil.create('div', 'rv-legend');
+      d.innerHTML =
+        '<span><i style="background:#22c55e;border-radius:2px;"></i>Light</span>' +
+        '<span><i style="background:#f59e0b;border-radius:2px;"></i>Mod</span>' +
+        '<span><i style="background:#ef4444;border-radius:2px;"></i>Heavy</span>' +
+        '<span><i style="background:#ffd84d;border-radius:50%;"></i>⚡&lt;10m</span>';
+      return d;
+    }
+  });
+  new Legend().addTo(map);
+
+  var updateAges = function() {
+    var ra = document.getElementById('rv-radar-age');
+    var la = document.getElementById('rv-lightning-age');
+    if (ra) ra.textContent = fmtAge(radarFrameTs);
+    if (la) la.textContent = lastStrikeTs ? fmtAge(lastStrikeTs) : 'none';
+  };
+
+  var frames = [], currentIdx = 0, animTimer = null;
+
+  var loadFrames = function() {
+    fetch('https://api.rainviewer.com/public/weather-maps.json').then(function(r){return r.json();}).then(function(j){
+      var past = (j.radar && j.radar.past) || [];
+      if (!past.length) { if (errPill) errPill.style.display = 'inline-block'; return; }
+      if (errPill) errPill.style.display = 'none';
+      var slice = past.slice(-FRAMES_BACK);
+      frames.forEach(function(f){ if (f.layer && map.hasLayer(f.layer)) map.removeLayer(f.layer); });
+      frames = [];
+      slice.forEach(function(f) {
+        var url = j.host + f.path + '/512/{z}/{x}/{y}/2/1_1.png';
+        var layer = L.tileLayer(url, { opacity: 0, maxZoom: 18, zIndex: 200 }).addTo(map);
+        frames.push({ ts: f.time, layer: layer });
+      });
+      currentIdx = frames.length - 1;
+      showFrame(currentIdx);
+      if (!animTimer) startAnimation();
+    }).catch(function(){ if (errPill) errPill.style.display = 'inline-block'; });
+  };
+
+  var showFrame = function(idx) {
+    if (!frames.length) return;
+    frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.75 : 0); });
+    radarFrameTs = frames[idx].ts;
+    updateAges();
+    var pb = document.getElementById('rv-progress-bar');
+    if (pb) pb.style.width = ((idx + 1) / frames.length * 100) + '%';
+  };
+
+  var startAnimation = function() {
+    animTimer = setInterval(function() {
+      if (paused || !frames.length) return;
+      currentIdx = (currentIdx + 1) % frames.length;
+      showFrame(currentIdx);
+    }, FRAME_MS);
+  };
+
+  document.body.addEventListener('mouseenter', function(){ paused = true; });
+  document.body.addEventListener('mouseleave', function(){ paused = false; });
+
+  loadFrames();
+  setInterval(loadFrames, 5 * 60 * 1000);
+
+  // Home pin
+  var homeIcon = L.divIcon({ className:'home-pin', html:'<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;"></div>', iconSize:[14,14] });
+  L.marker(HOME, { icon: homeIcon, zIndexOffset: 1000 }).addTo(map);
+
+  // Range rings
+  var miToM = function(mi){ return mi * 1609.34; };
+  var audibleRing = L.circle(HOME, { radius: miToM(miAud), color:'#ffd84d', weight:2, fill:false, dashArray:'6,6' });
+  var visualRing  = L.circle(HOME, { radius: miToM(miVis), color:'#fbbf24', weight:1.5, fill:false, dashArray:'4,8', opacity:0.7 });
+  if (audOn) audibleRing.addTo(map);
+  if (visOn) visualRing.addTo(map);
+
+  // Lightning strikes — read from parent window (HA) via postMessage
+  var strikeLayer = L.layerGroup().addTo(map);
+  var renderStrikes = function(strikes) {
+    strikeLayer.clearLayers();
+    if (!Array.isArray(strikes)) return;
+    var now = Date.now(), newest = 0;
+    strikes.forEach(function(s){
+      if (s.lat == null || s.lon == null) return;
+      var pubMs = s.t ? new Date(s.t).getTime() : now;
+      var ageMin = (now - pubMs) / 60000;
+      if (ageMin > 60) return;
+      if (pubMs > newest) newest = pubMs;
+      var opacity = Math.max(0.15, 1 - ageMin / 60);
+      var size = ageMin < 2 ? 9 : (ageMin < 10 ? 6 : 4);
+      L.circleMarker([s.lat, s.lon], { radius: size, color:'#fff', weight: 1, fillColor:'#ffd84d', fillOpacity: opacity }).addTo(strikeLayer);
+    });
+    lastStrikeTs = newest ? Math.floor(newest/1000) : null;
+    updateAges();
+  };
+
+  // Listen for strikes + setting updates from HA dashboard
+  window.addEventListener('message', function(ev){
+    if (!ev.data || ev.data.type !== 'radar-update') return;
+    if (ev.data.strikes) renderStrikes(ev.data.strikes);
+    if (typeof ev.data.aud === 'number') audibleRing.setRadius(miToM(ev.data.aud));
+    if (typeof ev.data.vis === 'number') visualRing.setRadius(miToM(ev.data.vis));
+    if (typeof ev.data.audOn === 'boolean') {
+      if (ev.data.audOn && !map.hasLayer(audibleRing)) audibleRing.addTo(map);
+      if (!ev.data.audOn && map.hasLayer(audibleRing)) map.removeLayer(audibleRing);
+    }
+    if (typeof ev.data.visOn === 'boolean') {
+      if (ev.data.visOn && !map.hasLayer(visualRing)) visualRing.addTo(map);
+      if (!ev.data.visOn && map.hasLayer(visualRing)) map.removeLayer(visualRing);
+    }
+    if (ev.data.theme && basemapUrls[ev.data.theme]) {
+      if (baseLayer) map.removeLayer(baseLayer);
+      baseLayer = L.tileLayer(basemapUrls[ev.data.theme], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
+      baseLayer.bringToBack();
+    }
+  });
+
+  // Tell parent we're ready
+  try { window.parent.postMessage({type:'radar-ready'}, '*'); } catch(e){}
+
+  setInterval(updateAges, 30000);
+})();
+</script>
+</body>
+</html>
