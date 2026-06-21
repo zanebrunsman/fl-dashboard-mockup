@@ -1,7 +1,7 @@
-# why: Custom Leaflet radar matching the mockup. CARTO Positron/Dark Matter basemap,
-# RainViewer overlay, home pin, live range rings from helpers (with on/off toggles),
-# multi-strike geo_location entities, mockup-style top-right cluster with data-age
-# pills + reset button, mockup legend, theme-aware basemap.
+# why: Animated Leaflet radar (embedded). Auto-loops last 30min of RainViewer
+# frames (6 frames @ ~5min spacing). Pause-on-hover. CARTO basemap, home pin,
+# live range rings, multi-strike lightning, mockup-style top-right cluster with
+# data-age pills + reset + expand button, mockup legend, theme-aware basemap.
 type: custom:html-template-card
 ignore_line_breaks: true
 content: |
@@ -11,7 +11,7 @@ content: |
 
     <!-- top-right cluster: data-age pills + map controls -->
     <div id="radar-topbar" style="position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:6px;z-index:600;">
-      <span id="radar-pill-radar" style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;backdrop-filter:blur(4px);">Radar · <span id="radar-age">--</span></span>
+      <span id="radar-pill-radar" style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;">Radar · <span id="radar-age">--</span></span>
       <span id="radar-pill-lightning" style="background:rgba(255,216,77,0.85);color:#1c2a35;font-size:11px;padding:4px 8px;border-radius:999px;font-weight:600;">Lightning · <span id="lightning-age">--</span></span>
       <span id="radar-pill-err" style="display:none;background:#b42318;color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;">Radar offline</span>
       <button id="radar-reset" title="Reset view" style="width:30px;height:30px;border:none;border-radius:8px;background:rgba(0,0,0,0.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
@@ -29,6 +29,11 @@ content: |
       <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#ef4444;border-radius:2px;display:inline-block;"></i>Heavy</span>
       <span style="display:flex;align-items:center;gap:4px;"><i style="width:10px;height:10px;background:#ffd84d;border-radius:50%;display:inline-block;"></i>Lightning · last 10 min</span>
     </div>
+
+    <!-- thin frame progress bar at bottom -->
+    <div id="radar-progress" style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.15);z-index:500;">
+      <div id="radar-progress-bar" style="height:100%;width:0%;background:#ffd84d;transition:width 0.18s linear;"></div>
+    </div>
   </div>
   <script>
     (function() {
@@ -36,8 +41,11 @@ content: |
       window.__radarInit = true;
       var HOME = [29.9, -81.31];
       var HOME_ZOOM = 9;
+      var FRAMES_BACK = 6;       // ~30 min of past
+      var FRAME_MS = 220;        // ms per frame (smoothness vs speed)
       var radarFrameTs = null;
       var lastStrikeTs = null;
+      var paused = false;
 
       var loadLeaflet = function(cb) {
         if (window.L) { cb(); return; }
@@ -66,9 +74,6 @@ content: |
         var mapEl = document.getElementById('radar-map');
         if (!mapEl || mapEl._leaflet_id) return;
         var getTheme = function() {
-          // Casa Cola Creek themes don't set data-theme; sniff card background luminance instead.
-          var t = document.documentElement.getAttribute('data-theme');
-          if (t === 'dark' || t === 'light') return t;
           var bg = getComputedStyle(document.documentElement).getPropertyValue('--primary-background-color').trim();
           if (!bg) return 'light';
           var m = bg.match(/#([0-9a-f]{6})/i);
@@ -84,30 +89,66 @@ content: |
         var baseLayer = L.tileLayer(basemapUrls[getTheme()], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
         L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OSM © CARTO | RainViewer').addTo(map);
 
-        var rainLayer = null;
-        var refreshRain = function() {
+        // animated radar layers
+        var frames = [];        // array of {ts, layer}
+        var currentIdx = 0;
+        var animTimer = null;
+
+        var loadFrames = function() {
           fetch('https://api.rainviewer.com/public/weather-maps.json').then(function(r){return r.json();}).then(function(j){
-            var frames = j.radar && j.radar.past ? j.radar.past : [];
-            if (!frames.length) {
+            var past = j.radar && j.radar.past ? j.radar.past : [];
+            if (!past.length) {
               var err = document.getElementById('radar-pill-err');
               if (err) err.style.display = 'inline-block';
               return;
             }
             var errEl = document.getElementById('radar-pill-err');
             if (errEl) errEl.style.display = 'none';
-            var latest = frames[frames.length - 1];
-            radarFrameTs = latest.time;
-            var url = j.host + latest.path + '/512/{z}/{x}/{y}/2/1_1.png';
-            if (rainLayer) map.removeLayer(rainLayer);
-            rainLayer = L.tileLayer(url, { opacity: 0.7, maxZoom: 18 }).addTo(map);
-            updateAges();
+            // grab the last N frames
+            var slice = past.slice(-FRAMES_BACK);
+            // remove old frame layers
+            frames.forEach(function(f){ if (f.layer && map.hasLayer(f.layer)) map.removeLayer(f.layer); });
+            frames = [];
+            slice.forEach(function(f, i) {
+              var url = j.host + f.path + '/512/{z}/{x}/{y}/2/1_1.png';
+              var layer = L.tileLayer(url, { opacity: 0, maxZoom: 18, zIndex: 200 }).addTo(map);
+              frames.push({ ts: f.time, layer: layer });
+            });
+            currentIdx = frames.length - 1;
+            showFrame(currentIdx);
+            if (!animTimer) startAnimation();
           }).catch(function(){
             var err = document.getElementById('radar-pill-err');
             if (err) err.style.display = 'inline-block';
           });
         };
-        refreshRain();
-        setInterval(refreshRain, 5 * 60 * 1000);
+
+        var showFrame = function(idx) {
+          if (!frames.length) return;
+          frames.forEach(function(f, i){ f.layer.setOpacity(i === idx ? 0.75 : 0); });
+          radarFrameTs = frames[idx].ts;
+          updateAges();
+          var pb = document.getElementById('radar-progress-bar');
+          if (pb) pb.style.width = ((idx + 1) / frames.length * 100) + '%';
+        };
+
+        var startAnimation = function() {
+          animTimer = setInterval(function() {
+            if (paused || !frames.length) return;
+            currentIdx = (currentIdx + 1) % frames.length;
+            showFrame(currentIdx);
+          }, FRAME_MS);
+        };
+
+        // pause on hover (Dad reading the screen)
+        var wrap = document.getElementById('radar-wrap');
+        if (wrap) {
+          wrap.addEventListener('mouseenter', function(){ paused = true; });
+          wrap.addEventListener('mouseleave', function(){ paused = false; });
+        }
+
+        loadFrames();
+        setInterval(loadFrames, 5 * 60 * 1000);  // refresh frame list every 5 min
 
         var homeIcon = L.divIcon({ className: 'home-pin', html: '<div style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 0 2px #ef4444;"></div>', iconSize: [14,14] });
         L.marker(HOME, { icon: homeIcon, zIndexOffset: 1000 }).addTo(map);
@@ -161,20 +202,16 @@ content: |
         };
         setInterval(applyRangeRings, 5000);
         applyRangeRings();
-
         setInterval(updateAges, 30000);
 
-        // Reset button → recenter home + zoom
         var resetBtn = document.getElementById('radar-reset');
         if (resetBtn) resetBtn.addEventListener('click', function(){ map.setView(HOME, HOME_ZOOM); });
 
-        // Theme observer
         var applyTheme = function() {
           var t = getTheme();
           if (baseLayer) map.removeLayer(baseLayer);
           baseLayer = L.tileLayer(basemapUrls[t], { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
           baseLayer.bringToBack();
-          if (rainLayer) rainLayer.bringToFront();
         };
         var themeObs = new MutationObserver(applyTheme);
         themeObs.observe(document.documentElement, { attributes: true });
