@@ -1,0 +1,40 @@
+# why: User-facing theme toggle. Persists across HA restarts via input_select
+# state. Auto mode follows browser/OS preference via HA's built-in "Backend-selected"
+# theme. Light/Dark force explicit themes.
+
+input_select:
+  theme_mode:
+    name: Theme
+    icon: mdi:theme-light-dark
+    options:
+      - Auto
+      - Light
+      - Dark
+    initial: Auto
+
+automation:
+  - id: theme_mode_apply
+    alias: "Theme: apply mode change"
+    description: "Apply the selected theme when the user changes input_select.theme_mode"
+    mode: restart
+    triggers:
+      - platform: state
+        entity_id: input_select.theme_mode
+      - platform: homeassistant
+        event: start
+    actions:
+      # why: HA's built-in 'default' theme is the same file for light + dark;
+      # the 'mode' parameter on frontend.set_theme picks which palette to render.
+      # 'Backend-selected' tells HA to follow the browser/OS color-scheme media query.
+      - service: frontend.set_theme
+        data:
+          name: >-
+            {% set m = states('input_select.theme_mode') %}
+            {% if m == 'Auto' %}Backend-selected
+            {% else %}default
+            {% endif %}
+          mode: >-
+            {% set m = states('input_select.theme_mode') %}
+            {% if m == 'Dark' %}dark
+            {% else %}light
+            {% endif %}
