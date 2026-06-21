@@ -1,0 +1,54 @@
+# why: 48h tide curve from sensor.tide_predictions_48h attribute timeseries.
+# apexcharts data_generator reads the `predictions` attribute and converts to
+# [timestamp_ms, height_ft] pairs. Now-line marker for current time.
+type: custom:apexcharts-card
+header:
+  show: true
+  title: Tide forecast
+  show_states: true
+  colorize_states: true
+graph_span: 48h
+span:
+  start: hour
+  offset: '-6h'
+now:
+  show: true
+  label: Now
+  color: '#94a3b8'
+apex_config:
+  chart:
+    height: 220
+  stroke:
+    curve: smooth
+    width: 2
+  fill:
+    type: gradient
+    gradient:
+      shadeIntensity: 0.6
+      opacityFrom: 0.4
+      opacityTo: 0.05
+  yaxis:
+    title:
+      text: ft (MLLW)
+    decimalsInFloat: 1
+  xaxis:
+    labels:
+      datetimeFormatter:
+        hour: hAM
+        day: MMM dd
+  tooltip:
+    x:
+      format: ddd ha
+series:
+  - entity: sensor.tide_predictions_48h
+    name: Height
+    type: area
+    color: '#38bdf8'
+    show:
+      legend_value: false
+      header_color_threshold: false
+    data_generator: |
+      var preds = entity.attributes.predictions || [];
+      return preds.map(function(p) {
+        return [new Date(p.t.replace(' ', 'T')).getTime(), parseFloat(p.v)];
+      });
