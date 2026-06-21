@@ -1,0 +1,181 @@
+# why: Custom HA theme matching the FL Home dashboard mockup palette.
+# Two variants — "Casa Cola Creek Light" and "Casa Cola Creek Dark" — that map
+# the mockup's CSS custom properties onto Home Assistant's theme tokens.
+# Tokens reference: https://www.home-assistant.io/integrations/frontend/#defining-themes
+
+Casa Cola Creek Light:
+  # Mockup palette tokens (re-exported as CSS vars so card-mod / custom cards
+  # can read them too)
+  mockup-bg: "#f5f1ea"
+  mockup-surface: "#ffffff"
+  mockup-surface-2: "#fbf8f2"
+  mockup-surface-offset: "#ede6d8"
+  mockup-border: "#ddd4c1"
+  mockup-divider: "#e7e0d0"
+  mockup-text: "#1c2a35"
+  mockup-text-muted: "#6b7785"
+  mockup-text-faint: "#a7afba"
+  mockup-primary: "#0b3a52"
+  mockup-primary-hover: "#0a4e6c"
+  mockup-blue: "#1b6a8f"
+  mockup-blue-soft: "#e2eef5"
+  mockup-warning: "#b45309"
+  mockup-warning-highlight: "#fde9c8"
+  mockup-error: "#b42318"
+  mockup-error-highlight: "#fad9d2"
+  mockup-success: "#2f7d3a"
+  mockup-success-highlight: "#d5ebd8"
+  mockup-gold: "#d18b1a"
+
+  # HA core tokens
+  primary-color: "#0b3a52"
+  accent-color: "#d18b1a"
+  primary-background-color: "#f5f1ea"
+  secondary-background-color: "#fbf8f2"
+  divider-color: "#e7e0d0"
+
+  # Text
+  primary-text-color: "#1c2a35"
+  secondary-text-color: "#6b7785"
+  text-primary-color: "#1c2a35"
+  disabled-text-color: "#a7afba"
+  app-header-text-color: "#fefcf7"
+  app-header-background-color: "#0b3a52"
+
+  # Surfaces / cards
+  card-background-color: "#ffffff"
+  ha-card-background: "#ffffff"
+  ha-card-border-radius: "1rem"
+  ha-card-border-color: "#ddd4c1"
+  ha-card-border-width: "1px"
+  ha-card-box-shadow: "0 4px 14px rgba(20, 30, 40, 0.08)"
+  paper-card-background-color: "#ffffff"
+  paper-listbox-background-color: "#ffffff"
+
+  # Sidebar
+  sidebar-icon-color: "#6b7785"
+  sidebar-text-color: "#1c2a35"
+  sidebar-background-color: "#fbf8f2"
+  sidebar-selected-background-color: "#cfe2eb"
+  sidebar-selected-icon-color: "#0b3a52"
+  sidebar-selected-text-color: "#0b3a52"
+
+  # State / icon
+  state-icon-color: "#6b7785"
+  state-icon-active-color: "#0b3a52"
+  paper-item-icon-color: "#6b7785"
+  paper-item-icon-active-color: "#0b3a52"
+
+  # Switch / slider
+  switch-checked-color: "#0b3a52"
+  switch-checked-track-color: "#cfe2eb"
+  switch-unchecked-color: "#a7afba"
+  switch-unchecked-track-color: "#e7e0d0"
+  paper-slider-knob-color: "#0b3a52"
+  paper-slider-active-color: "#0b3a52"
+  paper-slider-container-color: "#ddd4c1"
+
+  # Status colors
+  label-badge-red: "#b42318"
+  label-badge-yellow: "#d18b1a"
+  label-badge-green: "#2f7d3a"
+  label-badge-blue: "#1b6a8f"
+  warning-color: "#b45309"
+  error-color: "#b42318"
+  success-color: "#2f7d3a"
+  info-color: "#1b6a8f"
+
+  # Mushroom card overrides
+  mush-rgb-primary: "11, 58, 82"
+  mush-card-primary-font-size: "1.0625rem"
+  mush-card-secondary-font-size: "0.9375rem"
+  mush-icon-border-radius: "12px"
+  mush-control-border-radius: "12px"
+
+Casa Cola Creek Dark:
+  # Mockup palette tokens
+  mockup-bg: "#0e1722"
+  mockup-surface: "#16212e"
+  mockup-surface-2: "#1b2837"
+  mockup-surface-offset: "#1f2d3e"
+  mockup-border: "#2c3a4d"
+  mockup-divider: "#233143"
+  mockup-text: "#e6ecf2"
+  mockup-text-muted: "#8a98a8"
+  mockup-text-faint: "#5b6776"
+  mockup-primary: "#14536f"
+  mockup-primary-hover: "#1c6a8a"
+  mockup-blue: "#5da8c9"
+  mockup-blue-soft: "#1c3543"
+  mockup-warning: "#f0a04b"
+  mockup-warning-highlight: "#3a2a12"
+  mockup-error: "#f08b7e"
+  mockup-error-highlight: "#3d1f1b"
+  mockup-success: "#6dc079"
+  mockup-success-highlight: "#18331e"
+  mockup-gold: "#e8b757"
+
+  # HA core tokens
+  primary-color: "#5da8c9"
+  accent-color: "#e8b757"
+  primary-background-color: "#0e1722"
+  secondary-background-color: "#16212e"
+  divider-color: "#233143"
+
+  # Text
+  primary-text-color: "#e6ecf2"
+  secondary-text-color: "#8a98a8"
+  text-primary-color: "#e6ecf2"
+  disabled-text-color: "#5b6776"
+  app-header-text-color: "#e6ecf2"
+  app-header-background-color: "#16212e"
+
+  # Surfaces / cards
+  card-background-color: "#16212e"
+  ha-card-background: "#16212e"
+  ha-card-border-radius: "1rem"
+  ha-card-border-color: "#2c3a4d"
+  ha-card-border-width: "1px"
+  ha-card-box-shadow: "0 4px 14px rgba(0, 0, 0, 0.35)"
+  paper-card-background-color: "#16212e"
+  paper-listbox-background-color: "#1b2837"
+
+  # Sidebar
+  sidebar-icon-color: "#8a98a8"
+  sidebar-text-color: "#e6ecf2"
+  sidebar-background-color: "#16212e"
+  sidebar-selected-background-color: "#1c3a48"
+  sidebar-selected-icon-color: "#5da8c9"
+  sidebar-selected-text-color: "#5da8c9"
+
+  # State / icon
+  state-icon-color: "#8a98a8"
+  state-icon-active-color: "#5da8c9"
+  paper-item-icon-color: "#8a98a8"
+  paper-item-icon-active-color: "#5da8c9"
+
+  # Switch / slider
+  switch-checked-color: "#5da8c9"
+  switch-checked-track-color: "#1c3a48"
+  switch-unchecked-color: "#5b6776"
+  switch-unchecked-track-color: "#233143"
+  paper-slider-knob-color: "#5da8c9"
+  paper-slider-active-color: "#5da8c9"
+  paper-slider-container-color: "#2c3a4d"
+
+  # Status colors
+  label-badge-red: "#f08b7e"
+  label-badge-yellow: "#e8b757"
+  label-badge-green: "#6dc079"
+  label-badge-blue: "#5da8c9"
+  warning-color: "#f0a04b"
+  error-color: "#f08b7e"
+  success-color: "#6dc079"
+  info-color: "#5da8c9"
+
+  # Mushroom card overrides
+  mush-rgb-primary: "93, 168, 201"
+  mush-card-primary-font-size: "1.0625rem"
+  mush-card-secondary-font-size: "0.9375rem"
+  mush-icon-border-radius: "12px"
+  mush-control-border-radius: "12px"

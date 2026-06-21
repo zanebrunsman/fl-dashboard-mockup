@@ -1,6 +1,9 @@
 # why: User-facing theme toggle. Persists across HA restarts via input_select
-# state. Auto follows browser/OS color-scheme via HA's Backend-selected pseudo-theme.
-# Light/Dark force the Graphite palettes (installed via HACS).
+# state. Light/Dark force the Casa Cola Creek mockup palette; Auto delegates
+# to HA's Backend-selected pseudo-theme (follows browser/OS color-scheme).
+#
+# Themes themselves must be loaded by /config/configuration.yaml — see the
+# `frontend: themes:` block there.
 
 input_select:
   theme_mode:
@@ -23,13 +26,11 @@ automation:
       - platform: homeassistant
         event: start
     actions:
-      # why: Graphite ships separate Light + Dark theme files. Backend-selected
-      # delegates to HA's color-scheme detection (which Graphite Auto also handles).
       - service: frontend.set_theme
         data:
           name: >-
             {% set m = states('input_select.theme_mode') %}
-            {% if m == 'Dark' %}Graphite
-            {% elif m == 'Light' %}Graphite Light
-            {% else %}Graphite Auto
+            {% if m == 'Dark' %}Casa Cola Creek Dark
+            {% elif m == 'Light' %}Casa Cola Creek Light
+            {% else %}Backend-selected
             {% endif %}
