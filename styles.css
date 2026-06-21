@@ -2728,6 +2728,19 @@ svg {
 .hourly__precip--dry { color: var(--color-text-faint, var(--color-text-muted)); }
 .hourly__precip--wet { color: var(--rain, #4ea7c4); }
 
+/* ===== Weather tab: section labels above sub-components inside Conditions card ===== */
+.section-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: var(--space-3) 0 var(--space-2);
+}
+.card__head + .section-label {
+  margin-top: 0;
+}
+
 /* ===== Weather tab: 4-day forecast strip inside Conditions card ===== */
 .forecast4 {
   display: grid;
