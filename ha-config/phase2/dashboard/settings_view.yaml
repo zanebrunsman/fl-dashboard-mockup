@@ -1,6 +1,8 @@
-# Settings tab — Phase 2.6.1 sections grid (matches Weather styling).
-# Theme: dropdown + 3 explicit buttons (Light/Dark/Auto) so browser_mod
-# `browser_id: THIS` resolves to the calling tablet.
+# Settings tab — Phase 2.6.2
+# Theme buttons now call browser_mod.set_theme DIRECTLY (not via input_select),
+# so the action fires from the iPad's browser context. browser_id: THIS targets
+# this device only, and dark: dark/light/auto forces the mode regardless of
+# per-user theme or system Light/Dark.
 
 title: Settings
 path: settings
@@ -12,12 +14,10 @@ sections:
   - type: grid
     column_span: 1
     cards:
-      - type: entities
+      - type: markdown
         title: Theme
-        show_header_toggle: false
-        entities:
-          - entity: input_select.theme_mode
-            name: Theme mode (selector)
+        content: |
+          Tap a button to change THIS iPad's theme. Setting persists across reloads.
 
       - type: horizontal-stack
         cards:
@@ -26,28 +26,31 @@ sections:
             icon: mdi:white-balance-sunny
             tap_action:
               action: call-service
-              service: input_select.select_option
+              service: browser_mod.set_theme
               service_data:
-                entity_id: input_select.theme_mode
-                option: Light
+                theme: Casa Cola Creek Light
+                dark: light
+                browser_id: THIS
           - type: button
             name: Dark
             icon: mdi:weather-night
             tap_action:
               action: call-service
-              service: input_select.select_option
+              service: browser_mod.set_theme
               service_data:
-                entity_id: input_select.theme_mode
-                option: Dark
+                theme: Casa Cola Creek Dark
+                dark: dark
+                browser_id: THIS
           - type: button
             name: Auto
             icon: mdi:theme-light-dark
             tap_action:
               action: call-service
-              service: input_select.select_option
+              service: browser_mod.set_theme
               service_data:
-                entity_id: input_select.theme_mode
-                option: Auto
+                theme: Casa Cola Creek Light
+                dark: auto
+                browser_id: THIS
 
       - type: entities
         title: Audible alerts
@@ -81,11 +84,14 @@ sections:
       - type: markdown
         title: Theme troubleshooting
         content: |
-          If the theme buttons don't swap on this iPad:
+          **Recommended:** the easiest way to control the iPad's theme is in /profile
+          (avatar lower-left). Set Theme = **Casa Cola Creek Light** with mode **Auto**,
+          and the dashboard will follow the iPad's day/night system setting.
 
-          1. Settings → Browser Mod → make sure this tablet is **Registered**.
-          2. In your /profile (avatar lower-left), set **Theme = Auto** (so per-user override doesn't block the swap).
-          3. Pull-to-refresh the dashboard.
+          The Light/Dark/Auto buttons here override the per-user theme just for THIS
+          iPad — useful for quick swaps without touching profile settings. If they
+          don't work, go to **Settings → Browser Mod** and confirm this tablet is
+          listed with **Register** toggle ON.
 
       - type: button
         name: Test chime
