@@ -1,6 +1,7 @@
 # Security tab - Public St. Augustine area webcams + FDOT traffic cameras.
-# These are all public live streams; no auth required.
-# YouTube embed URLs use ?autoplay=1&mute=1 (mute required by browser autoplay policy).
+# Phase 2.6 fixes:
+#   - YouTube iframes use youtube-nocookie.com/embed/ (fixes Error 153)
+#   - FL511 uses /Map/EmbeddedMap endpoint (fixes full-site takeover)
 
 title: Security
 path: security
@@ -16,33 +17,39 @@ sections:
         heading: St. Augustine area live cams
         heading_style: title
 
+  - type: grid
+    column_span: 1
+    cards:
       - type: iframe
-        url: https://www.youtube.com/embed/ZTk5cIbXH2g?autoplay=1&mute=1&controls=0&modestbranding=1
+        url: https://www.youtube-nocookie.com/embed/ZTk5cIbXH2g?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
         aspect_ratio: '56.25%'
         title: St. Augustine skyline
         disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen
+        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
 
       - type: iframe
-        url: https://www.youtube.com/embed/0lox0s8zNcU?autoplay=1&mute=1&controls=0&modestbranding=1
-        aspect_ratio: '56.25%'
-        title: Bridge of Lions
-        disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen
-
-      - type: iframe
-        url: https://www.youtube.com/embed/ORNGtJ7WB_8?autoplay=1&mute=1&controls=0&modestbranding=1
+        url: https://www.youtube-nocookie.com/embed/ORNGtJ7WB_8?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
         aspect_ratio: '56.25%'
         title: St. Augustine lighthouse
         disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen
+        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: iframe
+        url: https://www.youtube-nocookie.com/embed/0lox0s8zNcU?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
+        aspect_ratio: '56.25%'
+        title: Bridge of Lions
+        disable_sandbox: true
+        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
 
       - type: iframe
-        url: https://www.youtube.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&controls=0&modestbranding=1
+        url: https://www.youtube-nocookie.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
         aspect_ratio: '56.25%'
         title: St. George Street
         disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen
+        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
 
   - type: grid
     column_span: 2
@@ -53,13 +60,12 @@ sections:
 
       - type: markdown
         content: |
-          [FL511 Live Traffic Map](https://fl511.com/cctv) provides FDOT cam snapshots for
-          I-95 mile markers 305–317 near St. Augustine. Direct embed isn't supported
-          (snapshots refresh ~every 30s on their site), but the link opens the live map.
+          [Open FL511 full traffic map →](https://fl511.com/cctv) for FDOT live CCTV
+          snapshots on I-95 mile markers 305–317 (St. Augustine).
 
       - type: iframe
-        url: https://northeastfloridatraffic.com/live-traffic-camera-map/
+        url: https://fl511.com/Map/EmbeddedMap?lat=29.9&lon=-81.31
         aspect_ratio: '75%'
-        title: FDOT District 2 traffic map
+        title: FL511 traffic map (embed)
         disable_sandbox: true
-        allow: fullscreen
+        allow: fullscreen; geolocation
