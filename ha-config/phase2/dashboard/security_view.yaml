@@ -1,7 +1,13 @@
-# Security tab - Public St. Augustine area webcams + FDOT traffic cameras.
-# Phase 2.6 fixes:
-#   - YouTube iframes use youtube-nocookie.com/embed/ (fixes Error 153)
-#   - FL511 uses /Map/EmbeddedMap endpoint (fixes full-site takeover)
+# Security tab — Phase 2.6.1
+# Fixes from screenshots:
+#   - YouTube Error 153 -> switch from iframe card to custom:youtube-video-card
+#     (HACS card sets referrerpolicy="strict-origin-when-cross-origin" which
+#     YouTube's player now requires).
+#   - FL511 embed was cluttered -> replaced with link-out + Windy I-95 highway cams
+#     (Windy hosts FDOT cams natively, no auth, no banners).
+#
+# REQUIRED HACS install (if not already): "YouTube Video Card" by loryanstrant
+#   HACS -> Frontend -> + Explore & Download Repositories -> "YouTube Video Card"
 
 title: Security
 path: security
@@ -14,58 +20,99 @@ sections:
     column_span: 2
     cards:
       - type: heading
-        heading: St. Augustine area live cams
+        heading: St. Augustine live cams
         heading_style: title
 
   - type: grid
     column_span: 1
     cards:
-      - type: iframe
-        url: https://www.youtube-nocookie.com/embed/ZTk5cIbXH2g?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
-        aspect_ratio: '56.25%'
+      - type: custom:youtube-video-card
+        video_id: ZTk5cIbXH2g
         title: St. Augustine skyline
-        disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
+        autoplay: true
+        mute: true
+        controls: true
 
-      - type: iframe
-        url: https://www.youtube-nocookie.com/embed/ORNGtJ7WB_8?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
-        aspect_ratio: '56.25%'
+      - type: custom:youtube-video-card
+        video_id: FyGb2TZB344
+        title: Castillo de San Marcos
+        autoplay: true
+        mute: true
+        controls: true
+
+      - type: custom:youtube-video-card
+        video_id: ORNGtJ7WB_8
         title: St. Augustine lighthouse
-        disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
+        autoplay: true
+        mute: true
+        controls: true
 
   - type: grid
     column_span: 1
     cards:
-      - type: iframe
-        url: https://www.youtube-nocookie.com/embed/0lox0s8zNcU?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
-        aspect_ratio: '56.25%'
+      - type: custom:youtube-video-card
+        video_id: 0lox0s8zNcU
         title: Bridge of Lions
-        disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
+        autoplay: true
+        mute: true
+        controls: true
 
-      - type: iframe
-        url: https://www.youtube-nocookie.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&controls=1&modestbranding=1&playsinline=1&rel=0
-        aspect_ratio: '56.25%'
+      - type: custom:youtube-video-card
+        video_id: uLJBad4vSno
+        title: Matanzas River
+        autoplay: true
+        mute: true
+        controls: true
+
+      - type: custom:youtube-video-card
+        video_id: ZksWoEAhmTU
         title: St. George Street
-        disable_sandbox: true
-        allow: autoplay; encrypted-media; fullscreen; picture-in-picture
+        autoplay: true
+        mute: true
+        controls: true
 
   - type: grid
     column_span: 2
     cards:
       - type: heading
-        heading: Local traffic — I-95 corridor
+        heading: I-95 traffic cameras (FDOT via Windy)
         heading_style: title
 
       - type: markdown
         content: |
-          [Open FL511 full traffic map →](https://fl511.com/cctv) for FDOT live CCTV
-          snapshots on I-95 mile markers 305–317 (St. Augustine).
+          Live FDOT cameras on I-95 near St. Augustine. For the full FL511 map with alerts
+          and construction info, [open FL511 →](https://fl511.com/cctv).
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: iframe
+        url: https://webcams.windy.com/webcams/public/embed/player/1736342441/day
+        aspect_ratio: '60%'
+        title: I-95 @ MM 313.3 (St. Augustine S)
+        disable_sandbox: true
+        allow: autoplay; fullscreen
 
       - type: iframe
-        url: https://fl511.com/Map/EmbeddedMap?lat=29.9&lon=-81.31
-        aspect_ratio: '75%'
-        title: FL511 traffic map (embed)
+        url: https://webcams.windy.com/webcams/public/embed/player/1736339934/day
+        aspect_ratio: '60%'
+        title: I-95 @ MM 310.1 (Fort Peyton)
         disable_sandbox: true
-        allow: fullscreen; geolocation
+        allow: autoplay; fullscreen
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: iframe
+        url: https://webcams.windy.com/webcams/public/embed/player/1736342295/day
+        aspect_ratio: '60%'
+        title: I-95 @ MM 315.1 (St. Augustine)
+        disable_sandbox: true
+        allow: autoplay; fullscreen
+
+      - type: iframe
+        url: https://webcams.windy.com/webcams/public/embed/player/1583004042/day
+        aspect_ratio: '60%'
+        title: Flagler Beach Pier
+        disable_sandbox: true
+        allow: autoplay; fullscreen

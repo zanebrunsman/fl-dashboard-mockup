@@ -1,4 +1,6 @@
-# Settings tab — Phase 2.6 sections grid (matches Weather tab styling).
+# Settings tab — Phase 2.6.1 sections grid (matches Weather styling).
+# Theme: dropdown + 3 explicit buttons (Light/Dark/Auto) so browser_mod
+# `browser_id: THIS` resolves to the calling tablet.
 
 title: Settings
 path: settings
@@ -15,7 +17,37 @@ sections:
         show_header_toggle: false
         entities:
           - entity: input_select.theme_mode
-            name: Theme mode
+            name: Theme mode (selector)
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Light
+            icon: mdi:white-balance-sunny
+            tap_action:
+              action: call-service
+              service: input_select.select_option
+              service_data:
+                entity_id: input_select.theme_mode
+                option: Light
+          - type: button
+            name: Dark
+            icon: mdi:weather-night
+            tap_action:
+              action: call-service
+              service: input_select.select_option
+              service_data:
+                entity_id: input_select.theme_mode
+                option: Dark
+          - type: button
+            name: Auto
+            icon: mdi:theme-light-dark
+            tap_action:
+              action: call-service
+              service: input_select.select_option
+              service_data:
+                entity_id: input_select.theme_mode
+                option: Auto
 
       - type: entities
         title: Audible alerts
@@ -45,6 +77,15 @@ sections:
             name: Auto-switch on alerts
           - entity: input_number.alert_auto_switch_hold_min
             name: Hold time (min)
+
+      - type: markdown
+        title: Theme troubleshooting
+        content: |
+          If the theme buttons don't swap on this iPad:
+
+          1. Settings → Browser Mod → make sure this tablet is **Registered**.
+          2. In your /profile (avatar lower-left), set **Theme = Auto** (so per-user override doesn't block the swap).
+          3. Pull-to-refresh the dashboard.
 
       - type: button
         name: Test chime

@@ -29,7 +29,7 @@ sections:
     cards:
       - type: iframe
         url: https://embed.windy.com/embed2.html?lat=29.9&lon=-81.31&detailLat=29.9&detailLon=-81.31&zoom=8&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
-        aspect_ratio: '110%'
+        aspect_ratio: '180%'
         title: Radar
         disable_sandbox: true
         allow: fullscreen; geolocation
