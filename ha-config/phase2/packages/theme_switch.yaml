@@ -1,26 +1,10 @@
-# Theme defaults — minimal package.
-# The dashboard buttons in /lovelace-fl/settings call browser_mod.set_theme
-# directly with browser_id: THIS, so no automation indirection is needed.
+# Phase 2.6.3: theme switching now handled entirely by HA's built-in
+# prefers-color-scheme Auto mode on the merged "Casa Cola Creek" theme.
+# No automations, scripts, or input_selects needed here.
 #
-# This package only sets the GLOBAL default theme on HA startup, for any
-# session that doesn't have a per-user theme pinned. The per-user theme in
-# /profile wins over this — that's by HA design.
+# To enable: in /profile set Theme = "Casa Cola Creek" and Mode = Auto.
+#
+# This package file is intentionally near-empty; kept so existing deploy
+# scripts that reference it don't fail.
 
-automation:
-  - alias: Theme - set system default on startup
-    id: theme_default_startup
-    trigger:
-      - platform: homeassistant
-        event: start
-    action:
-      - delay: '00:00:05'
-      - service: frontend.set_theme
-        data:
-          name: Casa Cola Creek Light
-          mode: light
-        continue_on_error: true
-      - service: frontend.set_theme
-        data:
-          name: Casa Cola Creek Dark
-          mode: dark
-        continue_on_error: true
+# (no entities)

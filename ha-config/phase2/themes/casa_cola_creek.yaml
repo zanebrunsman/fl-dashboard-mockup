@@ -1,9 +1,17 @@
 # why: Custom HA theme matching the FL Home dashboard mockup palette.
-# Two variants — "Casa Cola Creek Light" and "Casa Cola Creek Dark" — that map
-# the mockup's CSS custom properties onto Home Assistant's theme tokens.
+# Single theme "Casa Cola Creek" with a built-in dark mode variant.
+# In profile, set Theme = "Casa Cola Creek" + Mode = Auto, and the dashboard
+# automatically follows the iPad/system Light <-> Dark preference.
 # Tokens reference: https://www.home-assistant.io/integrations/frontend/#defining-themes
+#
+# Phase 2.6.3: merged Light + Dark into one theme using modes: light/dark
+# so HA's prefers-color-scheme Auto mode works on iPad system theme.
 
-Casa Cola Creek Light:
+Casa Cola Creek:
+  # ============================================================
+  # LIGHT MODE (default — used when system is light OR Mode=Light)
+  # ============================================================
+
   # Mockup palette tokens (re-exported as CSS vars so card-mod / custom cards
   # can read them too)
   mockup-bg: "#f5f1ea"
@@ -92,90 +100,94 @@ Casa Cola Creek Light:
   mush-icon-border-radius: "12px"
   mush-control-border-radius: "12px"
 
-Casa Cola Creek Dark:
-  # Mockup palette tokens
-  mockup-bg: "#0e1722"
-  mockup-surface: "#16212e"
-  mockup-surface-2: "#1b2837"
-  mockup-surface-offset: "#1f2d3e"
-  mockup-border: "#2c3a4d"
-  mockup-divider: "#233143"
-  mockup-text: "#e6ecf2"
-  mockup-text-muted: "#8a98a8"
-  mockup-text-faint: "#5b6776"
-  mockup-primary: "#14536f"
-  mockup-primary-hover: "#1c6a8a"
-  mockup-blue: "#5da8c9"
-  mockup-blue-soft: "#1c3543"
-  mockup-warning: "#f0a04b"
-  mockup-warning-highlight: "#3a2a12"
-  mockup-error: "#f08b7e"
-  mockup-error-highlight: "#3d1f1b"
-  mockup-success: "#6dc079"
-  mockup-success-highlight: "#18331e"
-  mockup-gold: "#e8b757"
+  # ============================================================
+  # DARK MODE — auto-applied when system is dark OR Mode=Dark
+  # ============================================================
+  modes:
+    dark:
+      # Mockup palette tokens
+      mockup-bg: "#0e1722"
+      mockup-surface: "#16212e"
+      mockup-surface-2: "#1b2837"
+      mockup-surface-offset: "#1f2d3e"
+      mockup-border: "#2c3a4d"
+      mockup-divider: "#233143"
+      mockup-text: "#e6ecf2"
+      mockup-text-muted: "#8a98a8"
+      mockup-text-faint: "#5b6776"
+      mockup-primary: "#14536f"
+      mockup-primary-hover: "#1c6a8a"
+      mockup-blue: "#5da8c9"
+      mockup-blue-soft: "#1c3543"
+      mockup-warning: "#f0a04b"
+      mockup-warning-highlight: "#3a2a12"
+      mockup-error: "#f08b7e"
+      mockup-error-highlight: "#3d1f1b"
+      mockup-success: "#6dc079"
+      mockup-success-highlight: "#18331e"
+      mockup-gold: "#e8b757"
 
-  # HA core tokens
-  primary-color: "#5da8c9"
-  accent-color: "#e8b757"
-  primary-background-color: "#0e1722"
-  secondary-background-color: "#16212e"
-  divider-color: "#233143"
+      # HA core tokens
+      primary-color: "#5da8c9"
+      accent-color: "#e8b757"
+      primary-background-color: "#0e1722"
+      secondary-background-color: "#16212e"
+      divider-color: "#233143"
 
-  # Text
-  primary-text-color: "#e6ecf2"
-  secondary-text-color: "#8a98a8"
-  text-primary-color: "#e6ecf2"
-  disabled-text-color: "#5b6776"
-  app-header-text-color: "#e6ecf2"
-  app-header-background-color: "#16212e"
+      # Text
+      primary-text-color: "#e6ecf2"
+      secondary-text-color: "#8a98a8"
+      text-primary-color: "#e6ecf2"
+      disabled-text-color: "#5b6776"
+      app-header-text-color: "#e6ecf2"
+      app-header-background-color: "#16212e"
 
-  # Surfaces / cards
-  card-background-color: "#16212e"
-  ha-card-background: "#16212e"
-  ha-card-border-radius: "1rem"
-  ha-card-border-color: "#2c3a4d"
-  ha-card-border-width: "1px"
-  ha-card-box-shadow: "0 4px 14px rgba(0, 0, 0, 0.35)"
-  paper-card-background-color: "#16212e"
-  paper-listbox-background-color: "#1b2837"
+      # Surfaces / cards
+      card-background-color: "#16212e"
+      ha-card-background: "#16212e"
+      ha-card-border-radius: "1rem"
+      ha-card-border-color: "#2c3a4d"
+      ha-card-border-width: "1px"
+      ha-card-box-shadow: "0 4px 14px rgba(0, 0, 0, 0.35)"
+      paper-card-background-color: "#16212e"
+      paper-listbox-background-color: "#1b2837"
 
-  # Sidebar
-  sidebar-icon-color: "#8a98a8"
-  sidebar-text-color: "#e6ecf2"
-  sidebar-background-color: "#16212e"
-  sidebar-selected-background-color: "#1c3a48"
-  sidebar-selected-icon-color: "#5da8c9"
-  sidebar-selected-text-color: "#5da8c9"
+      # Sidebar
+      sidebar-icon-color: "#8a98a8"
+      sidebar-text-color: "#e6ecf2"
+      sidebar-background-color: "#16212e"
+      sidebar-selected-background-color: "#1c3a48"
+      sidebar-selected-icon-color: "#5da8c9"
+      sidebar-selected-text-color: "#5da8c9"
 
-  # State / icon
-  state-icon-color: "#8a98a8"
-  state-icon-active-color: "#5da8c9"
-  paper-item-icon-color: "#8a98a8"
-  paper-item-icon-active-color: "#5da8c9"
+      # State / icon
+      state-icon-color: "#8a98a8"
+      state-icon-active-color: "#5da8c9"
+      paper-item-icon-color: "#8a98a8"
+      paper-item-icon-active-color: "#5da8c9"
 
-  # Switch / slider
-  switch-checked-color: "#5da8c9"
-  switch-checked-track-color: "#1c3a48"
-  switch-unchecked-color: "#5b6776"
-  switch-unchecked-track-color: "#233143"
-  paper-slider-knob-color: "#5da8c9"
-  paper-slider-active-color: "#5da8c9"
-  paper-slider-container-color: "#2c3a4d"
+      # Switch / slider
+      switch-checked-color: "#5da8c9"
+      switch-checked-track-color: "#1c3a48"
+      switch-unchecked-color: "#5b6776"
+      switch-unchecked-track-color: "#233143"
+      paper-slider-knob-color: "#5da8c9"
+      paper-slider-active-color: "#5da8c9"
+      paper-slider-container-color: "#2c3a4d"
 
-  # Status colors
-  label-badge-red: "#f08b7e"
-  label-badge-yellow: "#e8b757"
-  label-badge-green: "#6dc079"
-  label-badge-blue: "#5da8c9"
-  warning-color: "#f0a04b"
-  error-color: "#f08b7e"
-  success-color: "#6dc079"
-  info-color: "#5da8c9"
+      # Status colors
+      label-badge-red: "#f08b7e"
+      label-badge-yellow: "#e8b757"
+      label-badge-green: "#6dc079"
+      label-badge-blue: "#5da8c9"
+      warning-color: "#f0a04b"
+      error-color: "#f08b7e"
+      success-color: "#6dc079"
+      info-color: "#5da8c9"
 
-  # Mushroom card overrides
-  mush-rgb-primary: "93, 168, 201"
-  mush-card-primary-font-size: "1.0625rem"
-  mush-card-secondary-font-size: "0.9375rem"
-  mush-icon-border-radius: "12px"
-  mush-control-border-radius: "12px"
+      # Mushroom card overrides
+      mush-rgb-primary: "93, 168, 201"
+      mush-card-primary-font-size: "1.0625rem"
+      mush-card-secondary-font-size: "0.9375rem"
+      mush-icon-border-radius: "12px"
+      mush-control-border-radius: "12px"

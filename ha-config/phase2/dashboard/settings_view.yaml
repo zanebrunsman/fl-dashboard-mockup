@@ -1,8 +1,9 @@
-# Settings tab — Phase 2.6.2
-# Theme buttons now call browser_mod.set_theme DIRECTLY (not via input_select),
-# so the action fires from the iPad's browser context. browser_id: THIS targets
-# this device only, and dark: dark/light/auto forces the mode regardless of
-# per-user theme or system Light/Dark.
+# Settings tab — Phase 2.6.3
+# Theme now follows the iPad's system Light/Dark mode automatically.
+# Achieved by merging "Casa Cola Creek Light" + "Casa Cola Creek Dark" into a
+# single "Casa Cola Creek" theme with a `modes: dark:` variant block, then
+# selecting it in /profile with Mode = Auto. No buttons, no service calls,
+# no browser_mod entity tracking.
 
 title: Settings
 path: settings
@@ -17,40 +18,12 @@ sections:
       - type: markdown
         title: Theme
         content: |
-          Tap a button to change THIS iPad's theme. Setting persists across reloads.
+          The dashboard follows the iPad's system theme automatically. To change:
+          on the iPad swipe down from the top-right corner, long-press the
+          brightness slider, then tap the Dark Mode button.
 
-      - type: horizontal-stack
-        cards:
-          - type: button
-            name: Light
-            icon: mdi:white-balance-sunny
-            tap_action:
-              action: call-service
-              service: browser_mod.set_theme
-              service_data:
-                theme: Casa Cola Creek Light
-                dark: light
-                browser_id: THIS
-          - type: button
-            name: Dark
-            icon: mdi:weather-night
-            tap_action:
-              action: call-service
-              service: browser_mod.set_theme
-              service_data:
-                theme: Casa Cola Creek Dark
-                dark: dark
-                browser_id: THIS
-          - type: button
-            name: Auto
-            icon: mdi:theme-light-dark
-            tap_action:
-              action: call-service
-              service: browser_mod.set_theme
-              service_data:
-                theme: Casa Cola Creek Light
-                dark: auto
-                browser_id: THIS
+          If the theme ever gets stuck, open the avatar menu (lower-left),
+          set **Theme = Casa Cola Creek** and **Mode = Auto**.
 
       - type: entities
         title: Audible alerts
@@ -80,18 +53,6 @@ sections:
             name: Auto-switch on alerts
           - entity: input_number.alert_auto_switch_hold_min
             name: Hold time (min)
-
-      - type: markdown
-        title: Theme troubleshooting
-        content: |
-          **Recommended:** the easiest way to control the iPad's theme is in /profile
-          (avatar lower-left). Set Theme = **Casa Cola Creek Light** with mode **Auto**,
-          and the dashboard will follow the iPad's day/night system setting.
-
-          The Light/Dark/Auto buttons here override the per-user theme just for THIS
-          iPad — useful for quick swaps without touching profile settings. If they
-          don't work, go to **Settings → Browser Mod** and confirm this tablet is
-          listed with **Register** toggle ON.
 
       - type: button
         name: Test chime
