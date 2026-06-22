@@ -1,80 +1,12 @@
-# Theme switcher v3 — uses browser_mod.set_theme with browser_id: THIS so the
-# calling browser (whichever device triggered the change) actually swaps,
-# regardless of per-user theme overrides in /profile.
+# Theme defaults — minimal package.
+# The dashboard buttons in /lovelace-fl/settings call browser_mod.set_theme
+# directly with browser_id: THIS, so no automation indirection is needed.
 #
-# Requires browser_mod 2.x installed AND the iPad's browser registered
-# (visible in Settings -> Browser Mod -> Registered Browsers, with "Register"
-# toggle ON in that browser's session).
-#
-# How it works:
-#  - Auto -> light theme + dark mode auto (follows iPad system)
-#  - Light -> light theme + dark: light
-#  - Dark -> dark theme + dark: dark
-
-input_select:
-  theme_mode:
-    name: Theme mode
-    options:
-      - Auto
-      - Light
-      - Dark
-    initial: Auto
-    icon: mdi:theme-light-dark
-
-# A script the dashboard button can call directly with browser_id THIS
-# (input_select state-change automations cannot capture the originating browser).
-script:
-  apply_theme_to_this_browser:
-    alias: Apply theme mode to this browser
-    description: Reads input_select.theme_mode and applies it via browser_mod to the calling browser only.
-    sequence:
-      - variables:
-          mode: '{{ states("input_select.theme_mode") }}'
-          theme_name: >-
-            {% if mode == 'Dark' %}Casa Cola Creek Dark
-            {% elif mode == 'Light' %}Casa Cola Creek Light
-            {% else %}Casa Cola Creek Light{% endif %}
-          dark_mode: >-
-            {% if mode == 'Dark' %}dark
-            {% elif mode == 'Light' %}light
-            {% else %}auto{% endif %}
-      - service: browser_mod.set_theme
-        data:
-          theme: "{{ theme_name }}"
-          dark: "{{ dark_mode }}"
-          browser_id: THIS
-        continue_on_error: true
+# This package only sets the GLOBAL default theme on HA startup, for any
+# session that doesn't have a per-user theme pinned. The per-user theme in
+# /profile wins over this — that's by HA design.
 
 automation:
-  # Fires whenever the dropdown changes — also applies via THIS browser_id
-  - alias: Theme - apply selection on change (this browser)
-    id: theme_apply_this_browser
-    mode: restart
-    trigger:
-      - platform: state
-        entity_id: input_select.theme_mode
-    action:
-      - service: script.apply_theme_to_this_browser
-
-  # Global fallback for sessions set to "Backend selected" in /profile
-  - alias: Theme - global fallback set_theme
-    id: theme_apply_global_fallback
-    mode: restart
-    trigger:
-      - platform: state
-        entity_id: input_select.theme_mode
-    action:
-      - variables:
-          mode: '{{ states("input_select.theme_mode") }}'
-      - service: frontend.set_theme
-        data:
-          name: >-
-            {% if mode == 'Dark' %}Casa Cola Creek Dark
-            {% else %}Casa Cola Creek Light{% endif %}
-          mode: >-
-            {% if mode == 'Auto' %}light{% else %}{{ mode | lower }}{% endif %}
-        continue_on_error: true
-
   - alias: Theme - set system default on startup
     id: theme_default_startup
     trigger:
