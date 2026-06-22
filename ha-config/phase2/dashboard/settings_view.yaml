@@ -1,0 +1,57 @@
+# Settings tab — Phase 2.6 sections grid (matches Weather tab styling).
+
+title: Settings
+path: settings
+icon: mdi:cog
+type: sections
+max_columns: 2
+subview: false
+sections:
+  - type: grid
+    column_span: 1
+    cards:
+      - type: entities
+        title: Theme
+        show_header_toggle: false
+        entities:
+          - entity: input_select.theme_mode
+            name: Theme mode
+
+      - type: entities
+        title: Audible alerts
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.lightning_audible_enabled
+            name: Audible enabled
+          - entity: input_number.lightning_audible_radius_mi
+            name: Audible radius (mi)
+          - entity: input_number.lightning_visual_radius_mi
+            name: Visual radius (mi)
+          - entity: input_number.lightning_realert_cooldown_min
+            name: Re-alert cooldown (min)
+          - entity: input_number.alert_volume
+            name: Alert volume
+          - entity: input_boolean.quiet_hours
+            name: Quiet hours
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: entities
+        title: Dashboard behavior
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.alert_auto_switch_enabled
+            name: Auto-switch on alerts
+          - entity: input_number.alert_auto_switch_hold_min
+            name: Hold time (min)
+
+      - type: button
+        name: Test chime
+        icon: mdi:bell-ring
+        tap_action:
+          action: call-service
+          service: persistent_notification.create
+          service_data:
+            title: Chime test
+            message: Audio target not configured yet — lands with Sonos / Fully Kiosk.

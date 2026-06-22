@@ -1,0 +1,79 @@
+# Home tab — Phase 2.6 sections grid (matches Weather tab styling).
+# At-a-glance summary: hero forecast, current conditions, active alerts.
+
+title: Home
+path: home
+icon: mdi:home
+type: sections
+max_columns: 2
+subview: false
+sections:
+  - type: grid
+    column_span: 1
+    cards:
+      - type: weather-forecast
+        entity: weather.casa_cola_creek
+        forecast_type: hourly
+        show_current: true
+        show_forecast: true
+        name: Casa Cola Creek
+
+      - type: weather-forecast
+        entity: weather.casa_cola_creek
+        forecast_type: daily
+        show_current: false
+        show_forecast: true
+        name: 4-day outlook
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: entities
+        title: Now
+        show_header_toggle: false
+        entities:
+          - entity: weather.casa_cola_creek
+            name: Conditions
+          - entity: sensor.aqi_current
+            name: AQI
+            icon: mdi:weather-hazy
+          - entity: sensor.uv_index_current
+            name: UV index
+            icon: mdi:weather-sunny
+          - entity: sensor.tide_predictions_48h
+            name: Tide
+          - entity: sensor.lightning_nearest_strike_display
+            name: Nearest strike
+          - entity: sensor.lightning_strikes_last_hour_display
+            name: Strikes (last hr)
+
+      - type: conditional
+        conditions:
+          - condition: numeric_state
+            entity: sensor.weatheralerts_northeast_coastal_st_johns_flz233_flc109
+            above: 0
+        card:
+          type: markdown
+          title: Active alerts
+          content: |
+            {% for a in state_attr('sensor.weatheralerts_northeast_coastal_st_johns_flz233_flc109', 'alerts') %}
+            ## {{ a.event }}
+            **{{ a.headline }}**
+
+            {{ a.description }}
+
+            ---
+            {% endfor %}
+
+      - type: conditional
+        conditions:
+          - condition: numeric_state
+            entity: sensor.lightning_nearest_strike_display
+            below: 30
+        card:
+          type: markdown
+          content: |
+            ## ⚡ Lightning nearby
+            Nearest strike: {{ states('sensor.lightning_nearest_strike_display') }} mi
+            · bearing {{ states('sensor.lightning_strike_bearing_display') }}°
+            Strikes in last hour: {{ states('sensor.lightning_strikes_last_hour_display') }}
