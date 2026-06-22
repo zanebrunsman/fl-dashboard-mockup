@@ -1,14 +1,12 @@
-# Weather tab — Phase 2.6.5 grid (iPad 1194x834 landscape).
+# Weather tab — Phase 2.6.6 grid (iPad 1194x834 landscape).
 #
-# Fixes vs 2.6:
-#   - Radar uses grid_options.rows (sections-grid native sizing) instead of
-#     aspect_ratio, which is ignored in sections layout. Now ~8 rows tall.
-#   - Added Fullscreen button below the radar that pops the Windy embed into
-#     a browser fullscreen iframe via a popup card.
+# Fixes vs 2.6.5:
+#   - Removed the separate fullscreen button — the radar card now navigates
+#     to the dedicated /radar subview (panel layout) when its title or body
+#     is tapped. HA renders an automatic back-arrow header in the subview.
 #
 # Layout:
-#   left col:    [Radar iframe (8 rows tall)]
-#                [Fullscreen Radar button]
+#   left col:    [Radar iframe (8 rows tall, tap to fullscreen)]
 #   right col:   [Current conditions w/ AQI+UV]
 #                [UV chart - iOS gradient]
 #                [AQI chart - EPA bands]
@@ -25,26 +23,27 @@ sections:
   - type: grid
     column_span: 1
     cards:
+      # Tappable header that opens the /radar subview (full-bleed panel).
+      - type: button
+        name: Radar  ·  tap to expand
+        icon: mdi:radar
+        show_state: false
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace-fl/radar
+        grid_options:
+          rows: 1
+          columns: full
+
+      # Radar iframe (sized via grid_options.rows since aspect_ratio is
+      # ignored in sections layout).
       - type: iframe
         url: https://embed.windy.com/embed2.html?lat=29.9&lon=-81.31&detailLat=29.9&detailLon=-81.31&zoom=8&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
-        title: Radar
+        title: ''
         disable_sandbox: true
         allow: fullscreen; geolocation
         grid_options:
-          rows: 8
-          columns: full
-
-      # Fullscreen radar button — opens Windy's hosted full radar view in a
-      # browser_mod popup (or new tab fallback). Uses navigate action since
-      # browser_mod popup with iframe is fragile across HA versions.
-      - type: button
-        name: Open full-screen radar
-        icon: mdi:fullscreen
-        tap_action:
-          action: url
-          url_path: https://embed.windy.com/embed2.html?lat=29.9&lon=-81.31&detailLat=29.9&detailLon=-81.31&zoom=8&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
-        grid_options:
-          rows: 1
+          rows: 7
           columns: full
 
   - type: grid
