@@ -1,0 +1,65 @@
+# Security tab - Public St. Augustine area webcams + FDOT traffic cameras.
+# These are all public live streams; no auth required.
+# YouTube embed URLs use ?autoplay=1&mute=1 (mute required by browser autoplay policy).
+
+title: Security
+path: security
+icon: mdi:cctv
+type: sections
+max_columns: 2
+subview: false
+sections:
+  - type: grid
+    column_span: 2
+    cards:
+      - type: heading
+        heading: St. Augustine area live cams
+        heading_style: title
+
+      - type: iframe
+        url: https://www.youtube.com/embed/ZTk5cIbXH2g?autoplay=1&mute=1&controls=0&modestbranding=1
+        aspect_ratio: '56.25%'
+        title: St. Augustine skyline
+        disable_sandbox: true
+        allow: autoplay; encrypted-media; fullscreen
+
+      - type: iframe
+        url: https://www.youtube.com/embed/0lox0s8zNcU?autoplay=1&mute=1&controls=0&modestbranding=1
+        aspect_ratio: '56.25%'
+        title: Bridge of Lions
+        disable_sandbox: true
+        allow: autoplay; encrypted-media; fullscreen
+
+      - type: iframe
+        url: https://www.youtube.com/embed/ORNGtJ7WB_8?autoplay=1&mute=1&controls=0&modestbranding=1
+        aspect_ratio: '56.25%'
+        title: St. Augustine lighthouse
+        disable_sandbox: true
+        allow: autoplay; encrypted-media; fullscreen
+
+      - type: iframe
+        url: https://www.youtube.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&controls=0&modestbranding=1
+        aspect_ratio: '56.25%'
+        title: St. George Street
+        disable_sandbox: true
+        allow: autoplay; encrypted-media; fullscreen
+
+  - type: grid
+    column_span: 2
+    cards:
+      - type: heading
+        heading: Local traffic — I-95 corridor
+        heading_style: title
+
+      - type: markdown
+        content: |
+          [FL511 Live Traffic Map](https://fl511.com/cctv) provides FDOT cam snapshots for
+          I-95 mile markers 305–317 near St. Augustine. Direct embed isn't supported
+          (snapshots refresh ~every 30s on their site), but the link opens the live map.
+
+      - type: iframe
+        url: https://northeastfloridatraffic.com/live-traffic-camera-map/
+        aspect_ratio: '75%'
+        title: FDOT District 2 traffic map
+        disable_sandbox: true
+        allow: fullscreen

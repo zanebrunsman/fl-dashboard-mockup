@@ -1,0 +1,36 @@
+# Wraps Blitzortung sensors so they show "0" / "—" instead of "Unavailable"
+# when there are no recent strikes. Keeps the dashboard looking clean during
+# fair weather.
+
+template:
+  - sensor:
+      - name: Lightning nearest strike display
+        unique_id: lightning_nearest_strike_display
+        state: |
+          {% set d = states('sensor.blitzortung_lightning_distance') %}
+          {% if d in ['unknown','unavailable',''] or d is none %}
+            None nearby
+          {% else %}
+            {{ d }} km
+          {% endif %}
+        icon: mdi:flash
+      - name: Lightning strike bearing display
+        unique_id: lightning_strike_bearing_display
+        state: |
+          {% set b = states('sensor.blitzortung_lightning_azimuth') %}
+          {% if b in ['unknown','unavailable',''] or b is none %}
+            —
+          {% else %}
+            {{ b }}°
+          {% endif %}
+        icon: mdi:compass
+      - name: Lightning strikes last hour display
+        unique_id: lightning_strikes_last_hour_display
+        state: |
+          {% set c = states('sensor.blitzortung_lightning_counter') %}
+          {% if c in ['unknown','unavailable',''] or c is none %}
+            0
+          {% else %}
+            {{ c }}
+          {% endif %}
+        icon: mdi:counter

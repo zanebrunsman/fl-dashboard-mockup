@@ -1,0 +1,163 @@
+# Weather tab — single-page grid layout (mockup style).
+# iPad landscape 1194x834. Two-column grid; radar spans full width across both rows.
+#
+# Layout:
+#   row 1: [ Radar (col 1-2, full width)                                          ]
+#   row 2: [ Current conditions   ] [ Air & UV (glance + apex)                   ]
+#   row 3: [ Lightning rings      ] [ Hourly forecast (Windy iframe)             ]
+#   row 4: [ Tide forecast (full width)                                          ]
+
+title: Weather
+path: weather
+icon: mdi:weather-partly-cloudy
+type: sections
+max_columns: 2
+subview: false
+sections:
+  - type: grid
+    column_span: 2
+    cards:
+      - type: iframe
+        url: https://embed.windy.com/embed2.html?lat=29.9&lon=-81.31&detailLat=29.9&detailLon=-81.31&zoom=8&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
+        aspect_ratio: '40%'
+        title: Radar
+        disable_sandbox: true
+        allow: fullscreen; geolocation
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: entities
+        title: Current conditions
+        show_header_toggle: false
+        entities:
+          - entity: weather.casa_cola_creek
+            name: Conditions
+          - entity: sensor.tide_predictions_48h
+            name: Tide
+          - entity: sensor.lightning_nearest_strike_display
+            name: Nearest strike
+          - entity: sensor.lightning_strike_bearing_display
+            name: Strike bearing
+          - entity: sensor.lightning_strikes_last_hour_display
+            name: Strikes (last hr)
+
+      - type: glance
+        title: Lightning alert rings
+        columns: 2
+        entities:
+          - entity: input_number.lightning_audible_radius_mi
+            name: Audible (mi)
+            icon: mdi:volume-high
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-fl/settings
+          - entity: input_number.lightning_visual_radius_mi
+            name: Visual (mi)
+            icon: mdi:eye-outline
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-fl/settings
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: glance
+            title: Air & UV
+            columns: 2
+            entities:
+              - entity: sensor.aqi_current
+                name: AQI
+                icon: mdi:weather-hazy
+              - entity: sensor.uv_index_current
+                name: UV
+                icon: mdi:weather-sunny
+          - type: custom:apexcharts-card
+            header:
+              title: Next 24h
+              show: true
+              show_states: false
+            graph_span: 24h
+            span:
+              start: hour
+            apex_config:
+              legend:
+                position: top
+              grid:
+                borderColor: '#374151'
+              stroke:
+                curve: smooth
+                width: 2
+              xaxis:
+                labels:
+                  format: ha
+            yaxis:
+              - id: aqi
+                min: 0
+                max: 200
+                decimals: 0
+                apex_config:
+                  title:
+                    text: AQI
+              - id: uv
+                opposite: true
+                min: 0
+                max: 12
+                decimals: 0
+                apex_config:
+                  title:
+                    text: UV
+            series:
+              - entity: sensor.aqi_current
+                name: AQI
+                yaxis_id: aqi
+                color: '#f59e0b'
+                type: line
+                data_generator: |
+                  const t = entity.attributes.time || [];
+                  const v = entity.attributes.us_aqi || [];
+                  return t.map((s, i) => [new Date(s).getTime(), v[i]]);
+              - entity: sensor.uv_index_current
+                name: UV
+                yaxis_id: uv
+                color: '#a855f7'
+                type: line
+                data_generator: |
+                  const t = entity.attributes.time || [];
+                  const v = entity.attributes.uv_index || [];
+                  return t.map((s, i) => [new Date(s).getTime(), v[i]]);
+
+      - type: iframe
+        url: https://embed.windy.com/embed2.html?lat=29.9&lon=-81.31&detailLat=29.9&detailLon=-81.31&zoom=8&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=forecast&location=coordinates&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1
+        aspect_ratio: '75%'
+        title: Hourly forecast
+        disable_sandbox: true
+        allow: fullscreen; geolocation
+
+  - type: grid
+    column_span: 2
+    cards:
+      - type: custom:apexcharts-card
+        header:
+          title: Tide forecast — 48h
+          show: true
+        graph_span: 48h
+        span:
+          start: hour
+        apex_config:
+          grid:
+            borderColor: '#374151'
+          stroke:
+            curve: smooth
+            width: 2
+        series:
+          - entity: sensor.tide_predictions_48h
+            name: Tide (ft MLLW)
+            color: '#38bdf8'
+            type: area
+            data_generator: |
+              const t = entity.attributes.time || [];
+              const v = entity.attributes.height || [];
+              return t.map((s, i) => [new Date(s).getTime(), v[i]]);
