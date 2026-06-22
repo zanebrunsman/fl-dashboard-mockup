@@ -1,0 +1,66 @@
+type: vertical-stack
+cards:
+  - type: glance
+    title: Air & UV
+    columns: 2
+    entities:
+      - entity: sensor.aqi_current
+        name: AQI
+        icon: mdi:weather-hazy
+      - entity: sensor.uv_index_current
+        name: UV
+        icon: mdi:weather-sunny
+  - type: custom:apexcharts-card
+    header:
+      title: Next 24h
+      show: true
+      show_states: false
+    graph_span: 24h
+    span:
+      start: hour
+    apex_config:
+      legend:
+        position: top
+      grid:
+        borderColor: '#374151'
+      stroke:
+        curve: smooth
+        width: 2
+      xaxis:
+        labels:
+          format: ha
+    yaxis:
+      - id: aqi
+        min: 0
+        max: 200
+        decimals: 0
+        apex_config:
+          title:
+            text: AQI
+      - id: uv
+        opposite: true
+        min: 0
+        max: 12
+        decimals: 0
+        apex_config:
+          title:
+            text: UV
+    series:
+      - entity: sensor.aqi_current
+        name: AQI
+        yaxis_id: aqi
+        color: '#f59e0b'
+        type: line
+        data_generator: |
+          const t = entity.attributes.time || [];
+          const v = entity.attributes.us_aqi || [];
+          return t.map((s, i) => [new Date(s).getTime(), v[i]]);
+      - entity: sensor.uv_index_current
+        name: UV
+        yaxis_id: uv
+        color: '#a855f7'
+        type: line
+        data_generator: |
+          const t = entity.attributes.time || [];
+          const v = entity.attributes.uv_index || [];
+          return t.map((s, i) => [new Date(s).getTime(), v[i]]);

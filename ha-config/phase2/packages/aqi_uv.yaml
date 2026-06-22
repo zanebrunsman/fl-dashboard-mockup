@@ -1,0 +1,75 @@
+# Open-Meteo Air Quality + UV — no API key required.
+# Pulls hourly AQI (US scale) + PM2.5 + UV index for Casa Cola Creek.
+# Updates every 30 min.
+
+rest:
+  - resource: https://air-quality-api.open-meteo.com/v1/air-quality
+    scan_interval: 1800
+    params:
+      latitude: '29.9'
+      longitude: '-81.31'
+      hourly: us_aqi,pm2_5,pm10,ozone
+      current: us_aqi,pm2_5
+      timezone: America/New_York
+      forecast_days: '2'
+    sensor:
+      - name: AQI current
+        unique_id: aqi_current_open_meteo
+        value_template: '{{ value_json.current.us_aqi }}'
+        unit_of_measurement: AQI
+        json_attributes_path: '$.hourly'
+        json_attributes:
+          - time
+          - us_aqi
+          - pm2_5
+          - pm10
+          - ozone
+      - name: AQI PM2.5 current
+        unique_id: aqi_pm25_current_open_meteo
+        value_template: '{{ value_json.current.pm2_5 | round(1) }}'
+        unit_of_measurement: µg/m³
+
+  - resource: https://api.open-meteo.com/v1/forecast
+    scan_interval: 1800
+    params:
+      latitude: '29.9'
+      longitude: '-81.31'
+      hourly: uv_index,uv_index_clear_sky
+      current: uv_index
+      timezone: America/New_York
+      forecast_days: '2'
+    sensor:
+      - name: UV index current
+        unique_id: uv_current_open_meteo
+        value_template: '{{ value_json.current.uv_index | round(1) }}'
+        unit_of_measurement: UV
+        json_attributes_path: '$.hourly'
+        json_attributes:
+          - time
+          - uv_index
+          - uv_index_clear_sky
+
+# Template helpers for category labels
+template:
+  - sensor:
+      - name: AQI category
+        unique_id: aqi_category_label
+        state: |
+          {% set v = states('sensor.aqi_current') | int(0) %}
+          {% if v <= 50 %}Good
+          {% elif v <= 100 %}Moderate
+          {% elif v <= 150 %}USG
+          {% elif v <= 200 %}Unhealthy
+          {% elif v <= 300 %}Very unhealthy
+          {% else %}Hazardous{% endif %}
+        icon: mdi:weather-hazy
+      - name: UV category
+        unique_id: uv_category_label
+        state: |
+          {% set v = states('sensor.uv_index_current') | float(0) %}
+          {% if v < 3 %}Low
+          {% elif v < 6 %}Moderate
+          {% elif v < 8 %}High
+          {% elif v < 11 %}Very high
+          {% else %}Extreme{% endif %}
+        icon: mdi:weather-sunny

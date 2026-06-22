@@ -1,36 +1,58 @@
-# why: User-facing theme toggle. Persists across HA restarts via input_select
-# state. Light/Dark force the Casa Cola Creek mockup palette; Auto delegates
-# to HA's Backend-selected pseudo-theme (follows browser/OS color-scheme).
-#
-# Themes themselves must be loaded by /config/configuration.yaml — see the
-# `frontend: themes:` block there.
+# Theme switcher — input_select drives frontend.set_theme service.
+# Important: Setting a per-user theme in /profile OVERRIDES this global default.
+# After installing, go to /profile (lower-left avatar) and set Theme = "Backend-selected" or "Auto".
 
 input_select:
   theme_mode:
-    name: Theme
-    icon: mdi:theme-light-dark
+    name: Theme mode
     options:
       - Auto
       - Light
       - Dark
     initial: Auto
+    icon: mdi:theme-light-dark
 
 automation:
-  - id: theme_mode_apply
-    alias: "Theme: apply mode change"
-    description: "Apply the selected theme when input_select.theme_mode changes"
+  - alias: Theme - apply selection on change
+    id: theme_apply_on_change
     mode: restart
-    triggers:
+    trigger:
       - platform: state
         entity_id: input_select.theme_mode
       - platform: homeassistant
         event: start
-    actions:
+    action:
+      - variables:
+          mode: '{{ states("input_select.theme_mode") }}'
       - service: frontend.set_theme
         data:
-          name: >-
-            {% set m = states('input_select.theme_mode') %}
-            {% if m == 'Dark' %}Casa Cola Creek Dark
-            {% elif m == 'Light' %}Casa Cola Creek Light
-            {% else %}Backend-selected
-            {% endif %}
+          name: |
+            {% if mode == 'Dark' %}Casa Cola Creek Dark
+            {% elif mode == 'Light' %}Casa Cola Creek Light
+            {% else %}Casa Cola Creek Light{% endif %}
+          mode: |
+            {% if mode == 'Auto' %}light{% else %}{{ mode | lower }}{% endif %}
+      # Also set the dark variant explicitly so Auto mode follows system
+      - service: frontend.set_theme
+        data:
+          name: Casa Cola Creek Dark
+          mode: dark
+        continue_on_error: true
+
+  # On startup, also force the system default theme so per-user overrides
+  # don't silently win for new sessions.
+  - alias: Theme - set system default on startup
+    id: theme_default_startup
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay: '00:00:05'
+      - service: frontend.set_theme
+        data:
+          name: Casa Cola Creek Light
+          mode: light
+      - service: frontend.set_theme
+        data:
+          name: Casa Cola Creek Dark
+          mode: dark
