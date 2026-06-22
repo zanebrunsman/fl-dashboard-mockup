@@ -1,109 +1,111 @@
 # why: Custom HA theme matching the FL Home dashboard mockup palette.
-# Single theme "Casa Cola Creek" with a built-in dark mode variant.
-# In profile, set Theme = "Casa Cola Creek" + Mode = Auto, and the dashboard
-# automatically follows the iPad/system Light <-> Dark preference.
-# Tokens reference: https://www.home-assistant.io/integrations/frontend/#defining-themes
+# Single theme "Casa Cola Creek" with explicit light AND dark variants inside
+# `modes:`. HA requires BOTH `light:` and `dark:` under `modes:` for the
+# Auto/Light/Dark selector to appear in /profile. With Mode = Auto, the
+# dashboard automatically follows the iPad's system Light <-> Dark preference.
 #
-# Phase 2.6.3: merged Light + Dark into one theme using modes: light/dark
-# so HA's prefers-color-scheme Auto mode works on iPad system theme.
+# Phase 2.6.4: fixed light/dark variants nesting (HA needs both modes keys).
+# Tokens reference: https://www.home-assistant.io/integrations/frontend/#defining-themes
 
 Casa Cola Creek:
-  # ============================================================
-  # LIGHT MODE (default — used when system is light OR Mode=Light)
-  # ============================================================
-
-  # Mockup palette tokens (re-exported as CSS vars so card-mod / custom cards
-  # can read them too)
-  mockup-bg: "#f5f1ea"
-  mockup-surface: "#ffffff"
-  mockup-surface-2: "#fbf8f2"
-  mockup-surface-offset: "#ede6d8"
-  mockup-border: "#ddd4c1"
-  mockup-divider: "#e7e0d0"
-  mockup-text: "#1c2a35"
-  mockup-text-muted: "#6b7785"
-  mockup-text-faint: "#a7afba"
-  mockup-primary: "#0b3a52"
-  mockup-primary-hover: "#0a4e6c"
-  mockup-blue: "#1b6a8f"
-  mockup-blue-soft: "#e2eef5"
-  mockup-warning: "#b45309"
-  mockup-warning-highlight: "#fde9c8"
-  mockup-error: "#b42318"
-  mockup-error-highlight: "#fad9d2"
-  mockup-success: "#2f7d3a"
-  mockup-success-highlight: "#d5ebd8"
-  mockup-gold: "#d18b1a"
-
-  # HA core tokens
-  primary-color: "#0b3a52"
-  accent-color: "#d18b1a"
-  primary-background-color: "#f5f1ea"
-  secondary-background-color: "#fbf8f2"
-  divider-color: "#e7e0d0"
-
-  # Text
-  primary-text-color: "#1c2a35"
-  secondary-text-color: "#6b7785"
-  text-primary-color: "#1c2a35"
-  disabled-text-color: "#a7afba"
-  app-header-text-color: "#fefcf7"
-  app-header-background-color: "#0b3a52"
-
-  # Surfaces / cards
-  card-background-color: "#ffffff"
-  ha-card-background: "#ffffff"
+  # Shared defaults (these apply to both modes; light/dark override below).
+  # Kept here as fallbacks so missing vars in a mode block degrade gracefully.
   ha-card-border-radius: "1rem"
-  ha-card-border-color: "#ddd4c1"
   ha-card-border-width: "1px"
-  ha-card-box-shadow: "0 4px 14px rgba(20, 30, 40, 0.08)"
-  paper-card-background-color: "#ffffff"
-  paper-listbox-background-color: "#ffffff"
-
-  # Sidebar
-  sidebar-icon-color: "#6b7785"
-  sidebar-text-color: "#1c2a35"
-  sidebar-background-color: "#fbf8f2"
-  sidebar-selected-background-color: "#cfe2eb"
-  sidebar-selected-icon-color: "#0b3a52"
-  sidebar-selected-text-color: "#0b3a52"
-
-  # State / icon
-  state-icon-color: "#6b7785"
-  state-icon-active-color: "#0b3a52"
-  paper-item-icon-color: "#6b7785"
-  paper-item-icon-active-color: "#0b3a52"
-
-  # Switch / slider
-  switch-checked-color: "#0b3a52"
-  switch-checked-track-color: "#cfe2eb"
-  switch-unchecked-color: "#a7afba"
-  switch-unchecked-track-color: "#e7e0d0"
-  paper-slider-knob-color: "#0b3a52"
-  paper-slider-active-color: "#0b3a52"
-  paper-slider-container-color: "#ddd4c1"
-
-  # Status colors
-  label-badge-red: "#b42318"
-  label-badge-yellow: "#d18b1a"
-  label-badge-green: "#2f7d3a"
-  label-badge-blue: "#1b6a8f"
-  warning-color: "#b45309"
-  error-color: "#b42318"
-  success-color: "#2f7d3a"
-  info-color: "#1b6a8f"
-
-  # Mushroom card overrides
-  mush-rgb-primary: "11, 58, 82"
   mush-card-primary-font-size: "1.0625rem"
   mush-card-secondary-font-size: "0.9375rem"
   mush-icon-border-radius: "12px"
   mush-control-border-radius: "12px"
 
-  # ============================================================
-  # DARK MODE — auto-applied when system is dark OR Mode=Dark
-  # ============================================================
   modes:
+    # ============================================================
+    # LIGHT MODE — applied when system is light OR Mode=Light
+    # ============================================================
+    light:
+      # Mockup palette tokens
+      mockup-bg: "#f5f1ea"
+      mockup-surface: "#ffffff"
+      mockup-surface-2: "#fbf8f2"
+      mockup-surface-offset: "#ede6d8"
+      mockup-border: "#ddd4c1"
+      mockup-divider: "#e7e0d0"
+      mockup-text: "#1c2a35"
+      mockup-text-muted: "#6b7785"
+      mockup-text-faint: "#a7afba"
+      mockup-primary: "#0b3a52"
+      mockup-primary-hover: "#0a4e6c"
+      mockup-blue: "#1b6a8f"
+      mockup-blue-soft: "#e2eef5"
+      mockup-warning: "#b45309"
+      mockup-warning-highlight: "#fde9c8"
+      mockup-error: "#b42318"
+      mockup-error-highlight: "#fad9d2"
+      mockup-success: "#2f7d3a"
+      mockup-success-highlight: "#d5ebd8"
+      mockup-gold: "#d18b1a"
+
+      # HA core tokens
+      primary-color: "#0b3a52"
+      accent-color: "#d18b1a"
+      primary-background-color: "#f5f1ea"
+      secondary-background-color: "#fbf8f2"
+      divider-color: "#e7e0d0"
+
+      # Text
+      primary-text-color: "#1c2a35"
+      secondary-text-color: "#6b7785"
+      text-primary-color: "#1c2a35"
+      disabled-text-color: "#a7afba"
+      app-header-text-color: "#fefcf7"
+      app-header-background-color: "#0b3a52"
+
+      # Surfaces / cards
+      card-background-color: "#ffffff"
+      ha-card-background: "#ffffff"
+      ha-card-border-color: "#ddd4c1"
+      ha-card-box-shadow: "0 4px 14px rgba(20, 30, 40, 0.08)"
+      paper-card-background-color: "#ffffff"
+      paper-listbox-background-color: "#ffffff"
+
+      # Sidebar
+      sidebar-icon-color: "#6b7785"
+      sidebar-text-color: "#1c2a35"
+      sidebar-background-color: "#fbf8f2"
+      sidebar-selected-background-color: "#cfe2eb"
+      sidebar-selected-icon-color: "#0b3a52"
+      sidebar-selected-text-color: "#0b3a52"
+
+      # State / icon
+      state-icon-color: "#6b7785"
+      state-icon-active-color: "#0b3a52"
+      paper-item-icon-color: "#6b7785"
+      paper-item-icon-active-color: "#0b3a52"
+
+      # Switch / slider
+      switch-checked-color: "#0b3a52"
+      switch-checked-track-color: "#cfe2eb"
+      switch-unchecked-color: "#a7afba"
+      switch-unchecked-track-color: "#e7e0d0"
+      paper-slider-knob-color: "#0b3a52"
+      paper-slider-active-color: "#0b3a52"
+      paper-slider-container-color: "#ddd4c1"
+
+      # Status colors
+      label-badge-red: "#b42318"
+      label-badge-yellow: "#d18b1a"
+      label-badge-green: "#2f7d3a"
+      label-badge-blue: "#1b6a8f"
+      warning-color: "#b45309"
+      error-color: "#b42318"
+      success-color: "#2f7d3a"
+      info-color: "#1b6a8f"
+
+      # Mushroom
+      mush-rgb-primary: "11, 58, 82"
+
+    # ============================================================
+    # DARK MODE — applied when system is dark OR Mode=Dark
+    # ============================================================
     dark:
       # Mockup palette tokens
       mockup-bg: "#0e1722"
@@ -145,9 +147,7 @@ Casa Cola Creek:
       # Surfaces / cards
       card-background-color: "#16212e"
       ha-card-background: "#16212e"
-      ha-card-border-radius: "1rem"
       ha-card-border-color: "#2c3a4d"
-      ha-card-border-width: "1px"
       ha-card-box-shadow: "0 4px 14px rgba(0, 0, 0, 0.35)"
       paper-card-background-color: "#16212e"
       paper-listbox-background-color: "#1b2837"
@@ -185,9 +185,5 @@ Casa Cola Creek:
       success-color: "#6dc079"
       info-color: "#5da8c9"
 
-      # Mushroom card overrides
+      # Mushroom
       mush-rgb-primary: "93, 168, 201"
-      mush-card-primary-font-size: "1.0625rem"
-      mush-card-secondary-font-size: "0.9375rem"
-      mush-icon-border-radius: "12px"
-      mush-control-border-radius: "12px"
