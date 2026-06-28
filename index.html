@@ -236,27 +236,12 @@
             <span class="tile__eyebrow">Doors &amp; Garage</span>
             <span class="tile__chev" aria-hidden="true">›</span>
           </div>
-          <div class="tile__body tile__body--status">
-            <div class="lock-row">
-              <div class="lock-row__icon lock-row__icon--locked" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+          <div class="tile__body tile__body--status tile__body--offline">
+            <div class="lock-row lock-row--offline">
+              <div class="lock-row__icon lock-row__icon--muted" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
               </div>
-              <div class="lock-row__name">Front door</div>
-              <div class="lock-row__state lock-row__state--ok">Locked</div>
-            </div>
-            <div class="lock-row">
-              <div class="lock-row__icon lock-row__icon--locked" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-              </div>
-              <div class="lock-row__name">Back door</div>
-              <div class="lock-row__state lock-row__state--ok">Locked</div>
-            </div>
-            <div class="lock-row">
-              <div class="lock-row__icon lock-row__icon--garage" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13" /><path d="M7 21v-9h10v9" /><path d="M7 15h10" /></svg>
-              </div>
-              <div class="lock-row__name">Garage door</div>
-              <div class="lock-row__state lock-row__state--ok">Closed</div>
+              <div class="lock-row__name" style="color:var(--text-tertiary,var(--clr-text-3,#aaa))">Connects when HA Green is online</div>
             </div>
           </div>
         </button>
@@ -578,89 +563,57 @@
       </header>
 
       <div class="sec-grid">
-        <!-- Cameras: large feed + thumbs -->
+        <!-- Public live webcams — St. Augustine landmarks -->
+        <!-- Camera feeds will switch to actual home cameras once HA Green is online -->
         <section class="card card--cam-main">
           <header class="card__head">
-            <div class="card__title" id="camTitle">Front door</div>
-            <div class="card__sub">Live · 1080p · Local stream</div>
+            <div class="card__title" id="camTitle">Castillo de San Marcos</div>
+            <div class="card__sub" id="camSub">Live public webcam · St. Augustine · <span style="color:var(--clr-accent,var(--color-primary))">Home cameras connect when HA Green is online</span></div>
           </header>
           <div class="cam-main">
-            <div class="cam-main__view" id="camView" data-cam="front" style="background-image:url('assets/cams/cam-front.png')"></div>
-            <div class="cam-main__overlay">
-              <span class="cam-main__live"><span class="cam-thumb__dot"></span>LIVE</span>
-              <span class="cam-main__time" id="camTime">2:14 PM</span>
+            <div class="cam-main__view" id="camView" style="padding:0;background:#000;aspect-ratio:16/9;overflow:hidden;">
+              <iframe id="camIframe"
+                src="https://www.youtube.com/embed/FyGb2TZB344?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1"
+                style="width:100%;height:100%;border:0;display:block;"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+                title="Castillo de San Marcos live cam"></iframe>
             </div>
           </div>
           <div class="cam-rail">
-            <button class="cam-rail__btn cam-rail__btn--active" data-cam="front">
-              <div class="cam-thumb cam-thumb--front cam-thumb--small" style="background-image:url('assets/cams/cam-front.png')"></div>
-              <span>Front</span>
+            <button class="cam-rail__btn cam-rail__btn--active" data-cam="castillo" data-yt="FyGb2TZB344" data-label="Castillo de San Marcos">
+              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a3a2a,#2d5c3e);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🏰</div>
+              <span>Castillo</span>
             </button>
-            <button class="cam-rail__btn" data-cam="drive">
-              <div class="cam-thumb cam-thumb--drive cam-thumb--small" style="background-image:url('assets/cams/cam-drive.png')"></div>
-              <span>Driveway</span>
+            <button class="cam-rail__btn" data-cam="bridge" data-yt="0lox0s8zNcU" data-label="Bridge of Lions">
+              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a2a3a,#2d3e5c);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌉</div>
+              <span>Bridge of Lions</span>
             </button>
-            <button class="cam-rail__btn" data-cam="back">
-              <div class="cam-thumb cam-thumb--back cam-thumb--small" style="background-image:url('assets/cams/cam-back.png')"></div>
-              <span>Backyard</span>
+            <button class="cam-rail__btn" data-cam="stgeorge" data-yt="ZksWoEAhmTU" data-label="St. George Street">
+              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#3a2a1a,#5c3e2d);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛖</div>
+              <span>St. George St.</span>
             </button>
-            <button class="cam-rail__btn" data-cam="gar">
-              <div class="cam-thumb cam-thumb--gar cam-thumb--small" style="background-image:url('assets/cams/cam-garage.png')"></div>
-              <span>Garage</span>
+            <button class="cam-rail__btn" data-cam="skyline" data-yt="ZTk5cIbXH2g" data-label="St. Augustine Skyline">
+              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a1a3a,#2d2d5c);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌆</div>
+              <span>Skyline</span>
             </button>
           </div>
         </section>
 
-        <!-- Controls -->
-        <section class="card card--controls">
+        <!-- Doors & garage — connects to HA Green -->
+        <section class="card card--controls card--offline">
           <header class="card__head">
             <div class="card__title">Doors &amp; garage</div>
-            <div class="card__sub">Tap to act · PIN required</div>
+            <div class="card__sub">Available when HA Green is online</div>
           </header>
-          <div class="controls">
-            <article class="control" data-control="front-door" data-state="locked">
-              <div class="control__icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-              </div>
-              <div class="control__meta">
-                <div class="control__name">Front door</div>
-                <div class="control__state">Locked · Battery 87%</div>
-              </div>
-              <button class="control__btn" data-act="unlock" data-target="front-door">Unlock</button>
-            </article>
-
-            <article class="control" data-control="back-door" data-state="locked">
-              <div class="control__icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-              </div>
-              <div class="control__meta">
-                <div class="control__name">Back door</div>
-                <div class="control__state">Locked · Battery 92%</div>
-              </div>
-              <button class="control__btn" data-act="unlock" data-target="back-door">Unlock</button>
-            </article>
-
-            <article class="control" data-control="garage" data-state="closed">
-              <div class="control__icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13" /><path d="M7 21v-9h10v9" /><path d="M7 15h10" /></svg>
-              </div>
-              <div class="control__meta">
-                <div class="control__name">Garage door</div>
-                <div class="control__state">Closed · Last opened 9:42 AM</div>
-              </div>
-              <button class="control__btn" data-act="open" data-target="garage">Open</button>
-            </article>
+          <div class="ha-offline-panel">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <div class="ha-offline-panel__text">
+              <div class="ha-offline-panel__title">Lock &amp; garage controls</div>
+              <div class="ha-offline-panel__sub">Real-time lock state, battery levels, activity log, and PIN-protected controls will appear here once Home Assistant Green is set up and paired.</div>
+            </div>
           </div>
-
-          <header class="card__head card__head--inset">
-            <div class="card__title">Recent activity</div>
-          </header>
-          <ul class="log" role="list">
-            <li><span class="log__time">2:02p</span><span class="log__what">Front door — Locked by Mom</span></li>
-            <li><span class="log__time">12:14p</span><span class="log__what">Garage — Closed</span></li>
-            <li><span class="log__time">9:42a</span><span class="log__what">Garage — Opened</span></li>
-            <li><span class="log__time">9:41a</span><span class="log__what">Front door — Unlocked by Dad</span></li>
-          </ul>
         </section>
       </div>
 
@@ -1269,30 +1222,11 @@
             <div class="card__title">System</div>
             <div class="card__sub">Home Assistant Green</div>
           </header>
-          <div class="sys-grid">
-            <div class="sys-cell">
-              <div class="sys-cell__label">HA Core</div>
-              <div class="sys-cell__value">2026.6.2</div>
-            </div>
-            <div class="sys-cell">
-              <div class="sys-cell__label">Uptime</div>
-              <div class="sys-cell__value">14 days</div>
-            </div>
-            <div class="sys-cell">
-              <div class="sys-cell__label">CPU</div>
-              <div class="sys-cell__value">12%</div>
-            </div>
-            <div class="sys-cell">
-              <div class="sys-cell__label">RAM</div>
-              <div class="sys-cell__value">1.4 / 4 GB</div>
-            </div>
-            <div class="sys-cell">
-              <div class="sys-cell__label">Last alert poll</div>
-              <div class="sys-cell__value">30 s ago</div>
-            </div>
-            <div class="sys-cell">
-              <div class="sys-cell__label">Blitzortung</div>
-              <div class="sys-cell__value sys-cell__value--ok">Connected</div>
+          <div class="sys-offline-note">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+              <div class="sys-offline-note__title">HA Green not yet connected</div>
+              <div class="sys-offline-note__sub">System stats (HA version, uptime, CPU, RAM) will appear here once Home Assistant Green is online and paired to this dashboard.</div>
             </div>
           </div>
           <div class="sys-actions">
@@ -1347,22 +1281,11 @@
           <div class="sleep-clock__date" id="sleepClockDate">Saturday · June 20</div>
         </div>
 
-        <!-- Essential lock status (read-only) -->
-        <div class="sleep-locks">
-          <div class="sleep-lock">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            <span class="sleep-lock__name">Front door</span>
-            <span class="sleep-lock__state">Locked</span>
-          </div>
-          <div class="sleep-lock">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            <span class="sleep-lock__name">Back door</span>
-            <span class="sleep-lock__state">Locked</span>
-          </div>
-          <div class="sleep-lock">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21V8l9-5 9 5v13"/><path d="M7 21v-9h10v9"/><path d="M7 15h10"/></svg>
-            <span class="sleep-lock__name">Garage</span>
-            <span class="sleep-lock__state">Closed</span>
+        <!-- Lock status placeholder — will show real state when HA Green is online -->
+        <div class="sleep-locks sleep-locks--placeholder">
+          <div class="sleep-lock sleep-lock--muted">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <span class="sleep-lock__name">Door &amp; garage status available when HA Green is online</span>
           </div>
         </div>
 
@@ -1458,5 +1381,23 @@
     </div>
 
     <script src="app.js"></script>
-  </body>
+  <script>
+/* ── Security tab: YouTube cam switcher ── */
+document.querySelectorAll('.cam-rail__btn[data-yt]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ytId = btn.dataset.yt;
+    const label = btn.dataset.label || btn.querySelector('span')?.textContent || '';
+    const iframe = document.getElementById('camIframe');
+    const title = document.getElementById('camTitle');
+    if (iframe) {
+      iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1`;
+      iframe.title = label + ' live cam';
+    }
+    if (title) title.textContent = label;
+    document.querySelectorAll('.cam-rail__btn').forEach(b => b.classList.remove('cam-rail__btn--active'));
+    btn.classList.add('cam-rail__btn--active');
+  });
+});
+</script>
+</body>
 </html>
