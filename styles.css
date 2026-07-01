@@ -192,6 +192,9 @@ svg {
 .brand__mark {
   width: 38px;
   height: 38px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 .brand__text {
   display: flex;
@@ -270,7 +273,7 @@ svg {
 /* ===== HERO ===== */
 .hero {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 2.8fr 2fr;
   gap: var(--space-4);
   align-items: stretch;
 }
@@ -2943,6 +2946,15 @@ svg {
 /* Stack on narrower tablets / portrait */
 @media (max-width: 900px) {
   .testing-grid { grid-template-columns: 1fr; }
+}
+
+/* Custom radar moved into the Testing grid: the .radar block uses flex:1 and
+   relies on its card having a fixed height. In this grid the card is
+   auto-height, so give the map area an explicit height to render Leaflet. */
+.testing-grid .card--radar { align-self: stretch; }
+.testing-grid .card--radar .radar {
+  flex: 0 0 auto;
+  height: clamp(360px, 52vh, 620px);
 }
 
 .card--windy .card__head,

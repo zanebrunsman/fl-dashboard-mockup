@@ -547,12 +547,14 @@
     return fsRadar;
   }
 
-  // Hook: weather tab activation -> init card radar
-  document.querySelectorAll('[data-nav="weather"]').forEach((btn) => {
+  // Hook: testing tab activation -> init custom radar (moved from weather tab).
+  // Leaflet needs the map element visible before invalidateSize(), so we defer
+  // to the tab-show; ensureCardRadar() also re-invalidates on subsequent visits.
+  document.querySelectorAll('[data-nav="testing"]').forEach((btn) => {
     btn.addEventListener('click', () => setTimeout(ensureCardRadar, 50));
   });
-  // If we ever land on weather tab directly, init immediately
-  if (document.querySelector('[data-view="weather"]') && !document.querySelector('[data-view="weather"]').hidden) {
+  // If we ever land on the testing tab directly, init immediately
+  if (document.querySelector('[data-view="testing"]') && !document.querySelector('[data-view="testing"]').hidden) {
     setTimeout(ensureCardRadar, 50);
   }
 
@@ -638,4 +640,23 @@
       }
     });
   });
+})();
+
+// ---- Camera thumbnail cache-bust refresh (every 120s) ----
+// Preloads new image before swapping to avoid flicker; only runs while page is visible.
+(() => {
+  function refreshCamThumbs() {
+    if (document.visibilityState !== 'visible') return;
+    document.querySelectorAll('.cam-thumb[data-yt]').forEach((el) => {
+      const id = el.dataset.yt;
+      if (!id) return;
+      const newUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg?cb=${Date.now()}`;
+      const img = new Image();
+      img.onload = () => {
+        el.style.backgroundImage = `url('${newUrl}')`;
+      };
+      img.src = newUrl;
+    });
+  }
+  setInterval(refreshCamThumbs, 120 * 1000);
 })();

@@ -15,7 +15,9 @@
         <meta name="apple-mobile-web-app-title" content="Casa Cola Creek" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="icon" href="assets/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <!-- Leaflet for live radar map (CARTO basemap + RainViewer precipitation overlay) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -31,10 +33,7 @@
       <header class="topbar">
         <div class="topbar__left">
           <div class="brand">
-            <svg viewBox="0 0 32 32" aria-hidden="true" class="brand__mark">
-              <path d="M5 16 L16 5 L27 16 L27 27 L5 27 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-              <path d="M13 27 L13 19 L19 19 L19 27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-            </svg>
+            <img src="assets/icon-192.png" alt="Casa Cola Creek" class="brand__mark" width="38" height="38" decoding="async" />
             <div class="brand__text">
               <div class="brand__line1">Casa Cola Creek</div>
               <div class="brand__line2">St. Augustine · FL</div>
@@ -99,13 +98,6 @@
               <div class="stat__label">Tide</div>
               <div class="stat__value">Rising <span class="stat__sub">High 4:42p</span></div>
             </div>
-            <div class="stat stat--lightning">
-              <div class="stat__label">Lightning</div>
-              <div class="stat__value">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--lightning)" stroke="none" style="vertical-align:-2px;margin-right:4px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
-                3.2 mi <span class="stat__sub">NE · 2m ago</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -151,56 +143,11 @@
             <span class="tile__eyebrow">Weather</span>
             <span class="tile__chev" aria-hidden="true">›</span>
           </div>
-          <div class="tile__body">
-            <div class="hourly" role="list" aria-label="Hourly forecast">
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">Now</div>
-                <svg viewBox="0 0 40 40" width="40" height="40" class="hourly__icon" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="var(--sun)" stroke="#c98a14" stroke-width="1"/><g stroke="var(--sun)" stroke-width="2.6" stroke-linecap="round"><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/><line x1="8.5" y1="8.5" x2="11.5" y2="11.5"/><line x1="28.5" y1="28.5" x2="31.5" y2="31.5"/><line x1="8.5" y1="31.5" x2="11.5" y2="28.5"/><line x1="28.5" y1="11.5" x2="31.5" y2="8.5"/></g></svg>
-                <div class="hourly__temp">88°</div>
-                <div class="hourly__precip hourly__precip--dry">0%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">8 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">85°</div>
-                <div class="hourly__precip hourly__precip--dry">5%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">9 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">82°</div>
-                <div class="hourly__precip hourly__precip--dry">10%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">10 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">79°</div>
-                <div class="hourly__precip hourly__precip--wet">40%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">11 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3 M14 27 l-1.5 3 M18 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">77°</div>
-                <div class="hourly__precip hourly__precip--wet">65%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">12 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">75°</div>
-                <div class="hourly__precip hourly__precip--wet">50%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">1 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">74°</div>
-                <div class="hourly__precip hourly__precip--dry">20%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">2 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">74°</div>
-                <div class="hourly__precip hourly__precip--dry">15%</div>
-              </div>
+          <div class="tile__body tile__body--weather-summary">
+            <div class="wx-summary">
+              <div class="wx-summary__temp">86°</div>
+              <div class="wx-summary__phrase">Partly sunny</div>
+              <div class="wx-summary__cta">Forecast →</div>
             </div>
           </div>
         </button>
@@ -234,20 +181,22 @@
           </div>
         </button>
 
-        <button class="tile tile--security" data-nav="security" aria-label="Doors and garage">
+        <section class="tile tile--radar" data-nav="weather">
           <div class="tile__head">
-            <span class="tile__eyebrow">Doors &amp; Garage</span>
-            <span class="tile__chev" aria-hidden="true">›</span>
+            <span class="tile__eyebrow">Radar</span>
+            <button class="tile__chev-btn" data-nav="weather" aria-label="Open Weather tab" style="background:none;border:none;padding:0;cursor:pointer;color:inherit;font-size:inherit;">›</button>
           </div>
-          <div class="tile__body tile__body--status tile__body--offline">
-            <div class="lock-row lock-row--offline">
-              <div class="lock-row__icon lock-row__icon--muted" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-              </div>
-              <div class="lock-row__name" style="color:var(--text-tertiary,var(--clr-text-3,#aaa))">Connects when HA Green is online</div>
-            </div>
+          <div class="tile__body tile__body--radar-embed" style="min-height:180px;aspect-ratio:16/9;padding:0;overflow:hidden;">
+            <iframe
+              id="homeRadarFrame"
+              src="https://embed.windy.com/embed2.html?lat=29.98&lon=-81.35&detailLat=29.98&detailLon=-81.35&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1&play=1"
+              frameborder="0"
+              loading="lazy"
+              allowfullscreen
+              style="width:100%;height:100%;border:0;display:block;"
+              title="Live radar — St. Augustine"></iframe>
           </div>
-        </button>
+        </section>
 
         <button class="tile tile--nowplaying" data-nav="media" aria-label="Open media controls">
           <div class="tile__head">
@@ -324,38 +273,97 @@
       </header>
 
       <div class="wx-grid">
-        <!-- Radar -->
-        <section class="card card--radar">
+        <!-- Hourly forecast (moved from Home tile) -->
+        <section class="card card--hourly">
           <header class="card__head">
-            <div class="card__title">Live radar</div>
-            <div class="card__sub">RainViewer + Blitzortung · St. Augustine</div>
+            <div class="card__title">Hourly forecast</div>
           </header>
-          <div class="radar" data-radar="card">
-            <!-- Top-right cluster: data-age pills + map controls -->
-            <div class="radar__topbar">
-              <div class="radar__ages">
-                <span class="radar__pill" data-radar-ts hidden>Radar · <span data-radar-age>--</span></span>
-                <span class="radar__pill radar__pill--bolt">Lightning · 2m ago</span>
-                <span class="radar__pill radar__pill--err" data-radar-err hidden>Radar offline</span>
+          <div class="hourly" role="list" aria-label="Hourly forecast">
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">Now</div>
+                <svg viewBox="0 0 40 40" width="40" height="40" class="hourly__icon" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="var(--sun)" stroke="#c98a14" stroke-width="1"/><g stroke="var(--sun)" stroke-width="2.6" stroke-linecap="round"><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/><line x1="8.5" y1="8.5" x2="11.5" y2="11.5"/><line x1="28.5" y1="28.5" x2="31.5" y2="31.5"/><line x1="8.5" y1="31.5" x2="11.5" y2="28.5"/><line x1="28.5" y1="11.5" x2="31.5" y2="8.5"/></g></svg>
+                <div class="hourly__temp">88°</div>
+                <div class="hourly__precip hourly__precip--dry">0%</div>
               </div>
-              <div class="radar__ctrls">
-                <button class="radar__ctrl" data-radar-action="reset" aria-label="Reset radar view" title="Reset view">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
-                </button>
-                <button class="radar__ctrl" data-radar-action="expand" aria-label="Open full-screen radar" title="Full screen">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
-                </button>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">8 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">85°</div>
+                <div class="hourly__precip hourly__precip--dry">5%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">9 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">82°</div>
+                <div class="hourly__precip hourly__precip--dry">10%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">10 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">79°</div>
+                <div class="hourly__precip hourly__precip--wet">40%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">11 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3 M14 27 l-1.5 3 M18 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">77°</div>
+                <div class="hourly__precip hourly__precip--wet">65%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">12 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">75°</div>
+                <div class="hourly__precip hourly__precip--wet">50%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">1 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">20%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">2 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">15%</div>
               </div>
             </div>
-            <div class="radar__map" data-radar-map id="radar-map" aria-label="Live radar map of St. Augustine with precipitation and lightning"></div>
+        </section>
 
-            <div class="radar__legend">
-              <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
-              <span class="radar__chip"><i style="background:#f59e0b"></i>Moderate</span>
-              <span class="radar__chip"><i style="background:#ef4444"></i>Heavy</span>
-              <span class="radar__chip radar__chip--bolt"><i style="background:#ffd84d"></i>Lightning · last 10 min</span>
+        <!-- Radar (Windy.com embed) -->
+        <section class="card card--windy">
+          <header class="card__head">
+            <div>
+              <div class="card__title">Live radar</div>
+              <div class="card__sub">Windy.com · St. Augustine · tap an overlay to switch</div>
             </div>
+            <div class="windy-overlays" role="group" aria-label="Windy overlay">
+              <button class="chip chip--active" data-windy-overlay="radar">Radar</button>
+              <button class="chip" data-windy-overlay="wind">Wind</button>
+              <button class="chip" data-windy-overlay="rain">Rain</button>
+              <button class="chip" data-windy-overlay="temp">Temp</button>
+              <button class="chip" data-windy-overlay="waves">Waves</button>
+            </div>
+          </header>
+          <div class="windy-embed">
+            <iframe
+              id="windyFrame"
+              title="Windy weather map — St. Augustine, FL"
+              src="https://embed.windy.com/embed2.html?lat=29.98&lon=-81.35&detailLat=29.98&detailLon=-81.35&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1&play=1"
+              frameborder="0"
+              loading="lazy"
+              allowfullscreen></iframe>
           </div>
+          <footer class="card__foot windy-foot">
+            <span class="windy-foot__note">Radar, wind, rain, temp &amp; waves overlays · pinch to zoom.</span>
+            <div class="windy-foot__actions">
+              <button class="btn btn--ghost btn--sm" id="windyRecenter" type="button" title="Recenter on your location">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                Recenter
+              </button>
+              <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.98,-81.35,9" target="_blank" rel="noopener">Open full Windy ↗</a>
+            </div>
+          </footer>
         </section>
 
         <!-- Alerts list -->
@@ -1324,7 +1332,7 @@
 
     <!-- ===========================
          TESTING VIEW  (dev/preview — not for Dad's daily use)
-         Trials the Windy.com embed + overlay switching in-context.
+         Trials the custom Leaflet radar (RainViewer + Blitzortung) in-context.
          =========================== -->
     <main class="view view--testing" data-view="testing" hidden>
       <header class="topbar">
@@ -1346,39 +1354,40 @@
       </header>
 
       <div class="testing-grid">
-        <section class="card card--windy">
+        <!-- Custom radar (Leaflet: RainViewer + Blitzortung) — trialed here before HA port -->
+        <section class="card card--radar">
           <header class="card__head">
             <div>
-              <div class="card__title">Windy.com embed</div>
-              <div class="card__sub">Interactive map centered on St. Augustine · tap an overlay to switch</div>
-            </div>
-            <div class="windy-overlays" role="group" aria-label="Windy overlay">
-              <button class="chip chip--active" data-windy-overlay="radar">Radar</button>
-              <button class="chip" data-windy-overlay="wind">Wind</button>
-              <button class="chip" data-windy-overlay="rain">Rain</button>
-              <button class="chip" data-windy-overlay="temp">Temp</button>
-              <button class="chip" data-windy-overlay="waves">Waves</button>
+              <div class="card__title">Custom radar</div>
+              <div class="card__sub">RainViewer + Blitzortung · St. Augustine · self-hosted stack</div>
             </div>
           </header>
-          <div class="windy-embed">
-            <iframe
-              id="windyFrame"
-              title="Windy weather map — St. Augustine, FL"
-              src="https://embed.windy.com/embed2.html?lat=29.98&lon=-81.35&detailLat=29.98&detailLon=-81.35&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
-              frameborder="0"
-              loading="lazy"
-              allowfullscreen></iframe>
-          </div>
-          <footer class="card__foot windy-foot">
-            <span class="windy-foot__note">Testing feed responsiveness &amp; touch controls on the tablet.</span>
-            <div class="windy-foot__actions">
-              <button class="btn btn--ghost btn--sm" id="windyRecenter" type="button" title="Recenter on St. Augustine">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-                Recenter
-              </button>
-              <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.98,-81.35,9" target="_blank" rel="noopener">Open full Windy ↗</a>
+          <div class="radar" data-radar="card">
+            <!-- Top-right cluster: data-age pills + map controls -->
+            <div class="radar__topbar">
+              <div class="radar__ages">
+                <span class="radar__pill" data-radar-ts hidden>Radar · <span data-radar-age>--</span></span>
+                <span class="radar__pill radar__pill--bolt">Lightning · 2m ago</span>
+                <span class="radar__pill radar__pill--err" data-radar-err hidden>Radar offline</span>
+              </div>
+              <div class="radar__ctrls">
+                <button class="radar__ctrl" data-radar-action="reset" aria-label="Reset radar view" title="Reset view">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+                </button>
+                <button class="radar__ctrl" data-radar-action="expand" aria-label="Open full-screen radar" title="Full screen">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+                </button>
+              </div>
             </div>
-          </footer>
+            <div class="radar__map" data-radar-map id="radar-map" aria-label="Live radar map of St. Augustine with precipitation and lightning"></div>
+
+            <div class="radar__legend">
+              <span class="radar__chip"><i style="background:#22c55e"></i>Light</span>
+              <span class="radar__chip"><i style="background:#f59e0b"></i>Moderate</span>
+              <span class="radar__chip"><i style="background:#ef4444"></i>Heavy</span>
+              <span class="radar__chip radar__chip--bolt"><i style="background:#ffd84d"></i>Lightning · last 10 min</span>
+            </div>
+          </div>
         </section>
 
         <section class="card card--windy-notes">
@@ -1389,11 +1398,11 @@
             </div>
           </header>
           <ul class="check-list" role="list">
-            <li>Overlay buttons swap the map (radar / wind / rain / temp / waves)</li>
-            <li>Pinch-zoom &amp; drag work under a finger on the tablet</li>
-            <li>Loads quickly over the home Wi-Fi</li>
+            <li>RainViewer precipitation tiles load and animate</li>
+            <li>Blitzortung lightning strikes appear within ~10 min</li>
+            <li>Reset &amp; full-screen controls behave on the tablet</li>
+            <li>Pinch-zoom &amp; drag work under a finger</li>
             <li>Readable in both light and dark mode</li>
-            <li>“Open full Windy” launches the standalone site</li>
           </ul>
         </section>
       </div>
@@ -1550,35 +1559,59 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
   });
 });
 
-/* ── Testing tab: Windy overlay switcher + recenter ── */
-/* The Windy embed exposes no recenter button or JS API and the iframe is
-   cross-origin, so we can't move the map from outside. Instead, both the
-   overlay chips and the Recenter button rebuild the iframe src with the home
-   coordinates — reloading snaps the map back to St. Augustine (zoom 9).
-   Windy maps 'radar' to product=radar; other overlays use product=ecmwf. */
+/* ── Windy embeds: device-location aware ── */
+/* The Windy embed exposes no recenter/setView JS API and the iframe is
+   cross-origin, so we can't move the map from outside. Instead we rebuild the
+   iframe src with the coordinates we want — reloading snaps the map there.
+
+   Two embeds share this logic: the Home-tab radar tile (#homeRadarFrame) and
+   the Weather-tab full map (#windyFrame, with overlay chips + Recenter). Both
+   load first at the hardcoded St. Augustine fallback, then re-point to the
+   device's location once the Geolocation API resolves. If the user denies
+   permission, geolocation is unavailable, or it times out, they stay on the
+   fallback. Geolocation requires HTTPS (GitHub Pages is fine; a local http://
+   preview will simply keep the fallback). Windy maps 'radar' to product=radar;
+   other overlays use product=ecmwf. */
 (function () {
+  // ── Shared coordinate state ──
+  // Rounded fallback (~2 decimals / ~1 km) so the exact home location isn't
+  // exposed in this public repo. The HA port can swap in the precise coords.
+  const FALLBACK = { lat: 29.98, lon: -81.35 };
+  const ZOOM = 9;
+  const coords = { lat: FALLBACK.lat, lon: FALLBACK.lon };
+  const productFor = (o) => (o === 'radar' ? 'radar' : 'ecmwf');
+
+  function windySrc(overlay) {
+    const lat = coords.lat, lon = coords.lon;
+    const product = productFor(overlay);
+    return (
+      `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}` +
+      `&detailLat=${lat}&detailLon=${lon}&width=650&height=450&zoom=${ZOOM}` +
+      `&level=surface&overlay=${overlay}&product=${product}` +
+      `&menu=&message=true&marker=true&calendar=now&pressure=&type=map` +
+      `&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1&play=1`
+    );
+  }
+
+  // ── Home-tab radar tile (radar overlay only, no controls) ──
+  const homeFrame = document.getElementById('homeRadarFrame');
+  function refreshHomeRadar() {
+    if (homeFrame) homeFrame.src = windySrc('radar');
+  }
+
+  // ── Weather-tab full map (overlay chips + recenter) ──
   const frame = document.getElementById('windyFrame');
   const openLink = document.getElementById('windyOpen');
   const recenterBtn = document.getElementById('windyRecenter');
   const chips = document.querySelectorAll('[data-windy-overlay]');
-  if (!frame || !chips.length) return;
-
-  // Rounded to ~2 decimals (~1 km) so the exact home location isn't exposed in this public repo.
-  const LAT = 29.98, LON = -81.35, ZOOM = 9;
-  const productFor = (o) => (o === 'radar' ? 'radar' : 'ecmwf');
   let currentOverlay = 'radar';
 
   function loadEmbed(overlay) {
     currentOverlay = overlay;
-    const product = productFor(overlay);
-    frame.src =
-      `https://embed.windy.com/embed2.html?lat=${LAT}&lon=${LON}` +
-      `&detailLat=${LAT}&detailLon=${LON}&width=650&height=450&zoom=${ZOOM}` +
-      `&level=surface&overlay=${overlay}&product=${product}` +
-      `&menu=&message=true&marker=true&calendar=now&pressure=&type=map` +
-      `&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1`;
+    if (frame) frame.src = windySrc(overlay);
     if (openLink) {
-      openLink.href = `https://www.windy.com/?${overlay},${LAT.toFixed(3)},${LON.toFixed(3)},${ZOOM}`;
+      openLink.href =
+        `https://www.windy.com/?${overlay},${coords.lat.toFixed(3)},${coords.lon.toFixed(3)},${ZOOM}`;
     }
     chips.forEach((c) =>
       c.classList.toggle('chip--active', c.dataset.windyOverlay === overlay)
@@ -1589,12 +1622,38 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
     chip.addEventListener('click', () => loadEmbed(chip.dataset.windyOverlay));
   });
 
-  /* Recenter: reload the embed at home coords, keeping the active overlay. */
+  // ── Geolocation helper ──
+  // Resolves the device position, updates shared coords, and reloads both
+  // embeds. Silently keeps the fallback if geolocation is blocked/denied/slow.
+  function applyDeviceLocation(onDone) {
+    if (!('geolocation' in navigator)) { if (onDone) onDone(false); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        coords.lat = +pos.coords.latitude.toFixed(4);
+        coords.lon = +pos.coords.longitude.toFixed(4);
+        refreshHomeRadar();
+        loadEmbed(currentOverlay);
+        if (onDone) onDone(true);
+      },
+      () => { if (onDone) onDone(false); },   // denied / unavailable / timeout
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    );
+  }
+
+  // Seed both embeds at the fallback immediately (also sets the Open-Windy link
+  // and the active chip), then attempt to re-point to the device location.
+  loadEmbed('radar');
+  applyDeviceLocation();
+
+  /* Recenter: pull a fresh device fix and re-point both embeds. On failure the
+     reload just refreshes at the last-known (fallback/home) coordinates. */
   if (recenterBtn) {
     recenterBtn.addEventListener('click', () => {
       recenterBtn.classList.add('is-busy');
-      loadEmbed(currentOverlay);
-      setTimeout(() => recenterBtn.classList.remove('is-busy'), 600);
+      applyDeviceLocation(() => {
+        loadEmbed(currentOverlay);
+        setTimeout(() => recenterBtn.classList.remove('is-busy'), 600);
+      });
     });
   }
 })();
