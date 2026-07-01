@@ -211,22 +211,25 @@
             <span class="tile__count">4 online</span>
             <span class="tile__chev" aria-hidden="true">›</span>
           </div>
+          <!-- Live St. Augustine public webcam previews. Thumbnails pull from
+               YouTube's static thumbnail endpoint; clicking the tile opens the
+               Security tab on that feed. Home cameras replace these once HA Green is online. -->
           <div class="tile__body tile__body--cam-grid">
-            <div class="cam-thumb cam-thumb--front" style="background-image:url('assets/cams/cam-front.png')">
+            <div class="cam-thumb cam-thumb--front" data-yt="FyGb2TZB344" style="background-image:url('https://img.youtube.com/vi/FyGb2TZB344/hqdefault.jpg')">
               <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
-              <div class="cam-thumb__label">Front Door</div>
+              <div class="cam-thumb__label">Castillo</div>
             </div>
-            <div class="cam-thumb cam-thumb--drive" style="background-image:url('assets/cams/cam-drive.png')">
+            <div class="cam-thumb cam-thumb--drive" data-yt="0lox0s8zNcU" style="background-image:url('https://img.youtube.com/vi/0lox0s8zNcU/hqdefault.jpg')">
               <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
-              <div class="cam-thumb__label">Driveway</div>
+              <div class="cam-thumb__label">Bridge of Lions</div>
             </div>
-            <div class="cam-thumb cam-thumb--back" style="background-image:url('assets/cams/cam-back.png')">
+            <div class="cam-thumb cam-thumb--back" data-yt="ZksWoEAhmTU" style="background-image:url('https://img.youtube.com/vi/ZksWoEAhmTU/hqdefault.jpg')">
               <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
-              <div class="cam-thumb__label">Backyard</div>
+              <div class="cam-thumb__label">St. George St.</div>
             </div>
-            <div class="cam-thumb cam-thumb--gar" style="background-image:url('assets/cams/cam-garage.png')">
+            <div class="cam-thumb cam-thumb--gar" data-yt="ZTk5cIbXH2g" style="background-image:url('https://img.youtube.com/vi/ZTk5cIbXH2g/hqdefault.jpg')">
               <div class="cam-thumb__live"><span class="cam-thumb__dot"></span>LIVE</div>
-              <div class="cam-thumb__label">Garage</div>
+              <div class="cam-thumb__label">Skyline</div>
             </div>
           </div>
         </button>
@@ -582,20 +585,21 @@
             </div>
           </div>
           <div class="cam-rail">
+            <!-- Rail thumbnails preview each feed via YouTube's static thumbnail. -->
             <button class="cam-rail__btn cam-rail__btn--active" data-cam="castillo" data-yt="FyGb2TZB344" data-label="Castillo de San Marcos">
-              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a3a2a,#2d5c3e);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🏰</div>
+              <div class="cam-thumb cam-thumb--small" style="background-image:url('https://img.youtube.com/vi/FyGb2TZB344/hqdefault.jpg');background-size:cover;background-position:center;"></div>
               <span>Castillo</span>
             </button>
             <button class="cam-rail__btn" data-cam="bridge" data-yt="0lox0s8zNcU" data-label="Bridge of Lions">
-              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a2a3a,#2d3e5c);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌉</div>
+              <div class="cam-thumb cam-thumb--small" style="background-image:url('https://img.youtube.com/vi/0lox0s8zNcU/hqdefault.jpg');background-size:cover;background-position:center;"></div>
               <span>Bridge of Lions</span>
             </button>
             <button class="cam-rail__btn" data-cam="stgeorge" data-yt="ZksWoEAhmTU" data-label="St. George Street">
-              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#3a2a1a,#5c3e2d);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🛖</div>
+              <div class="cam-thumb cam-thumb--small" style="background-image:url('https://img.youtube.com/vi/ZksWoEAhmTU/hqdefault.jpg');background-size:cover;background-position:center;"></div>
               <span>St. George St.</span>
             </button>
             <button class="cam-rail__btn" data-cam="skyline" data-yt="ZTk5cIbXH2g" data-label="St. Augustine Skyline">
-              <div class="cam-thumb cam-thumb--small" style="background:linear-gradient(135deg,#1a1a3a,#2d2d5c);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🌆</div>
+              <div class="cam-thumb cam-thumb--small" style="background-image:url('https://img.youtube.com/vi/ZTk5cIbXH2g/hqdefault.jpg');background-size:cover;background-position:center;"></div>
               <span>Skyline</span>
             </button>
           </div>
@@ -1382,20 +1386,41 @@
 
     <script src="app.js"></script>
   <script>
-/* ── Security tab: YouTube cam switcher ── */
+/* ── YouTube cam switcher (Security rail + Home cam tiles) ── */
+/* Shared switch: load a feed into the Security main view and sync the rail's
+   active state. Labels are read from data-label or, for Home tiles, looked up
+   from the matching rail button so both surfaces stay in sync. */
+function flSwitchCam(ytId, label) {
+  const iframe = document.getElementById('camIframe');
+  const title = document.getElementById('camTitle');
+  if (iframe) {
+    iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1`;
+    iframe.title = (label || 'Camera') + ' live cam';
+  }
+  if (title && label) title.textContent = label;
+  document.querySelectorAll('.cam-rail__btn').forEach(b => {
+    b.classList.toggle('cam-rail__btn--active', b.dataset.yt === ytId);
+  });
+}
+
+/* Security tab rail buttons */
 document.querySelectorAll('.cam-rail__btn[data-yt]').forEach(btn => {
   btn.addEventListener('click', () => {
-    const ytId = btn.dataset.yt;
     const label = btn.dataset.label || btn.querySelector('span')?.textContent || '';
-    const iframe = document.getElementById('camIframe');
-    const title = document.getElementById('camTitle');
-    if (iframe) {
-      iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1`;
-      iframe.title = label + ' live cam';
-    }
-    if (title) title.textContent = label;
-    document.querySelectorAll('.cam-rail__btn').forEach(b => b.classList.remove('cam-rail__btn--active'));
-    btn.classList.add('cam-rail__btn--active');
+    flSwitchCam(btn.dataset.yt, label);
+  });
+});
+
+/* Home tab camera tiles — the parent .tile--cameras already has data-nav="security"
+   so the view switches; here we also load the tapped feed. */
+document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    const ytId = thumb.dataset.yt;
+    const railBtn = document.querySelector(`.cam-rail__btn[data-yt="${ytId}"]`);
+    const label = railBtn?.dataset.label
+      || thumb.querySelector('.cam-thumb__label')?.textContent
+      || '';
+    flSwitchCam(ytId, label);
   });
 });
 </script>
