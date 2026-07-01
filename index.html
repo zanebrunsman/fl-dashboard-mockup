@@ -1364,7 +1364,7 @@
             <iframe
               id="windyFrame"
               title="Windy weather map — St. Augustine, FL"
-              src="https://embed.windy.com/embed2.html?lat=29.9012&lon=-81.3124&detailLat=29.9012&detailLon=-81.3124&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
+              src="https://embed.windy.com/embed2.html?lat=29.98&lon=-81.35&detailLat=29.98&detailLon=-81.35&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
               frameborder="0"
               loading="lazy"
               allowfullscreen></iframe>
@@ -1376,7 +1376,7 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
                 Recenter
               </button>
-              <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.901,-81.312,9" target="_blank" rel="noopener">Open full Windy ↗</a>
+              <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.98,-81.35,9" target="_blank" rel="noopener">Open full Windy ↗</a>
             </div>
           </footer>
         </section>
@@ -1563,7 +1563,7 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
   const chips = document.querySelectorAll('[data-windy-overlay]');
   if (!frame || !chips.length) return;
 
-  const LAT = 29.9012, LON = -81.3124, ZOOM = 9;
+  const LAT = 29.98, LON = -81.35, ZOOM = 9;
   const productFor = (o) => (o === 'radar' ? 'radar' : 'ecmwf');
   let currentOverlay = 'radar';
 
