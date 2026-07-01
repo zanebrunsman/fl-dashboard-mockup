@@ -2929,3 +2929,116 @@ svg {
 
 /* FS radar map fills its modal body */
 .radar__map--fs { border-radius: 0; }
+
+/* ===========================================================================
+   TESTING VIEW  (Windy embed preview tab)
+   =========================================================================== */
+.testing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  align-items: start;
+}
+/* Stack on narrower tablets / portrait */
+@media (max-width: 900px) {
+  .testing-grid { grid-template-columns: 1fr; }
+}
+
+.card--windy .card__head,
+.card--windy-notes .card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Overlay switcher chips */
+.windy-overlays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.windy-overlays .chip {
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-offset);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.windy-overlays .chip--active {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+}
+
+/* Responsive Windy iframe — fills width, holds a 4:3-ish map ratio */
+.windy-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+}
+.windy-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.windy-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+.windy-foot__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Checklist card */
+.check-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.check-list li {
+  position: relative;
+  padding-left: 1.75rem;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+.check-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-highlight);
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+.check-list li::after {
+  content: "";
+  position: absolute;
+  left: 0.32rem;
+  top: 0.42em;
+  width: 0.32rem;
+  height: 0.55rem;
+  border: solid var(--color-primary);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
