@@ -258,64 +258,7 @@
       </header>
 
       <div class="wx-grid">
-        <!-- Hourly forecast (moved from Home tile) -->
-        <section class="card card--hourly">
-          <header class="card__head">
-            <div class="card__title">Hourly forecast</div>
-          </header>
-          <div class="hourly" role="list" aria-label="Hourly forecast">
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">Now</div>
-                <svg viewBox="0 0 40 40" width="40" height="40" class="hourly__icon" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="var(--sun)" stroke="#c98a14" stroke-width="1"/><g stroke="var(--sun)" stroke-width="2.6" stroke-linecap="round"><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/><line x1="8.5" y1="8.5" x2="11.5" y2="11.5"/><line x1="28.5" y1="28.5" x2="31.5" y2="31.5"/><line x1="8.5" y1="31.5" x2="11.5" y2="28.5"/><line x1="28.5" y1="11.5" x2="31.5" y2="8.5"/></g></svg>
-                <div class="hourly__temp">88°</div>
-                <div class="hourly__precip hourly__precip--dry">0%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">8 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">85°</div>
-                <div class="hourly__precip hourly__precip--dry">5%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">9 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">82°</div>
-                <div class="hourly__precip hourly__precip--dry">10%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">10 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">79°</div>
-                <div class="hourly__precip hourly__precip--wet">40%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">11 PM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3 M14 27 l-1.5 3 M18 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">77°</div>
-                <div class="hourly__precip hourly__precip--wet">65%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">12 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <div class="hourly__temp">75°</div>
-                <div class="hourly__precip hourly__precip--wet">50%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">1 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">74°</div>
-                <div class="hourly__precip hourly__precip--dry">20%</div>
-              </div>
-              <div class="hourly__cell" role="listitem">
-                <div class="hourly__when">2 AM</div>
-                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
-                <div class="hourly__temp">74°</div>
-                <div class="hourly__precip hourly__precip--dry">15%</div>
-              </div>
-            </div>
-        </section>
-
-        <!-- Radar (Windy.com embed) -->
+        <div class="wx-col wx-col--left">
         <section class="card card--windy">
           <header class="card__head">
             <div>
@@ -350,104 +293,6 @@
             </div>
           </footer>
         </section>
-
-        <!-- Alerts list -->
-        <section class="card card--alerts">
-          <header class="card__head">
-            <div class="card__title">Active alerts</div>
-            <div class="card__sub">NWS · St. Johns County</div>
-          </header>
-          <ul class="alerts" role="list">
-            <li class="alert-row alert-row--bolt">
-              <div class="alert-row__bar"></div>
-              <div class="alert-row__body">
-                <div class="alert-row__title"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span>Lightning nearby — 3.2 mi NE</span></div>
-                <div class="alert-row__when">5 strikes in last 10 min · cell moving WNW @ 18 mph</div>
-                <div class="alert-row__desc">Audible chime sounded on Sonos + tablet. Stay indoors until cell passes.</div>
-              </div>
-            </li>
-            <li class="alert-row alert-row--warn">
-              <div class="alert-row__bar"></div>
-              <div class="alert-row__body">
-                <div class="alert-row__title">Heat Advisory</div>
-                <div class="alert-row__when">Today, 11:00 AM – 8:00 PM</div>
-                <div class="alert-row__desc">Heat index up to 108°F. Hydration and shade.</div>
-              </div>
-            </li>
-            <li class="alert-row alert-row--watch">
-              <div class="alert-row__bar"></div>
-              <div class="alert-row__body">
-                <div class="alert-row__title">Rip Current Statement</div>
-                <div class="alert-row__when">Through Sun 8:00 PM</div>
-                <div class="alert-row__desc">High risk along St. Johns County beaches.</div>
-              </div>
-            </li>
-            <li class="alert-row alert-row--info">
-              <div class="alert-row__bar"></div>
-              <div class="alert-row__body">
-                <div class="alert-row__title">Coastal flood — Minor</div>
-                <div class="alert-row__when">High tide 4:42 PM</div>
-                <div class="alert-row__desc">Minor flooding possible near Vilano causeway.</div>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <!-- Tide -->
-        <section class="card card--tide">
-          <header class="card__head">
-            <div class="card__title">Tide · Station 8720587</div>
-            <div class="card__sub">St. Augustine Beach</div>
-          </header>
-          <div class="tide-wrap">
-            <svg viewBox="0 0 600 200" class="tide" aria-label="Tide chart" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="tideFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--color-blue)" stop-opacity="0.35" />
-                  <stop offset="100%" stop-color="var(--color-blue)" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <!-- gridlines -->
-              <g stroke="var(--color-border)" stroke-width="1">
-                <line x1="0" y1="35" x2="600" y2="35" stroke-dasharray="2 4" opacity="0.6"/>
-                <line x1="0" y1="100" x2="600" y2="100" stroke-dasharray="2 4" opacity="0.6"/>
-                <line x1="0" y1="165" x2="600" y2="165" stroke-dasharray="2 4" opacity="0.6"/>
-              </g>
-              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70 L 640 180 L 0 180 Z" fill="url(#tideFill)" />
-              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70" fill="none" stroke="var(--color-blue)" stroke-width="3" stroke-linecap="round" />
-              <!-- NOW marker line -->
-              <line x1="240" y1="15" x2="240" y2="180" stroke="var(--color-primary)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
-              <g>
-                <circle cx="120" cy="35" r="5" fill="var(--color-blue)" />
-                <circle cx="360" cy="165" r="5" fill="var(--color-text-muted)" />
-                <circle cx="240" cy="100" r="6" fill="var(--color-primary)" stroke="#fff" stroke-width="2" />
-              </g>
-              <!-- height labels y-axis -->
-              <g fill="var(--color-text-faint)" font-family="Satoshi, sans-serif" font-size="10" font-weight="600">
-                <text x="6" y="30">4.3 ft</text>
-                <text x="6" y="104">2.0 ft</text>
-                <text x="6" y="168">0.4 ft</text>
-              </g>
-              <!-- peak/trough labels -->
-              <g fill="var(--color-text-muted)" font-family="Satoshi, sans-serif" font-size="10" font-weight="700">
-                <text x="120" y="22" text-anchor="middle">High 4:42 AM</text>
-                <text x="360" y="185" text-anchor="middle">Low 11:08 AM</text>
-                <text x="240" y="22" text-anchor="middle" fill="var(--color-primary)" font-weight="800">NOW · 2.1 ft</text>
-              </g>
-            </svg>
-            <!-- x-axis time labels -->
-            <div class="tide__axis">
-              <span>12a</span><span>3a</span><span>6a</span><span>9a</span><span>12p</span><span>3p</span><span>6p</span><span>9p</span>
-            </div>
-          </div>
-          <div class="tide__legend">
-            <div><strong>Now</strong> Rising · 2.1 ft</div>
-            <div><strong>Next high</strong> 4:42 PM · 4.3 ft</div>
-            <div><strong>Next low</strong> 11:08 PM · 0.4 ft</div>
-          </div>
-        </section>
-
-        <!-- Conditions table -->
         <section class="card card--cond">
           <header class="card__head">
             <div class="card__title">Conditions</div>
@@ -511,6 +356,156 @@
             </div>
           </div>
         </section>
+        </div>
+        <div class="wx-col wx-col--right">
+        <section class="card card--alerts">
+          <header class="card__head">
+            <div class="card__title">Active alerts</div>
+            <div class="card__sub">NWS · St. Johns County</div>
+          </header>
+          <ul class="alerts" role="list">
+            <li class="alert-row alert-row--bolt">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span>Lightning nearby — 3.2 mi NE</span></div>
+                <div class="alert-row__when">5 strikes in last 10 min · cell moving WNW @ 18 mph</div>
+                <div class="alert-row__desc">Audible chime sounded on Sonos + tablet. Stay indoors until cell passes.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--warn">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Heat Advisory</div>
+                <div class="alert-row__when">Today, 11:00 AM – 8:00 PM</div>
+                <div class="alert-row__desc">Heat index up to 108°F. Hydration and shade.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--watch">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Rip Current Statement</div>
+                <div class="alert-row__when">Through Sun 8:00 PM</div>
+                <div class="alert-row__desc">High risk along St. Johns County beaches.</div>
+              </div>
+            </li>
+            <li class="alert-row alert-row--info">
+              <div class="alert-row__bar"></div>
+              <div class="alert-row__body">
+                <div class="alert-row__title">Coastal flood — Minor</div>
+                <div class="alert-row__when">High tide 4:42 PM</div>
+                <div class="alert-row__desc">Minor flooding possible near Vilano causeway.</div>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section class="card card--hourly">
+          <header class="card__head">
+            <div class="card__title">Hourly forecast</div>
+          </header>
+          <div class="hourly" role="list" aria-label="Hourly forecast">
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">Now</div>
+                <svg viewBox="0 0 40 40" width="40" height="40" class="hourly__icon" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="var(--sun)" stroke="#c98a14" stroke-width="1"/><g stroke="var(--sun)" stroke-width="2.6" stroke-linecap="round"><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/><line x1="8.5" y1="8.5" x2="11.5" y2="11.5"/><line x1="28.5" y1="28.5" x2="31.5" y2="31.5"/><line x1="8.5" y1="31.5" x2="11.5" y2="28.5"/><line x1="28.5" y1="11.5" x2="31.5" y2="8.5"/></g></svg>
+                <div class="hourly__temp">88°</div>
+                <div class="hourly__precip hourly__precip--dry">0%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">8 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><circle cx="16" cy="16" r="6.5" fill="var(--sun)"/><path d="M10 20 Q10 15 15 15 Q19 15 20 18 Q24 18 24 21 Q24 24 21 24 L12 24 Q8 24 8 21 Q8 19 10 20 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">85°</div>
+                <div class="hourly__precip hourly__precip--dry">5%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">9 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">82°</div>
+                <div class="hourly__precip hourly__precip--dry">10%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">10 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">79°</div>
+                <div class="hourly__precip hourly__precip--wet">40%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">11 PM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3 M14 27 l-1.5 3 M18 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">77°</div>
+                <div class="hourly__precip hourly__precip--wet">65%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">12 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/><path d="M12 27 l-1.5 3 M16 27 l-1.5 3 M20 27 l-1.5 3" stroke="var(--rain)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div class="hourly__temp">75°</div>
+                <div class="hourly__precip hourly__precip--wet">50%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">1 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">20%</div>
+              </div>
+              <div class="hourly__cell" role="listitem">
+                <div class="hourly__when">2 AM</div>
+                <svg viewBox="0 0 32 32" width="30" height="30" class="hourly__icon"><path d="M9 18 Q9 11 16 11 Q22 11 23 17 Q28 17 28 21 Q28 25 24 25 L11 25 Q6 25 6 21 Q6 18 9 18 Z" fill="var(--cloud)"/></svg>
+                <div class="hourly__temp">74°</div>
+                <div class="hourly__precip hourly__precip--dry">15%</div>
+              </div>
+            </div>
+        </section>
+        <section class="card card--tide">
+          <header class="card__head">
+            <div class="card__title">Tide · Station 8720587</div>
+            <div class="card__sub">St. Augustine Beach</div>
+          </header>
+          <div class="tide-wrap">
+            <svg viewBox="0 0 600 200" class="tide" aria-label="Tide chart" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="tideFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--color-blue)" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="var(--color-blue)" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <!-- gridlines -->
+              <g stroke="var(--color-border)" stroke-width="1">
+                <line x1="0" y1="35" x2="600" y2="35" stroke-dasharray="2 4" opacity="0.6"/>
+                <line x1="0" y1="100" x2="600" y2="100" stroke-dasharray="2 4" opacity="0.6"/>
+                <line x1="0" y1="165" x2="600" y2="165" stroke-dasharray="2 4" opacity="0.6"/>
+              </g>
+              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70 L 640 180 L 0 180 Z" fill="url(#tideFill)" />
+              <path d="M0 100 C 80 35, 160 35, 240 100 S 400 165, 480 100 S 600 35, 640 70" fill="none" stroke="var(--color-blue)" stroke-width="3" stroke-linecap="round" />
+              <!-- NOW marker line -->
+              <line x1="240" y1="15" x2="240" y2="180" stroke="var(--color-primary)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+              <g>
+                <circle cx="120" cy="35" r="5" fill="var(--color-blue)" />
+                <circle cx="360" cy="165" r="5" fill="var(--color-text-muted)" />
+                <circle cx="240" cy="100" r="6" fill="var(--color-primary)" stroke="#fff" stroke-width="2" />
+              </g>
+              <!-- height labels y-axis -->
+              <g fill="var(--color-text-faint)" font-family="Satoshi, sans-serif" font-size="10" font-weight="600">
+                <text x="6" y="30">4.3 ft</text>
+                <text x="6" y="104">2.0 ft</text>
+                <text x="6" y="168">0.4 ft</text>
+              </g>
+              <!-- peak/trough labels -->
+              <g fill="var(--color-text-muted)" font-family="Satoshi, sans-serif" font-size="10" font-weight="700">
+                <text x="120" y="22" text-anchor="middle">High 4:42 AM</text>
+                <text x="360" y="185" text-anchor="middle">Low 11:08 AM</text>
+                <text x="240" y="22" text-anchor="middle" fill="var(--color-primary)" font-weight="800">NOW · 2.1 ft</text>
+              </g>
+            </svg>
+            <!-- x-axis time labels -->
+            <div class="tide__axis">
+              <span>12a</span><span>3a</span><span>6a</span><span>9a</span><span>12p</span><span>3p</span><span>6p</span><span>9p</span>
+            </div>
+          </div>
+          <div class="tide__legend">
+            <div><strong>Now</strong> Rising · 2.1 ft</div>
+            <div><strong>Next high</strong> 4:42 PM · 4.3 ft</div>
+            <div><strong>Next low</strong> 11:08 PM · 0.4 ft</div>
+          </div>
+        </section>
+        </div>
       </div>
 
       <nav class="navstrip" aria-label="Sections">

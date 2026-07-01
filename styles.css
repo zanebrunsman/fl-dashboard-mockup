@@ -755,29 +755,56 @@ svg {
    ============================================================ */
 .view--weather, .view--security { grid-template-rows: auto 1fr auto; }
 .view--weather { padding-bottom: var(--space-3); }
-/* Weather tab: 2 columns x 3 rows.
-   Left column = radar (top) then conditions (spans 2 rows below).
-   Right column = hourly, alerts, tide stacked evenly. */
+/* Weather tab: scrollable 2-column layout. Each column stacks independently
+   and sizes to its own content (no shared grid rows), so cards never clip or
+   overflow each other.
+   Left column  = radar (tall) then conditions (compressed).
+   Right column = active alerts (top), hourly, tide. */
 .wx-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: minmax(0, 1.55fr) minmax(0, 1.15fr) minmax(0, 0.95fr);
-  grid-template-areas:
-    "radar  hourly"
-    "cond   alerts"
-    "cond   tide";
+  grid-template-columns: 1.55fr 1fr;
   gap: var(--space-4);
+  align-items: start;
   min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
-.card--windy  { grid-area: radar; min-height: 0; overflow: hidden; }
-.card--cond   { grid-area: cond;  min-height: 0; overflow: hidden; }
-.card--hourly { grid-area: hourly; min-height: 0; overflow: hidden; }
-.card--alerts { grid-area: alerts; min-height: 0; overflow: hidden; }
-.card--tide   { grid-area: tide; min-height: 0; overflow: hidden; }
-.card--cond > .cond-grid { flex: 1; min-height: 0; }
-/* Scrollable inner lists so content never overflows a card */
-.card--alerts .alerts { overflow-y: auto; min-height: 0; }
-.card--hourly .hourly, .card--hourly .hourly-list { overflow-y: auto; min-height: 0; }
+.wx-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+/* Radar is the star of this tab — give it a large, usable height. */
+.card--windy { flex: 0 0 auto; min-height: 520px; }
+/* Radar embed fill height is set in the .windy-embed section below. */
+/* Conditions: let content define height so the card compresses instead of
+   leaving blank space. */
+.card--cond { flex: 0 0 auto; overflow: visible; }
+.card--cond > .cond-grid { flex: 0 0 auto; }
+/* Right-column cards size to their content. */
+.wx-col--right > .card { flex: 0 0 auto; }
+.card--hourly .hourly { flex: 0 0 auto; overflow: visible; }
+
+/* ---- Weather tab: enlarge small text for tablet readability ---- */
+.wx-grid .section-label { font-size: 12px; }
+/* Conditions — 4-day outlook + right-now cells */
+.wx-grid .forecast4__when { font-size: 14px; }
+.wx-grid .forecast4__temp { font-size: 16px; }
+.wx-grid .forecast4__temp span { font-size: 14px; }
+.wx-grid .cond-cell { padding: 9px 12px; gap: 10px; }
+.wx-grid .cond-cell__label { font-size: 12.5px; }
+.wx-grid .cond-cell__value { font-size: 15px; }
+/* Hourly forecast cells */
+.wx-grid .hourly__cell { padding: 10px 12px; min-height: 46px; gap: 12px; }
+.wx-grid .hourly__when { font-size: 13.5px; }
+.wx-grid .hourly__temp { font-size: 16px; }
+.wx-grid .hourly__precip { font-size: 13px; }
+.wx-grid .hourly__cell .hourly__icon { width: 30px; height: 30px; }
+/* Tide legend + axis */
+.wx-grid .tide__legend { font-size: 13.5px; }
+.wx-grid .tide__axis { font-size: 12.5px; }
+.wx-grid .card--tide .tide-chart, .wx-grid .card--tide svg { max-height: none; }
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -3012,12 +3039,12 @@ svg {
   background: var(--color-surface-offset);
   border: 1px solid var(--color-border);
 }
-/* On the Weather tab the radar card spans two rows — let the embed grow to
-   fill the available height instead of a fixed aspect ratio. */
+/* On the Weather tab the radar card is tall — let the embed grow to fill the
+   card height instead of a fixed aspect ratio. */
 .wx-grid .card--windy .windy-embed {
   aspect-ratio: auto;
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 440px;
 }
 .windy-embed iframe {
   position: absolute;
