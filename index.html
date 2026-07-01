@@ -1371,7 +1371,13 @@
           </div>
           <footer class="card__foot windy-foot">
             <span class="windy-foot__note">Testing feed responsiveness &amp; touch controls on the tablet.</span>
-            <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.901,-81.312,9" target="_blank" rel="noopener">Open full Windy ↗</a>
+            <div class="windy-foot__actions">
+              <button class="btn btn--ghost btn--sm" id="windyRecenter" type="button" title="Recenter on St. Augustine">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                Recenter
+              </button>
+              <a class="btn btn--ghost btn--sm" id="windyOpen" href="https://www.windy.com/?radar,29.901,-81.312,9" target="_blank" rel="noopener">Open full Windy ↗</a>
+            </div>
           </footer>
         </section>
 
@@ -1544,20 +1550,25 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
   });
 });
 
-/* ── Testing tab: Windy overlay switcher ── */
-/* Rebuilds the Windy embed URL when an overlay chip is tapped. Windy maps
-   'radar' to product=radar; the other overlays use product=ecmwf. Also keeps
-   the "Open full Windy" link in sync with the selected overlay. */
+/* ── Testing tab: Windy overlay switcher + recenter ── */
+/* The Windy embed exposes no recenter button or JS API and the iframe is
+   cross-origin, so we can't move the map from outside. Instead, both the
+   overlay chips and the Recenter button rebuild the iframe src with the home
+   coordinates — reloading snaps the map back to St. Augustine (zoom 9).
+   Windy maps 'radar' to product=radar; other overlays use product=ecmwf. */
 (function () {
   const frame = document.getElementById('windyFrame');
   const openLink = document.getElementById('windyOpen');
+  const recenterBtn = document.getElementById('windyRecenter');
   const chips = document.querySelectorAll('[data-windy-overlay]');
   if (!frame || !chips.length) return;
 
   const LAT = 29.9012, LON = -81.3124, ZOOM = 9;
   const productFor = (o) => (o === 'radar' ? 'radar' : 'ecmwf');
+  let currentOverlay = 'radar';
 
-  function setOverlay(overlay) {
+  function loadEmbed(overlay) {
+    currentOverlay = overlay;
     const product = productFor(overlay);
     frame.src =
       `https://embed.windy.com/embed2.html?lat=${LAT}&lon=${LON}` +
@@ -1574,8 +1585,17 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
   }
 
   chips.forEach((chip) => {
-    chip.addEventListener('click', () => setOverlay(chip.dataset.windyOverlay));
+    chip.addEventListener('click', () => loadEmbed(chip.dataset.windyOverlay));
   });
+
+  /* Recenter: reload the embed at home coords, keeping the active overlay. */
+  if (recenterBtn) {
+    recenterBtn.addEventListener('click', () => {
+      recenterBtn.classList.add('is-busy');
+      loadEmbed(currentOverlay);
+      setTimeout(() => recenterBtn.classList.remove('is-busy'), 600);
+    });
+  }
 })();
 </script>
 </body>
