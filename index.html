@@ -1563,6 +1563,7 @@ document.querySelectorAll('.tile--cameras .cam-thumb[data-yt]').forEach(thumb =>
   const chips = document.querySelectorAll('[data-windy-overlay]');
   if (!frame || !chips.length) return;
 
+  // Rounded to ~2 decimals (~1 km) so the exact home location isn't exposed in this public repo.
   const LAT = 29.98, LON = -81.35, ZOOM = 9;
   const productFor = (o) => (o === 'radar' ? 'radar' : 'ecmwf');
   let currentOverlay = 'radar';
