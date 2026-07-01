@@ -425,12 +425,18 @@ svg {
 /* ===== TILES ===== */
 .tiles {
   display: grid;
-  grid-template-columns: 1.4fr 1.4fr 1fr 1fr;
+  /* Radar sits on the left (aligned under the hero); cameras + now-playing
+     are pushed to the right, sitting next to each other. */
+  grid-template-columns: 1.7fr 1.15fr 1.15fr;
+  grid-template-areas: "radar cameras nowplaying";
   gap: var(--space-4);
   min-height: 0;
   align-self: stretch;
   align-content: stretch;
 }
+.tile--radar      { grid-area: radar; }
+.tile--cameras    { grid-area: cameras; }
+.tile--nowplaying { grid-area: nowplaying; }
 .tile {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -749,19 +755,29 @@ svg {
    ============================================================ */
 .view--weather, .view--security { grid-template-rows: auto 1fr auto; }
 .view--weather { padding-bottom: var(--space-3); }
+/* Weather tab: 2 columns x 3 rows.
+   Left column = radar (top) then conditions (spans 2 rows below).
+   Right column = hourly, alerts, tide stacked evenly. */
 .wx-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: 1.4fr 1.1fr;
+  grid-template-rows: minmax(0, 1.55fr) minmax(0, 1.15fr) minmax(0, 0.95fr);
+  grid-template-areas:
+    "radar  hourly"
+    "cond   alerts"
+    "cond   tide";
   gap: var(--space-4);
   min-height: 0;
 }
-.card--cond { min-height: 0; overflow: hidden; }
+.card--windy  { grid-area: radar; min-height: 0; overflow: hidden; }
+.card--cond   { grid-area: cond;  min-height: 0; overflow: hidden; }
+.card--hourly { grid-area: hourly; min-height: 0; overflow: hidden; }
+.card--alerts { grid-area: alerts; min-height: 0; overflow: hidden; }
+.card--tide   { grid-area: tide; min-height: 0; overflow: hidden; }
 .card--cond > .cond-grid { flex: 1; min-height: 0; }
-.card--radar { grid-column: 1; grid-row: 1; }
-.card--cond { grid-column: 1; grid-row: 2; }
-.card--alerts { grid-column: 2; grid-row: 1; }
-.card--tide { grid-column: 2; grid-row: 2; }
+/* Scrollable inner lists so content never overflows a card */
+.card--alerts .alerts { overflow-y: auto; min-height: 0; }
+.card--hourly .hourly, .card--hourly .hourly-list { overflow-y: auto; min-height: 0; }
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1385,11 +1401,14 @@ svg {
   width: 56px;
   height: 56px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, #2a5e7d 0%, #f5b942 100%);
-  display: grid;
-  place-items: center;
-  color: #fff;
+  overflow: hidden;
   flex-shrink: 0;
+}
+.np-art__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .np-meta {
   flex: 1;
@@ -1487,6 +1506,9 @@ svg {
   font-weight: 700;
   letter-spacing: 0.03em;
 }
+.src-tab__badge--paused {
+  background: rgba(255,255,255,0.14);
+}
 .src-tab:not(.src-tab--active) .src-tab__badge {
   background: var(--color-surface-offset);
   color: var(--color-text-muted);
@@ -1517,23 +1539,13 @@ svg {
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
-.player__art-bg {
+.player__art-img {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #2a5e7d 0%, #4a8baa 35%, #f5b942 100%);
-}
-.player__art-pulse {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 55%);
-  animation: pulse 3s ease-in-out infinite;
-}
-.player__art-icon {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #fff;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .player__meta {
   display: flex;
@@ -1742,10 +1754,15 @@ svg {
   width: 36px;
   height: 36px;
   border-radius: 4px;
-  background: linear-gradient(135deg, #4a8baa, #f5b942);
+  overflow: hidden;
+  flex-shrink: 0;
 }
-.queue__row:nth-child(2) .queue__art { background: linear-gradient(135deg, #2a5e7d, #94c2dd); }
-.queue__row:nth-child(3) .queue__art { background: linear-gradient(135deg, #d18b1a, #f5b942); }
+.queue__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .queue__meta { min-width: 0; }
 .queue__title {
   font-size: 13px;
@@ -2994,6 +3011,13 @@ svg {
   overflow: hidden;
   background: var(--color-surface-offset);
   border: 1px solid var(--color-border);
+}
+/* On the Weather tab the radar card spans two rows — let the embed grow to
+   fill the available height instead of a fixed aspect ratio. */
+.wx-grid .card--windy .windy-embed {
+  aspect-ratio: auto;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .windy-embed iframe {
   position: absolute;

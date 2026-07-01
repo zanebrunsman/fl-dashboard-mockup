@@ -138,20 +138,6 @@
 
       <!-- Quick tiles row -->
       <section class="tiles">
-        <button class="tile tile--weather" data-nav="weather" aria-label="Weather and radar">
-          <div class="tile__head">
-            <span class="tile__eyebrow">Weather</span>
-            <span class="tile__chev" aria-hidden="true">›</span>
-          </div>
-          <div class="tile__body tile__body--weather-summary">
-            <div class="wx-summary">
-              <div class="wx-summary__temp">86°</div>
-              <div class="wx-summary__phrase">Partly sunny</div>
-              <div class="wx-summary__cta">Forecast →</div>
-            </div>
-          </div>
-        </button>
-
         <button class="tile tile--cameras" data-nav="security" aria-label="View cameras">
           <div class="tile__head">
             <span class="tile__eyebrow">Cameras</span>
@@ -186,7 +172,7 @@
             <span class="tile__eyebrow">Radar</span>
             <button class="tile__chev-btn" data-nav="weather" aria-label="Open Weather tab" style="background:none;border:none;padding:0;cursor:pointer;color:inherit;font-size:inherit;">›</button>
           </div>
-          <div class="tile__body tile__body--radar-embed" style="min-height:180px;aspect-ratio:16/9;padding:0;overflow:hidden;">
+          <div class="tile__body tile__body--radar-embed" style="min-height:180px;padding:0;overflow:hidden;border-radius:var(--radius-md);">
             <iframe
               id="homeRadarFrame"
               src="https://embed.windy.com/embed2.html?lat=29.98&lon=-81.35&detailLat=29.98&detailLon=-81.35&width=650&height=450&zoom=9&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1&play=1"
@@ -206,8 +192,7 @@
           </div>
           <div class="tile__body tile__body--nowplaying">
             <div class="np-art" aria-hidden="true">
-              <div class="np-art__bg"></div>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff" stroke="none" class="np-art__play"><path d="M6 4l14 8-14 8z"/></svg>
+              <img class="np-art__img" src="assets/art/buffett-syk.jpg" alt="" width="56" height="56">
             </div>
             <div class="np-meta">
               <div class="np-title">Margaritaville</div>
@@ -699,7 +684,7 @@
             <button class="src-tab src-tab--active" data-src="sonos" role="tab" aria-selected="true">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg>
               Sonos
-              <span class="src-tab__badge">Playing</span>
+              <span class="src-tab__badge src-tab__badge--paused">Paused</span>
             </button>
             <button class="src-tab" data-src="tv" role="tab" aria-selected="false">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/></svg>
@@ -711,9 +696,7 @@
           <!-- Now playing panel (Sonos active) -->
           <div class="player" data-player="sonos">
             <div class="player__art" aria-hidden="true">
-              <div class="player__art-bg"></div>
-              <div class="player__art-pulse"></div>
-              <svg viewBox="0 0 24 24" width="40" height="40" fill="#fff" class="player__art-icon"><path d="M9 3v10.55A4 4 0 1 0 11 17V7h8V3z"/></svg>
+              <img class="player__art-img" src="assets/art/buffett-syk.jpg" alt="" width="120" height="120">
             </div>
             <div class="player__meta">
               <div class="player__title">Margaritaville</div>
@@ -733,7 +716,7 @@
               <!-- transport -->
               <div class="player__transport">
                 <button class="player__btn" aria-label="Previous"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg></button>
-                <button class="player__btn player__btn--lg" aria-label="Play / Pause"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1"/><rect x="13" y="5" width="4" height="14" rx="1"/></svg></button>
+                <button class="player__btn player__btn--lg" aria-label="Play"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
                 <button class="player__btn" aria-label="Next"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6v12l8.5-6z"/></svg></button>
               </div>
               <!-- volume -->
@@ -804,7 +787,7 @@
             </header>
             <ul class="queue" role="list">
               <li class="queue__row">
-                <div class="queue__art" data-art="a"></div>
+                <div class="queue__art"><img src="assets/art/buffett-syk.jpg" alt="" width="44" height="44"></div>
                 <div class="queue__meta">
                   <div class="queue__title">Cheeseburger in Paradise</div>
                   <div class="queue__artist">Jimmy Buffett</div>
@@ -812,7 +795,7 @@
                 <span class="queue__dur">3:46</span>
               </li>
               <li class="queue__row">
-                <div class="queue__art" data-art="b"></div>
+                <div class="queue__art"><img src="assets/art/beachboys-kokomo.jpg" alt="" width="44" height="44"></div>
                 <div class="queue__meta">
                   <div class="queue__title">Kokomo</div>
                   <div class="queue__artist">The Beach Boys</div>
@@ -820,7 +803,7 @@
                 <span class="queue__dur">3:35</span>
               </li>
               <li class="queue__row">
-                <div class="queue__art" data-art="c"></div>
+                <div class="queue__art"><img src="assets/art/weezer-green.jpg" alt="" width="44" height="44"></div>
                 <div class="queue__meta">
                   <div class="queue__title">Island in the Sun</div>
                   <div class="queue__artist">Weezer</div>
